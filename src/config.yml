@@ -1,0 +1,10 @@
+partyNamePrefix: "§b["
+partyNameSuffix: "]§f"
+leaderInvite: false
+leaderKick: true
+leaderDisband: true
+spawnWorld: world
+selectionTool:
+  ==: org.bukkit.inventory.ItemStack
+  type: FEATHER
+homes: {}

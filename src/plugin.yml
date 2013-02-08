@@ -1,0 +1,106 @@
+name: "Instances"
+version: "1.0"
+main: "org.cyberiantiger.minecraft.instances.Instances"
+# website: "http://dev.bukkit.org/server-mods/skylandsplus/"
+load: POSTWORLD
+commands:
+  p:
+    description: Chat to your party.
+    usage: /p <text>
+    permission: instances.party
+  pme:
+    description: Emote to your party.
+    usage: /pme <text>
+    permission: instances.party
+  pcreate:
+    description: Create a party.
+    usage: /pcreate <party name>
+    permission: instances.party
+  pdisband:
+    description: Disband your party.
+    usage: /pdisband
+    permission: instances.party
+  pinfo:
+    description: Show information about your party.
+    usage: /pinfo [<party name>]
+    permission: instances.party
+  pinvite:
+    description: Invite someone to join your party.
+    usage: /pinvite <player>
+    permission: instances.party
+  pjoin:
+    description: Join a party.
+    usage: /pjoin <party name>
+    permission: instances.party
+  pkick:
+    description: Kick a member from the party.
+    usage: /pkick <player>
+    permission: instances.party
+  pleader:
+    description: Change the party leader.
+    usage: /pleader <player>
+    permission: instances.party
+  pleave:
+    description: Leave your party
+    usage: /pleave
+    permission: instances.party
+  puninvite:
+    description: Uninvite someone from joining your party.
+    usage: /puninvite <player>
+    permission: instances.party
+  plist:
+    description: List parties.
+    usage: /plist
+    permission: instances.party.list
+  setspawn:
+    description: Set the spawn world.
+    usage: /setspawn
+    permission: instances.setspawn
+  spawn:
+    description: Teleport to the spawn location.
+    usage: /spawn
+    permission: instances.spawn
+  isave:
+    description: Save instance settings.
+    usage: /isave
+    permission: instances.save
+  ireload:
+    description: Reload instance settings.
+    usage: /ireload
+    permission: instances.reload
+  home:
+    description: Teleport to your home.
+    usage: /home
+    permission: instances.home
+  sethome:
+    description: Set your home.
+    usage: /sethome
+    permission: instances.sethome
+  motd:
+    description: Show the motd.
+    usage: /motd
+    permission: instances.motd
+  iselectiontool:
+    description: Set the selection tool to the item you are holding.
+    usage: /iselectiontool
+    permission: instances.portal.create
+  icreateportal:
+    description: Create an instance portal
+    usage: /icreateportal <name>
+    permission: instances.portal.create
+  isetentrance:
+    description: Set the entrance for a portal you are creating.
+    usage: /isetentrance
+    permission: instances.portal.create
+  isetdestination:
+    description: Set the destination for a portal you are creating.
+    usage: /isetdestination
+    permission: instances.portal.create
+  iportallist:
+    description: List all portals.
+    usage: /iportallist
+    permissions: instances.portal.list
+  ideleteportal:
+    description: Delete a portal.
+    usage: /ideleteportal <name>
+    permission: instances.portal.delete

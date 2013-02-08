@@ -1,0 +1,642 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.cyberiantiger.minecraft.instances;
+
+import java.io.BufferedReader;
+import java.util.logging.Level;
+import org.bukkit.configuration.ConfigurationSection;
+import org.cyberiantiger.minecraft.instances.command.SenderType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.cyberiantiger.minecraft.instances.command.Command;
+import org.cyberiantiger.minecraft.instances.command.CreatePortal;
+import org.cyberiantiger.minecraft.instances.command.DeletePortal;
+import org.cyberiantiger.minecraft.instances.command.Home;
+import org.cyberiantiger.minecraft.instances.command.Motd;
+import org.cyberiantiger.minecraft.instances.command.PartyChat;
+import org.cyberiantiger.minecraft.instances.command.PartyCreate;
+import org.cyberiantiger.minecraft.instances.command.PartyDisband;
+import org.cyberiantiger.minecraft.instances.command.PartyEmote;
+import org.cyberiantiger.minecraft.instances.command.PartyInfo;
+import org.cyberiantiger.minecraft.instances.command.PartyInvite;
+import org.cyberiantiger.minecraft.instances.command.PartyJoin;
+import org.cyberiantiger.minecraft.instances.command.PartyKick;
+import org.cyberiantiger.minecraft.instances.command.PartyLeader;
+import org.cyberiantiger.minecraft.instances.command.PartyLeave;
+import org.cyberiantiger.minecraft.instances.command.PartyList;
+import org.cyberiantiger.minecraft.instances.command.PartyUninvite;
+import org.cyberiantiger.minecraft.instances.command.PortalList;
+import org.cyberiantiger.minecraft.instances.command.Reload;
+import org.cyberiantiger.minecraft.instances.command.Save;
+import org.cyberiantiger.minecraft.instances.command.SelectionTool;
+import org.cyberiantiger.minecraft.instances.command.SetDestination;
+import org.cyberiantiger.minecraft.instances.command.SetEntrance;
+import org.cyberiantiger.minecraft.instances.command.SetHome;
+import org.cyberiantiger.minecraft.instances.command.SetSpawn;
+import org.cyberiantiger.minecraft.instances.command.Spawn;
+
+/**
+ *
+ * @author antony
+ */
+public class Instances extends JavaPlugin implements Listener {
+
+    public static final Charset CHARSET = Charset.forName("UTF-8");
+    private String[] motd;
+    private String partyNamePrefix;
+    private String partyNameSuffix;
+    private boolean leaderInvite;
+    private boolean leaderKick;
+    private boolean leaderDisband;
+    private World spawn;
+    // Map of world name -> entrance portal.
+    private Map<String, Party> parties = new HashMap<String, Party>();
+    private Map<Player, Party> partyMap = new HashMap<Player, Party>();
+    private Map<String, PortalPair> portals = new HashMap<String, PortalPair>();
+    private Map<String, List<Portal>> portalMap = new HashMap<String, List<Portal>>();
+    private Map<Player, InstanceEntrancePortal> lastPortal = new HashMap<Player, InstanceEntrancePortal>();
+    private Map<Player, Location> homes = new HashMap<Player, Location>();
+    private ItemStack selectionTool;
+    private Map<Player, Session> sessions = new HashMap<Player, Session>();
+    private final static Map<String, Command> commands = new HashMap<String, Command>();
+
+    {
+        commands.put("p", new PartyChat());
+        commands.put("pme", new PartyEmote());
+        commands.put("pcreate", new PartyCreate());
+        commands.put("pdisband", new PartyDisband());
+        commands.put("pinfo", new PartyInfo());
+        commands.put("pinvite", new PartyInvite());
+        commands.put("pjoin", new PartyJoin());
+        commands.put("pkick", new PartyKick());
+        commands.put("pleader", new PartyLeader());
+        commands.put("pleave", new PartyLeave());
+        commands.put("puninvite", new PartyUninvite());
+        commands.put("plist", new PartyList());
+        commands.put("setspawn", new SetSpawn());
+        commands.put("spawn", new Spawn());
+        commands.put("isave", new Save());
+        commands.put("ireload", new Reload());
+        commands.put("home", new Home());
+        commands.put("sethome", new SetHome());
+        commands.put("motd", new Motd());
+        commands.put("iselectiontool", new SelectionTool());
+        commands.put("icreateportal", new CreatePortal());
+        commands.put("isetentrance", new SetEntrance());
+        commands.put("isetdestination", new SetDestination());
+        commands.put("iportallist", new PortalList());
+        commands.put("ideleteportal", new DeletePortal());
+    }
+
+    public Collection<PortalPair> getPortalPairs() {
+        return portals.values();
+    }
+
+    public PortalPair getPortalPair(String name) {
+        return portals.get(name);
+    }
+
+    public void addPortalPair(PortalPair pair) {
+        portals.put(pair.getName(), pair);
+        addPortal(pair.getEnter());
+        addPortal(pair.getDestination());
+    }
+
+    public void addPortal(Portal portal) {
+        String world = portal.getCuboid().getWorld();
+        List<Portal> l = portalMap.get(world);
+        if (l == null) {
+            l = new ArrayList<Portal>();
+            portalMap.put(world, l);
+        }
+        l.add(portal);
+    }
+
+    public void removePortalPair(PortalPair pair) {
+        pair = portals.remove(pair.getName());
+        removePortal(pair.getEnter());
+        removePortal(pair.getDestination());
+    }
+
+    public void removePortal(Portal portal) {
+        String world = portal.getCuboid().getWorld();
+        List<Portal> worldPortals = portalMap.get(world);
+        if (worldPortals != null) {
+            worldPortals.remove(portal);
+        }
+    }
+
+    public String getPartyNamePrefix() {
+        return partyNamePrefix;
+    }
+
+    public String getPartyNameSuffix() {
+        return partyNameSuffix;
+    }
+
+    public boolean isLeaderInvite() {
+        return leaderInvite;
+    }
+
+    public boolean isLeaderDisband() {
+        return leaderDisband;
+    }
+
+    public boolean isLeaderKick() {
+        return leaderKick;
+    }
+
+    public ItemStack getSelectionTool() {
+        return selectionTool;
+    }
+
+    public void setSelectionTool(ItemStack selectionTool) {
+        this.selectionTool = selectionTool;
+    }
+
+    public Session getSession(Player player) {
+        Session session = sessions.get(player);
+        if (session == null) {
+            session = new Session();
+            sessions.put(player, session);
+        }
+        return session;
+    }
+
+    public Selection getSelection(Player player) {
+        return getSession(player).getCurrent();
+    }
+
+    public String[] getMotd() {
+        return motd;
+    }
+
+    public World getSpawn() {
+        return spawn;
+    }
+
+    public void setSpawn(World spawn) {
+        this.spawn = spawn;
+    }
+
+    public void setHome(Player player, Location home) {
+        homes.put(player, home);
+    }
+
+    public Location getHome(Player player) {
+        return homes.get(player);
+    }
+
+    public Collection<Party> getParties() {
+        return parties.values();
+    }
+
+    public Party getParty(String name) {
+        return parties.get(name);
+    }
+
+    public Party getParty(Player player) {
+        return partyMap.get(player);
+    }
+
+    public Party createParty(String name, Player player) {
+        Party party = new Party(name, player);
+        parties.put(name, party);
+        partyMap.put(player, party);
+        return party;
+    }
+
+    public void disbandParty(Party party) {
+        for (Player p : party.getMembers()) {
+            // Will cause calls to checkInstances(party) on the next tick.
+            removePlayerFromInstance(p);
+            partyMap.remove(p);
+        }
+        // Clear party members so checkInstances() can delete any instances.
+        party.getMembers().clear();
+        party.setLeader(null);
+        // XXX: Do we need to force a call to checkInstances(party) before
+        // we deref it?
+        parties.remove(party.getName());
+    }
+
+    public void partyAdd(Party party, Player player) {
+        party.getInvites().remove(player);
+        party.getMembers().add(player);
+        partyMap.put(player, party);
+    }
+
+    public void partyRemove(Party party, Player player) {
+        // Will cause a call to checkInstances next tick via teleport event.
+        removePlayerFromInstance(player);
+        party.getMembers().remove(player);
+        partyMap.remove(player);
+    }
+
+    public void partyInvite(Party party, Player player) {
+        party.getInvites().add(player);
+    }
+
+    public void partyUninvite(Party party, Player player) {
+        party.getInvites().remove(player);
+    }
+
+    public void setLastEnterPortal(Player player, InstanceEntrancePortal portal) {
+        lastPortal.put(player, portal);
+    }
+
+    public World getRealWorld(String name) {
+        for (World world : getServer().getWorlds()) {
+            if (name.equals(world.getName()) && !isInstance(world)) {
+                return world;
+            }
+        }
+        return null;
+    }
+
+    public boolean isInstance(World world) {
+        for (Party p : parties.values()) {
+            for (Instance i : p.getInstances()) {
+                if (world.getName().equals(i.getInstance())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        saveDefaultConfig();
+        getServer().getPluginManager().registerEvents(this, this);
+        File dir = getDataFolder();
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                getLogger().log(Level.WARNING, "Failed to create plugin directory:  {0}", dir);
+            }
+        }
+        load();
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        save();
+        clear();
+    }
+
+    public void clear() {
+        // This will cause instances to be unloaded, and teleport
+        // players out of any instances.
+        for (Party p : parties.values()) {
+            for (Player player : new ArrayList<Player>(p.getMembers())) {
+                partyRemove(p, player);
+            }
+        }
+        // Clear the rest of the state.
+        parties.clear();
+        partyMap.clear();
+        homes.clear();
+        sessions.clear();
+        portals.clear();
+        portalMap.clear();
+        lastPortal.clear();
+        motd = null;
+    }
+
+    public void load() {
+        FileConfiguration config = getConfig();
+        partyNamePrefix = config.getString("partyNamePrefix", "");
+        partyNameSuffix = config.getString("partyNameSuffix", "");
+        leaderInvite = config.getBoolean("leaderInvite", false);
+        leaderKick = config.getBoolean("leaderKick", true);
+        leaderDisband = config.getBoolean("leaderDisband", true);
+        selectionTool = config.getItemStack("selectionTool");
+        spawn = getServer().getWorld(config.getString("spawnWorld"));
+        if (spawn == null) {
+            spawn = getServer().getWorlds().get(0);
+        }
+        ConfigurationSection homeSection = config.getConfigurationSection("homes");
+        if (homeSection != null) {
+            for (String s : homeSection.getKeys(false)) {
+                Player player = getServer().getPlayer(s);
+                if (player == null) {
+                    continue;
+                }
+                ConfigurationSection home = homeSection.getConfigurationSection(s);
+                World world = getRealWorld(home.getString("world"));
+                double x = home.getDouble("x");
+                double y = home.getDouble("y");
+                double z = home.getDouble("z");
+                float pitch = (float) home.getDouble("pitch");
+                float yaw = (float) home.getDouble("yaw");
+                this.homes.put(player, new Location(world, x, y, z, yaw, pitch));
+            }
+        }
+        loadMotd();
+        ConfigurationSection portalSection = config.getConfigurationSection("portals");
+        if (portalSection != null) {
+            for (String s : portalSection.getKeys(false)) {
+                ConfigurationSection thisSection = portalSection.getConfigurationSection(s);
+                InstanceEntrancePortal entrance = new InstanceEntrancePortal(
+                        loadCuboid(thisSection.getConfigurationSection("entrance")));
+                InstanceDestinationPortal destination = new InstanceDestinationPortal(
+                        loadCuboid(thisSection.getConfigurationSection("destination")));
+                addPortalPair(new PortalPair(s, entrance, destination));
+            }
+        }
+    }
+
+    private Cuboid loadCuboid(ConfigurationSection section) {
+        String world = section.getString("world");
+        int minX = section.getInt("minX");
+        int maxX = section.getInt("maxX");
+        int minY = section.getInt("minY");
+        int maxY = section.getInt("maxY");
+        int minZ = section.getInt("minZ");
+        int maxZ = section.getInt("maxZ");
+        return new Cuboid(world, minX, maxX, minY, maxY, minZ, maxZ);
+    }
+
+    private void loadMotd() {
+        File motdFile = new File(getDataFolder(), "motd.txt");
+        List<String> tmp = new ArrayList<String>();
+        if (motdFile.isFile()) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(motdFile), CHARSET));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    tmp.add(line);
+                }
+                reader.close();
+            } catch (IOException ex) {
+                getLogger().log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    getLogger().log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        motd = tmp.isEmpty() ? null : tmp.toArray(new String[tmp.size()]);
+    }
+
+    public void save() {
+        FileConfiguration config = getConfig();
+        config.set("partyNamePrefix", partyNamePrefix);
+        config.set("partyNameSuffix", partyNameSuffix);
+        config.set("leaderInvite", leaderInvite);
+        config.set("leaderKick", leaderKick);
+        config.set("leaderDisband", leaderDisband);
+        config.set("spawnWorld", spawn.getName());
+        config.set("selectionTool", getSelectionTool());
+        ConfigurationSection homeSection;
+        if (!config.isConfigurationSection("homes")) {
+            homeSection = config.createSection("homes");
+        } else {
+            homeSection = config.getConfigurationSection("homes");
+        }
+        for (Map.Entry<Player, Location> e : this.homes.entrySet()) {
+            ConfigurationSection home = homeSection.createSection(e.getKey().getName());
+            Location l = e.getValue();
+            home.set("world", l.getWorld().getName());
+            home.set("x", l.getX());
+            home.set("y", l.getY());
+            home.set("z", l.getZ());
+            home.set("yaw", l.getYaw());
+            home.set("pitch", l.getPitch());
+        }
+        ConfigurationSection portalSection = config.createSection("portals");
+        for (PortalPair pair : portals.values()) {
+            ConfigurationSection pairSection = portalSection.createSection(pair.getName());
+            saveCuboid(pairSection.createSection("entrance"), pair.getEnter().getCuboid());
+            saveCuboid(pairSection.createSection("destination"), pair.getDestination().getCuboid());
+        }
+        saveConfig();
+    }
+
+    private void saveCuboid(ConfigurationSection section, Cuboid cuboid) {
+        section.set("world", cuboid.getWorld());
+        section.set("minX", cuboid.getMinX());
+        section.set("maxX", cuboid.getMaxX());
+        section.set("minY", cuboid.getMinY());
+        section.set("maxY", cuboid.getMaxY());
+        section.set("minZ", cuboid.getMinZ());
+        section.set("maxZ", cuboid.getMaxZ());
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+        Command cmd = commands.get(command.getName());
+        if (cmd == null) {
+            return false;
+        }
+        SenderType type = SenderType.getSenderType(sender);
+
+        if (cmd.availableTo(type)) {
+            List<String> result = cmd.execute(this, sender, args);
+            if (result == null) {
+                return false; // Show usage.
+} else {
+                // TODO: Results paging.
+                if (!result.isEmpty()) {
+                    sender.sendMessage(result.toArray(new String[result.size()]));
+                }
+                return true;
+            }
+        } else {
+            sender.sendMessage(command.getName() + " is not available to " + type.getPluralDisplayName());
+            return true;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        // Remove player from an instance if they are in one.
+        Player player = e.getPlayer();
+        Party party = getParty(player);
+        if (party != null) {
+            // Remove player from party.
+            // Will teleport player out of an instance if they are in one.
+            // Will cause a call to checkInstances(party) via teleport event.
+            partyRemove(party, player);
+            if (!party.getMembers().isEmpty()) {
+                if (party.getLeader() == player) {
+                    party.setLeader(party.getMembers().iterator().next());
+                    party.sendAll(
+                            getPartyNamePrefix() + party.getName() + getPartyNameSuffix() + ' '
+                            + player.getName() + " has quit." + party.getLeader().getName() + " is now leader.");
+                } else {
+                    party.sendAll(
+                            getPartyNamePrefix() + party.getName() + getPartyNameSuffix() + ' '
+                            + player.getName() + " has quit.");
+                }
+            }
+            // If party is empty, disband the party.
+            if (party.getMembers().isEmpty()) {
+                disbandParty(party);
+            }
+        }
+        System.out.println("Player quit: " + e.getPlayer().getName());
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerTeleport(PlayerTeleportEvent e) {
+        Party party = getParty(e.getPlayer());
+        // Should run after teleport has completed.
+        if (party != null) {
+            scheduleCheckInstances(party);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        e.setRespawnLocation(spawn.getSpawnLocation());
+        Party party = getParty(e.getPlayer());
+        // Should run after the player has respawned (technically a teleport).
+        if (party != null) {
+            scheduleCheckInstances(party);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerMove(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
+        String world = e.getFrom().getWorld().getName();
+        // Translate world names for players in instances.
+        Party party = getParty(player);
+        if (party != null) {
+            Instance instance = party.getInstanceFromInstanceWorld(world);
+            if (instance != null) {
+                world = instance.getSourceWorld();
+            }
+        }
+        // Check if they entered or left any portals in that world.
+        List<Portal> pList = portalMap.get(world);
+        if (pList != null) {
+            for (Portal p : pList) {
+                boolean fromInside = p.getCuboid().contains(e.getFrom());
+                boolean toInside = p.getCuboid().contains(e.getTo());
+                if (!fromInside && toInside) {
+                    p.onEnter(this, e);
+                } else if (fromInside && !toInside) {
+                    p.onLeave(this, e);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerLogin(PlayerJoinEvent e) {
+        if (e.getPlayer().hasPermission("instances.motd")) {
+            if (motd != null) {
+                e.getPlayer().sendMessage(motd);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onClick(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if (getSelectionTool() != null && getSelectionTool().equals(p.getItemInHand()) && p.hasPermission("instances.portal.create")) {
+            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                Block b = e.getClickedBlock();
+                Location l = b.getLocation();
+                getSelection(
+                        p).setFrom(l);
+                p.sendMessage("Selection area location from: " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
+                e.setCancelled(true);
+            }
+            if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                Block b = e.getClickedBlock();
+                Location l = b.getLocation();
+                getSelection(
+                        p).setTo(l);
+                p.sendMessage("Selection area location to: " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    public void removePlayerFromInstance(Player player) {
+        Party party = getParty(player);
+        if (party != null) {
+            Instance instance = party.getInstance(player);
+            if (instance != null) {
+                // Teleport them to the last instance entrance they used.
+                InstanceEntrancePortal portal = lastPortal.get(player);
+                if (portal != null) {
+                    portal.teleport(player);
+                } else {
+                    teleportToSpawn(player);
+                }
+            }
+        }
+    }
+
+    public void teleportToSpawn(Player player) {
+        player.teleport(spawn.getSpawnLocation());
+    }
+
+    private void scheduleCheckInstances(final Party party) {
+        getServer().getScheduler().runTask(this,
+                new Runnable() {
+                    public void run() {
+                        checkInstances(party);
+                    }
+                });
+    }
+
+    private void checkInstances(Party party) {
+        List<Instance> instances = new LinkedList(party.getInstances());
+        for (Player p : party.getMembers()) {
+            instances.remove(party.getInstance(p));
+        }
+        for (Instance i : instances) {
+            party.removeInstance(i);
+            deleteInstance(i);
+        }
+    }
+
+    private void deleteInstance(Instance instance) {
+        World world = getServer().getWorld(instance.getInstance());
+        getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
+        // Remove all players from the world.
+        for (Player p : world.getPlayers()) {
+            teleportToSpawn(p);
+        } // Finally delete the instance without saving.
+        getServer().unloadWorld(world, false);
+    }
+}
