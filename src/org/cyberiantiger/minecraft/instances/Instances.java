@@ -497,7 +497,7 @@ public class Instances extends JavaPlugin implements Listener {
                     party.setLeader(party.getMembers().iterator().next());
                     party.sendAll(
                             getPartyNamePrefix() + party.getName() + getPartyNameSuffix() + ' '
-                            + player.getName() + " has quit." + party.getLeader().getName() + " is now leader.");
+                            + player.getName() + " has quit. " + party.getLeader().getName() + " is now leader.");
                 } else {
                     party.sendAll(
                             getPartyNamePrefix() + party.getName() + getPartyNameSuffix() + ' '
