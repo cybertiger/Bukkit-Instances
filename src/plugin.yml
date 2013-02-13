@@ -104,3 +104,11 @@ commands:
     description: Delete a portal.
     usage: /ideleteportal <name>
     permission: instances.portal.delete
+  imob:
+    description: Spawn mobs.
+    usage: /imob <type> [<count>]
+    permission: instances.spawnmob
+  igenocide:
+    description: Commit genocide.
+    usage: /igenocide <type>
+    permission: instances.genocide

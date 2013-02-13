@@ -24,16 +24,15 @@ public class SetSpawn extends AbstractCommand {
     }
     
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0) {
             return null;
         }
-        Player player = (Player) sender;
         World world = player.getWorld();
         if (instances.isInstance(world)) {
-            return Collections.singletonList("Cannot set the spawn world to an instance.");
+            return error("Cannot set the spawn world to an instance.");
         }
         instances.setSpawn(world);
-        return Collections.singletonList("Spawn set to " + player.getWorld().getName() + '.');
+        return msg("Spawn set to " + player.getWorld().getName() + '.');
     }
 }

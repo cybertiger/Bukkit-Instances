@@ -4,6 +4,7 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
 import java.io.BufferedReader;
 import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,7 +41,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.cyberiantiger.minecraft.instances.command.Command;
 import org.cyberiantiger.minecraft.instances.command.CreatePortal;
 import org.cyberiantiger.minecraft.instances.command.DeletePortal;
+import org.cyberiantiger.minecraft.instances.command.Genocide;
 import org.cyberiantiger.minecraft.instances.command.Home;
+import org.cyberiantiger.minecraft.instances.command.Mob;
 import org.cyberiantiger.minecraft.instances.command.Motd;
 import org.cyberiantiger.minecraft.instances.command.PartyChat;
 import org.cyberiantiger.minecraft.instances.command.PartyCreate;
@@ -88,6 +91,7 @@ public class Instances extends JavaPlugin implements Listener {
     private ItemStack selectionTool;
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
+    private MultiverseCore core;
 
     {
         commands.put("p", new PartyChat());
@@ -115,6 +119,8 @@ public class Instances extends JavaPlugin implements Listener {
         commands.put("isetdestination", new SetDestination());
         commands.put("iportallist", new PortalList());
         commands.put("ideleteportal", new DeletePortal());
+        commands.put("imob", new Mob());
+        commands.put("igenocide", new Genocide());
     }
 
     public Collection<PortalPair> getPortalPairs() {
@@ -297,6 +303,12 @@ public class Instances extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         super.onEnable();
+        this.core = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
+
+        // Test if the Core was found.
+        if (this.core == null) {
+            getLogger().warning("Multiverse-Core not found, economy support disabled.");
+        }
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
         File dir = getDataFolder();
@@ -306,6 +318,10 @@ public class Instances extends JavaPlugin implements Listener {
             }
         }
         load();
+    }
+
+    public MultiverseCore getCore() {
+        return core;
     }
 
     @Override
@@ -372,7 +388,14 @@ public class Instances extends JavaPlugin implements Listener {
                         loadCuboid(thisSection.getConfigurationSection("entrance")));
                 InstanceDestinationPortal destination = new InstanceDestinationPortal(
                         loadCuboid(thisSection.getConfigurationSection("destination")));
-                addPortalPair(new PortalPair(s, entrance, destination));
+                double entryPrice = thisSection.getDouble("entryPrice");
+                double createPrice = thisSection.getDouble("createPrice");
+                ItemStack entryItem = thisSection.getItemStack("entryItem");
+                ItemStack createItem = thisSection.getItemStack("createItem");
+                int unloadTime = thisSection.getInt("unloadTime");
+                int reenterTime = thisSection.getInt("reenterTime");
+                addPortalPair(new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime));
+                new PortalPair(s, entrance, destination, entryPrice, createPrice, null, null, unloadTime, reenterTime);
             }
         }
     }
@@ -469,7 +492,7 @@ public class Instances extends JavaPlugin implements Listener {
             List<String> result = cmd.execute(this, sender, args);
             if (result == null) {
                 return false; // Show usage.
-} else {
+            } else {
                 // TODO: Results paging.
                 if (!result.isEmpty()) {
                     sender.sendMessage(result.toArray(new String[result.size()]));
@@ -613,6 +636,7 @@ public class Instances extends JavaPlugin implements Listener {
     private void scheduleCheckInstances(final Party party) {
         getServer().getScheduler().runTask(this,
                 new Runnable() {
+
                     public void run() {
                         checkInstances(party);
                     }

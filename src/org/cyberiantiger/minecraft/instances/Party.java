@@ -80,6 +80,18 @@ public class Party implements Comparable<Party> {
         return instanceMap.get(player.getWorld().getName());
     }
 
+    public void chat(Instances instances, Player player, String msg) {
+        sendAll(instances.getPartyNamePrefix() + getName() + ' ' + player.getDisplayName() + instances.getPartyNameSuffix() + ' ' + msg);
+    }
+
+    public void emote(Instances instances, Player player, String msg) {
+        sendAll(instances.getPartyNamePrefix() + getName() + instances.getPartyNameSuffix() + ' ' + player.getDisplayName() + ' ' + msg);
+    }
+
+    public void message(Instances instances, String msg) {
+        sendAll(instances.getPartyNamePrefix() + getName() + instances.getPartyNameSuffix() + ' ' + msg);
+    }
+
     public void sendAll(String s) {
         for (Player p : members) {
             p.sendMessage(s);

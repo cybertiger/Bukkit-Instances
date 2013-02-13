@@ -24,27 +24,15 @@ public class PartyChat extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
-        Player player = (Player) sender;
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length == 0)
             return null; // Usage
         Party party = instances.getParty(player);
         if (party == null)
-            return Collections.singletonList("You are not in a party.");
+            return error("You are not in a party.");
 
-        StringBuilder line = new StringBuilder();
-
-        line.append(instances.getPartyNamePrefix());
-        line.append(party.getName());
-        line.append(' ');
-        line.append(player.getName());
-        line.append(instances.getPartyNameSuffix());
-        for (String s : args) {
-            line.append(' ');
-            line.append(s);
-        }
-        party.sendAll(line.toString());
-        return Collections.emptyList();
+        party.chat(instances, player, concatonate(args));
+        return msg();
     }
 
 }

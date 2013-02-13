@@ -21,7 +21,7 @@ public class Save extends AbstractCommand {
         if (args.length != 0)
             return null;
         instances.save();
-        return Collections.singletonList("Instance settings saved.");
+        return msg("Instance settings saved.");
     }
 
 }

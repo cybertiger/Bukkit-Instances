@@ -22,39 +22,29 @@ public class PartyLeader extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 1) {
             return null;
         }
-        Player player = (Player) sender;
         Party party = instances.getParty(player);
         if (party == null) {
-            return Collections.singletonList("You are not in a party.");
+            return error("You are not in a party.");
         }
         if (!player.equals(party.getLeader())) {
-            return Collections.singletonList("You are not the party leader.");
+            return error("You are not the party leader.");
         }
         Player newLeader = instances.getServer().getPlayer(args[0]);
         if (newLeader == null) {
-            return Collections.singletonList(args[0] + " not found.");
+            return error(args[0] + " not found.");
         }
         if (newLeader == player) {
-            return Collections.singletonList("You are already the leader numbskull.");
+            return error("You are already the leader numbskull.");
         }
         if (!party.getMembers().contains(newLeader)) {
-            return Collections.singletonList(args[0] + " is not in the party.");
+            return error(args[0] + " is not in the party.");
         }
         party.setLeader(newLeader);
-        StringBuilder line = new StringBuilder();
-        line.append(instances.getPartyNamePrefix());
-        line.append(party.getName());
-        line.append(instances.getPartyNameSuffix());
-        line.append(' ');
-        line.append(args[0]);
-        line.append(" has been appointed leader by ");
-        line.append(player.getName());
-        line.append('.');
-        party.sendAll(line.toString());
-        return Collections.emptyList();
+        party.emote(instances, newLeader, " has been appointed leader by " + player.getName());
+        return msg();
     }
 }

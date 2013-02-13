@@ -22,7 +22,7 @@ public class Reload extends AbstractCommand {
             return null;
         instances.clear();
         instances.load();
-        return Collections.singletonList("Instance settings reloaded");
+        return msg("Instance settings reloaded");
     }
 
 }

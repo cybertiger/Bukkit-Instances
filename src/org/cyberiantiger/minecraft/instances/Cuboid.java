@@ -93,7 +93,8 @@ public class Cuboid {
     private boolean isEmpty(World world, double x, double y, double z) {
         Block b1 = world.getBlockAt((int)Math.floor(x), (int)Math.floor(y), (int)Math.floor(z));
         Block b2 = world.getBlockAt((int)Math.floor(x), (int)Math.floor(y)+1, (int)Math.floor(z));
-        return b1.getType() == Material.AIR && b2.getType() == Material.AIR;
+
+        return (!b1.getType().isSolid()) && (!b2.getType().isSolid());
     }
 
     public Location getCenterFloor(World world) {

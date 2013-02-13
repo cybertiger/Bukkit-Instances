@@ -23,16 +23,15 @@ public class SetHome extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0)
             return null;
-        Player player = (Player) sender;
         Location home = player.getLocation();
         if (instances.isInstance(home.getWorld())) {
-            return Collections.singletonList("You cannot set your home in an instance.");
+            return error("You cannot set your home in an instance.");
         }
         instances.setHome(player, home);
-        return Collections.singletonList("Home set.");
+        return msg("Home set.");
     }
 
 }

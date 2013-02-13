@@ -30,14 +30,14 @@ public class PartyList extends AbstractCommand {
         Collections.sort(parties);
 
         if (parties.isEmpty()) {
-            return Collections.singletonList("No parties");
+            return error("No parties");
         }
-        StringBuilder tmp = new StringBuilder();
+        StringBuilder tmp = new StringBuilder("Current parties: ");
         for (Party p : parties) {
              tmp.append(' ');
              tmp.append(p.getName());
         }
-        return Collections.singletonList(tmp.toString());
+        return msg(tmp.toString());
     }
 
 }

@@ -23,29 +23,21 @@ public class PartyJoin extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 1) {
             return null;
         }
-        Player player = (Player) sender;
         Party party = instances.getParty(player);
         if (party != null) {
-            return Collections.singletonList("You are already in a party.");
+            return error("You are already in a party.");
         }
         party = instances.getParty(args[0]);
         if (party == null || !party.getInvites().contains(player)) {
             // Don't leak information about the existance or non-existance of the party.
-            return Collections.singletonList("You have not been invited to join " + args[0] + ".");
+            return error("You have not been invited to join " + args[0] + ".");
         }
         instances.partyAdd(party, player);
-        StringBuilder line = new StringBuilder();
-        line.append(instances.getPartyNamePrefix());
-        line.append(party.getName());
-        line.append(instances.getPartyNameSuffix());
-        line.append(' ');
-        line.append(player.getName());
-        line.append(" has joined the party.");
-        party.sendAll(line.toString());
-        return Collections.emptyList();
+        party.emote(instances, player, " has joined the party.");
+        return msg();
     }
 }

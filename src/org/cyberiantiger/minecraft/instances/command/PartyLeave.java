@@ -23,27 +23,19 @@ public class PartyLeave extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0) {
             return null;
         }
-        Player player = (Player) sender;
         Party party = instances.getParty(player);
         if (party == null) {
-            return Collections.singletonList("You are not in a party.");
+            return error("You are not in a party.");
         }
         if (player.equals(party.getLeader())) {
-            return Collections.singletonList("You must assign someone else as party leader or disband the party.");
+            return error("You must assign someone else as party leader or disband the party.");
         }
-        StringBuilder line = new StringBuilder();
-        line.append(instances.getPartyNamePrefix());
-        line.append(party.getName());
-        line.append(instances.getPartyNameSuffix());
-        line.append(' ');
-        line.append(player.getName());
-        line.append(" has left the party.");
-        party.sendAll(line.toString());
+        party.emote(instances, player, " has left the party.");
         instances.partyRemove(party, player);
-        return Collections.emptyList();
+        return msg();
     }
 }

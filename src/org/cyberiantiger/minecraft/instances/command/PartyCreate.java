@@ -23,23 +23,22 @@ public class PartyCreate extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
-        Player player = (Player)sender;
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if(args.length != 1)
             return null; // Usage;
 
         Party party = instances.getParty(player);
         if (party != null) {
-            return Collections.singletonList("You are already in a party.");
+            return error("You are already in a party.");
         }
 
         party = instances.getParty(args[0]);
         if (party != null) {
-            return Collections.singletonList("That party already exists.");
+            return error("That party already exists.");
         }
 
         party = instances.createParty(args[0], player);
 
-        return Collections.singletonList("Party " + args[0] + " created.");
+        return msg("Party " + args[0] + " created.");
     }
 }

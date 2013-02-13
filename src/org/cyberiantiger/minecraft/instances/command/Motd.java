@@ -23,7 +23,7 @@ public class Motd extends AbstractCommand {
             return null;
         String[] motd = instances.getMotd();
         if (motd == null) {
-            return Collections.singletonList("No MOTD set, create one in plugins/Instances/motd.txt");
+            return error("No MOTD set, create one in plugins/Instances/motd.txt");
         }
         return Arrays.asList(motd);
     }

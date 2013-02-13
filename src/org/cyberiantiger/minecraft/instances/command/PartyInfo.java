@@ -7,7 +7,6 @@ package org.cyberiantiger.minecraft.instances.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.Instance;
@@ -36,11 +35,11 @@ public class PartyInfo extends AbstractCommand {
         if (args.length == 0) {
             party = instances.getParty((Player)sender);
             if (party == null)
-                return Collections.singletonList("You are not in a party.");
+                return error("You are not in a party.");
         } else {
             party = instances.getParty(args[0]);
             if (party == null)
-                return Collections.singletonList(args[0] + " does not exist.");
+                return error(args[0] + " does not exist.");
         }
         List<String> ret = new ArrayList<String>();
         ret.add("Party name: " + party.getName());
@@ -63,6 +62,6 @@ public class PartyInfo extends AbstractCommand {
             }
             ret.add(tmp.toString());
         }
-        return ret;
+        return msg(ret);
     }
 }

@@ -26,28 +26,27 @@ public class CreatePortal extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 1) {
             return null;
         }
-        Player player = (Player) sender;
         Session session = instances.getSession(player);
 
         if (session.getEntrance() == null || !session.getEntrance().isValid()) {
-            return Collections.singletonList("You have not set the entrance portal location.");
+            return error("You have not set the entrance portal location.");
         }
         if (session.getDestination() == null || !session.getDestination().isValid()) {
-            return Collections.singletonList("You have not set the destination portal location.");
+            return error("You have not set the destination portal location.");
         }
         if (instances.getPortalPair(args[0]) != null) {
-            return Collections.singletonList("That portal pair already exists.");
+            return error("That portal pair already exists.");
         }
         InstanceEntrancePortal entrance = new InstanceEntrancePortal(session.getEntrance().getCuboid());
         InstanceDestinationPortal destination = new InstanceDestinationPortal(session.getDestination().getCuboid());
         PortalPair pair = new PortalPair(args[0], entrance, destination);
         instances.addPortalPair(pair);
         session.clear();
-        return Collections.singletonList("Portal " + args[0] + " created.");
+        return msg("Portal " + args[0] + " created.");
     }
 
 }

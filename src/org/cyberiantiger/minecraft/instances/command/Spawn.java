@@ -5,9 +5,7 @@
 
 package org.cyberiantiger.minecraft.instances.command;
 
-import java.util.Collections;
 import java.util.List;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.Instances;
 
@@ -21,11 +19,11 @@ public class Spawn extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0)
             return null;
-        instances.teleportToSpawn((Player)sender);
-        return Collections.emptyList();
+        instances.teleportToSpawn(player);
+        return msg();
     }
 
 }

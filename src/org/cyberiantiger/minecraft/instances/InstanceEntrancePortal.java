@@ -4,11 +4,15 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
+import com.fernferret.allpay.multiverse.GenericBank;
 import java.util.logging.Level;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
+import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 
 /**
  *
@@ -57,6 +61,26 @@ public class InstanceEntrancePortal extends Portal {
 
         World world;
         if (instance == null) {
+            if (pair.getCreateOrEntryPrice() > 0.0D && instances.getCore() != null) {
+                GenericBank bank = instances.getCore().getBank();
+                if (!bank.hasEnough(player, pair.getCreateOrEntryPrice(), -1)) {
+                    return;
+                }
+                bank.take(player, pair.getCreateOrEntryPrice(), -1);
+            }
+            if (pair.getCreateOrEntryItem() != null) {
+                ItemStack itemInHand = player.getItemInHand();
+                ItemStack required = pair.getCreateOrEntryItem();
+                if (itemInHand == null || !required.isSimilar(itemInHand) || required.getAmount() > itemInHand.getAmount()) {
+                    player.sendMessage("An offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " is required.");
+                    return;
+                }
+                if (required.getAmount() == itemInHand.getAmount()) {
+                    player.setItemInHand(null);
+                } else {
+                    itemInHand.setAmount(itemInHand.getAmount() - required.getAmount());
+                }
+            }
             World sourceWorld = instances.getServer().getWorld(destination.getCuboid().getWorld());
             if (sourceWorld == null) {
                 player.sendMessage("Portal does not connect anywhere.");
@@ -76,6 +100,26 @@ public class InstanceEntrancePortal extends Portal {
 
             instances.getLogger().info("Created instance: " + instance);
         } else {
+            if (pair.getEntryPrice() > 0.0D && instances.getCore() != null) {
+                GenericBank bank = instances.getCore().getBank();
+                if (!bank.hasEnough(player, pair.getEntryPrice(), -1)) {
+                    return;
+                }
+                bank.take(player, pair.getEntryPrice(), -1);
+            }
+            if (pair.getEntryItem() != null) {
+                ItemStack itemInHand = player.getItemInHand();
+                ItemStack required = pair.getEntryItem();
+                if (itemInHand == null || !required.isSimilar(itemInHand) || required.getAmount() > itemInHand.getAmount()) {
+                    player.sendMessage("An offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " is required.");
+                    return;
+                }
+                if (required.getAmount() == itemInHand.getAmount()) {
+                    player.setItemInHand(null);
+                } else {
+                    itemInHand.setAmount(itemInHand.getAmount() - required.getAmount());
+                }
+            }
             world = instances.getServer().getWorld(instance.getInstance());
         }
 

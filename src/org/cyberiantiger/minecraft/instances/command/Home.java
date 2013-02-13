@@ -23,17 +23,16 @@ public class Home extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0) {
             return null;
         }
-        Player player = (Player) sender;
-        Location home = instances.getHome((Player)sender);
+        Location home = instances.getHome(player);
         if (home == null) {
-            return Collections.singletonList("You are homeless.");
+            return error("You are homeless.");
         }
         player.teleport(home);
-        return Collections.emptyList();
+        return msg();
     }
 
 }

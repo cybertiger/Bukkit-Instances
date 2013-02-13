@@ -22,20 +22,19 @@ public class SetDestination extends AbstractCommand {
     }
 
     @Override
-    public List<String> execute(Instances instances, CommandSender sender, String[] args) {
+    public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0)
             return null;
-        Player player = (Player) sender;
         Selection selection = instances.getSelection(player);
         if (!selection.isValid()) {
-            return Collections.singletonList("You do not currently have a valid selection.");
+            return error("You do not currently have a valid selection.");
         }
         if (instances.isInstance(selection.getWorld())) {
-            return Collections.singletonList("You cannot create instance portals inside an instance.");
+            return error("You cannot create instance portals inside an instance.");
         }
 
         instances.getSession(player).setDestination();
 
-        return Collections.singletonList("Destination portal location set.");
+        return msg("Destination portal location set.");
     }
 }
