@@ -6,7 +6,6 @@
 package org.cyberiantiger.minecraft.instances.command;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.cyberiantiger.minecraft.instances.Instances;
@@ -23,7 +22,7 @@ public class Motd extends AbstractCommand {
             return null;
         String[] motd = instances.getMotd();
         if (motd == null) {
-            return error("No MOTD set, create one in plugins/Instances/motd.txt");
+            throw new InvocationException("No MOTD set, create one in plugins/Instances/motd.txt");
         }
         return Arrays.asList(motd);
     }

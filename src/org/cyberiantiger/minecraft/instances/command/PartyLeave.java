@@ -29,12 +29,12 @@ public class PartyLeave extends AbstractCommand {
         }
         Party party = instances.getParty(player);
         if (party == null) {
-            return error("You are not in a party.");
+            throw new InvocationException("You are not in a party.");
         }
         if (player.equals(party.getLeader())) {
-            return error("You must assign someone else as party leader or disband the party.");
+            throw new InvocationException("You must assign someone else as party leader or disband the party.");
         }
-        party.emote(instances, player, " has left the party.");
+        party.emote(instances, player, "has left the party.");
         instances.partyRemove(party, player);
         return msg();
     }

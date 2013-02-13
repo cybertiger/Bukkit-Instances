@@ -15,8 +15,6 @@ import org.cyberiantiger.minecraft.instances.Instances;
  */
 public interface Command {
 
-    public boolean availableTo(SenderType type);
-
-    public List<String> execute(Instances instances, CommandSender sender, String[] args);
+    public List<String> execute(Instances instances, SenderType type, CommandSender sender, String[] args);
 
 }

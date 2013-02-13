@@ -43,8 +43,10 @@ import org.cyberiantiger.minecraft.instances.command.CreatePortal;
 import org.cyberiantiger.minecraft.instances.command.DeletePortal;
 import org.cyberiantiger.minecraft.instances.command.Genocide;
 import org.cyberiantiger.minecraft.instances.command.Home;
+import org.cyberiantiger.minecraft.instances.command.InvocationException;
 import org.cyberiantiger.minecraft.instances.command.Mob;
 import org.cyberiantiger.minecraft.instances.command.Motd;
+import org.cyberiantiger.minecraft.instances.command.NotAvailableException;
 import org.cyberiantiger.minecraft.instances.command.PartyChat;
 import org.cyberiantiger.minecraft.instances.command.PartyCreate;
 import org.cyberiantiger.minecraft.instances.command.PartyDisband;
@@ -66,6 +68,7 @@ import org.cyberiantiger.minecraft.instances.command.SetEntrance;
 import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
+import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
  *
@@ -488,8 +491,8 @@ public class Instances extends JavaPlugin implements Listener {
         }
         SenderType type = SenderType.getSenderType(sender);
 
-        if (cmd.availableTo(type)) {
-            List<String> result = cmd.execute(this, sender, args);
+        try {
+            List<String> result = cmd.execute(this, type, sender, args);
             if (result == null) {
                 return false; // Show usage.
             } else {
@@ -497,13 +500,30 @@ public class Instances extends JavaPlugin implements Listener {
                 if (!result.isEmpty()) {
                     sender.sendMessage(result.toArray(new String[result.size()]));
                 }
-                return true;
             }
-        } else {
-            sender.sendMessage(command.getName() + " is not available to " + type.getPluralDisplayName());
-            return true;
+        } catch (NotAvailableException e) {
+            if (e.getMessage() == null) {
+                sender.sendMessage(StringUtil.error(command.getName() + " is not available to " + type.getPluralDisplayName()));
+            } else {
+                sender.sendMessage(StringUtil.error(String.format(e.getMessage(), command.getName(), type.getPluralDisplayName())));
+            }
+        } catch (InvocationException e) {
+            if (e.getMessage() == null) {
+                sender.sendMessage(StringUtil.error("An error occurred with " + command.getName()));
+            } else {
+                sender.sendMessage(StringUtil.error(String.format(e.getMessage(), command.getName())));
+            }
         }
+        return true;
     }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String alias, String[] args) {
+        // TODO
+        return super.onTabComplete(sender, command, alias, args);
+    }
+
+
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent e) {

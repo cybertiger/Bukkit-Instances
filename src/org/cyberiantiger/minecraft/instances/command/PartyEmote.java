@@ -28,7 +28,7 @@ public class PartyEmote extends AbstractCommand {
             return null; // Usage
         Party party = instances.getParty(player);
         if (party == null) {
-            return error("You are not in a party.");
+            throw new InvocationException("You are not in a party.");
         }
 
         party.emote(instances, player, concatonate(args));

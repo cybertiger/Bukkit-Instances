@@ -6,7 +6,6 @@ package org.cyberiantiger.minecraft.instances.command;
 
 import java.util.Collections;
 import java.util.List;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.Party;
@@ -28,28 +27,28 @@ public class PartyUninvite extends AbstractCommand {
         }
         Party party = instances.getParty(player);
         if (party == null) {
-            return error("You are not in a party.");
+            throw new InvocationException("You are not in a party.");
         }
         if (instances.isLeaderInvite() && !player.equals(party.getLeader())) {
-            return error("You are not the party leader.");
+            throw new InvocationException("You are not the party leader.");
         }
         Player invitee = instances.getServer().getPlayer(args[0]);
         if (invitee == null) {
-            return error("No such player: " + args[0] + ".");
+            throw new InvocationException("No such player: " + args[0] + ".");
         }
         if (!invitee.isOnline()) {
-            return error(args[0] + " is not online.");
+            throw new InvocationException(args[0] + " is not online.");
         }
         boolean invited = party.getInvites().contains(invitee);
         boolean member = party.getMembers().contains(invitee);
         if (member) {
-            return error(args[0] + " is already a party member.");
+            throw new InvocationException(args[0] + " is already a party member.");
         }
         if (!invited) {
-            return error(args[0] + " is not invited.");
+            throw new InvocationException(args[0] + " is not invited.");
         }
         party.getInvites().remove(invitee);
-        party.emote(instances, invitee, " has been uninvited by " + player.getDisplayName() + '.');
+        party.emote(instances, invitee, "has been uninvited by " + player.getDisplayName() + '.');
         invitee.sendMessage("You are no longer invited to join party " + party.getName() + '.');
         return Collections.emptyList();
     }

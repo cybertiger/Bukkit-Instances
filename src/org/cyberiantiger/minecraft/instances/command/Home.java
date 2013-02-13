@@ -29,7 +29,7 @@ public class Home extends AbstractCommand {
         }
         Location home = instances.getHome(player);
         if (home == null) {
-            return error("You are homeless.");
+            throw new InvocationException("You are homeless.");
         }
         player.teleport(home);
         return msg();

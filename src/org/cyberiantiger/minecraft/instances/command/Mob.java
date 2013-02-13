@@ -38,19 +38,19 @@ public class Mob extends AbstractCommand {
             try {
                 count = Integer.parseInt(args[1]);
             } catch (NumberFormatException nfe) {
-                return error("Not a number: " + args[1]);
+                throw new InvocationException("Not a number: " + args[1]);
             }
             if (count < 1 || count > 256) {
-                return error("Try spawning a sensible number.");
+                throw new InvocationException("Try spawning a sensible number.");
             }
         }
         EntitySpawner spawner = getSpawner(args[0]);
         if (spawner == null) {
-            return error("Not a valid entity: " + args[0]);
+            throw new InvocationException("Not a valid entity: " + args[0]);
         }
         Block b = player.getTargetBlock(null, 200);
         if (b == null) {
-            return error("You are not looking at anything.");
+            throw new InvocationException("You are not looking at anything.");
         }
         Location spawnLoc = b.getLocation();
         spawnLoc.setY(spawnLoc.getBlockY() + 1);

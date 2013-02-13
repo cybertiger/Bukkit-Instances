@@ -30,7 +30,7 @@ public class PortalList extends AbstractCommand {
                 ret.add(pair.toString());
             }
         }
-        return msg(ret);
+        return ret;
     }
 
 }

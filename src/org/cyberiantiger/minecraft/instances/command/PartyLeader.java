@@ -28,23 +28,23 @@ public class PartyLeader extends AbstractCommand {
         }
         Party party = instances.getParty(player);
         if (party == null) {
-            return error("You are not in a party.");
+            throw new InvocationException("You are not in a party.");
         }
         if (!player.equals(party.getLeader())) {
-            return error("You are not the party leader.");
+            throw new InvocationException("You are not the party leader.");
         }
         Player newLeader = instances.getServer().getPlayer(args[0]);
         if (newLeader == null) {
-            return error(args[0] + " not found.");
+            throw new InvocationException(args[0] + " not found.");
         }
         if (newLeader == player) {
-            return error("You are already the leader numbskull.");
+            throw new InvocationException("You are already the leader numbskull.");
         }
         if (!party.getMembers().contains(newLeader)) {
-            return error(args[0] + " is not in the party.");
+            throw new InvocationException(args[0] + " is not in the party.");
         }
         party.setLeader(newLeader);
-        party.emote(instances, newLeader, " has been appointed leader by " + player.getName());
+        party.emote(instances, newLeader, "has been appointed leader by " + player.getName());
         return msg();
     }
 }

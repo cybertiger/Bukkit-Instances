@@ -28,7 +28,7 @@ public class SetHome extends AbstractCommand {
             return null;
         Location home = player.getLocation();
         if (instances.isInstance(home.getWorld())) {
-            return error("You cannot set your home in an instance.");
+            throw new InvocationException("You cannot set your home in an instance.");
         }
         instances.setHome(player, home);
         return msg("Home set.");

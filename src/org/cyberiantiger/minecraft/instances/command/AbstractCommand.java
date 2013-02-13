@@ -16,6 +16,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.Instances;
+import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
  *
@@ -38,6 +39,11 @@ public abstract class AbstractCommand implements Command {
 
     public boolean availableTo(SenderType type) {
         return target.contains(type);
+    }
+
+    public List<String> execute(Instances instances, SenderType type, CommandSender sender, String[] args) {
+        if (!availableTo(type)) throw new NotAvailableException();
+        return execute(instances, sender, args);
     }
 
     public List<String> execute(Instances instances, CommandSender sender, String[] args) {
@@ -69,39 +75,24 @@ public abstract class AbstractCommand implements Command {
     public List<String> execute(Instances instances, RemoteConsoleCommandSender sender, String[] args) {
         return null;
     }
-
-    public List<String> error(String msg) {
-        return Collections.singletonList("§4" + msg);
+    
+    public static List<String> msg(String msg) {
+        return Collections.singletonList(msg);
     }
 
-    public List<String> msg(String msg) {
-        return Collections.singletonList("§2" + msg);
-    }
-
-    public List<String> msg(String[] msg) {
-        for (int i = 0; i < msg.length; i++) {
-            msg[i] = "§2" + msg;
-        }
+    public static List<String> msg(String[] msg) {
         return Arrays.asList(msg);
     }
 
-    public List<String> msg(List<String> msg) {
-        ListIterator<String> i = msg.listIterator();
-        while (i.hasNext()) {
-            i.set("§2" + i.next());
-        }
-        return msg;
-    }
-
-    public List<String> msg() {
+    public static List<String> msg() {
         return Collections.emptyList();
     }
 
-    public String concatonate(String[] args) {
+    public static String concatonate(String[] args) {
         return concatonate(args, 0, args.length);
     }
 
-    public String concatonate(String[] args, int offset, int length) {
+    public static String concatonate(String[] args, int offset, int length) {
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < length; i++) {
             ret.append(args[offset+i]);
@@ -110,5 +101,19 @@ public abstract class AbstractCommand implements Command {
             }
         }
         return ret.toString();
+    }
+
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+    public static String[] shift(String[] args, int amount) {
+        if (amount > args.length) {
+            throw new IllegalArgumentException();
+        }
+        if (amount == args.length) {
+            return EMPTY_STRING_ARRAY;
+        }
+        String[] ret = new String[args.length - amount];
+        System.arraycopy(args, amount, ret, 0, ret.length);
+        return ret;
     }
 }

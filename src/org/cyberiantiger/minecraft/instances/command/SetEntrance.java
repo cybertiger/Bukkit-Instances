@@ -27,10 +27,10 @@ public class SetEntrance extends AbstractCommand {
             return null;
         Selection selection = instances.getSelection(player);
         if (!selection.isValid()) {
-            return error("You do not currently have a valid selection.");
+            throw new InvocationException("You do not currently have a valid selection.");
         }
         if (instances.isInstance(selection.getWorld())) {
-            return error("You cannot create instance portals inside an instance.");
+            throw new InvocationException("You cannot create instance portals inside an instance.");
         }
 
         instances.getSession(player).setEntrance();

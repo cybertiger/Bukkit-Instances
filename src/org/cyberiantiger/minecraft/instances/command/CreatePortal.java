@@ -33,13 +33,13 @@ public class CreatePortal extends AbstractCommand {
         Session session = instances.getSession(player);
 
         if (session.getEntrance() == null || !session.getEntrance().isValid()) {
-            return error("You have not set the entrance portal location.");
+            throw new InvocationException("You have not set the entrance portal location.");
         }
         if (session.getDestination() == null || !session.getDestination().isValid()) {
-            return error("You have not set the destination portal location.");
+            throw new InvocationException("You have not set the destination portal location.");
         }
         if (instances.getPortalPair(args[0]) != null) {
-            return error("That portal pair already exists.");
+            throw new InvocationException("That portal pair already exists.");
         }
         InstanceEntrancePortal entrance = new InstanceEntrancePortal(session.getEntrance().getCuboid());
         InstanceDestinationPortal destination = new InstanceDestinationPortal(session.getDestination().getCuboid());

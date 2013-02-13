@@ -24,7 +24,7 @@ public class DeletePortal extends AbstractCommand {
         }
         PortalPair pair = instances.getPortalPair(args[0]);
         if (pair == null) {
-            return error("Portal " + args[0] + " not found.");
+            throw new InvocationException("Portal " + args[0] + " not found.");
         }
         instances.removePortalPair(pair);
         return msg("Portal " + args[0] + " deleted.");

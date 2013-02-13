@@ -30,7 +30,7 @@ public class SetSpawn extends AbstractCommand {
         }
         World world = player.getWorld();
         if (instances.isInstance(world)) {
-            return error("Cannot set the spawn world to an instance.");
+            throw new InvocationException("Cannot set the spawn world to an instance.");
         }
         instances.setSpawn(world);
         return msg("Spawn set to " + player.getWorld().getName() + '.');

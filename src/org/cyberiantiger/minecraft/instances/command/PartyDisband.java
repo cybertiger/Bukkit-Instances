@@ -4,9 +4,7 @@
  */
 package org.cyberiantiger.minecraft.instances.command;
 
-import java.util.Collections;
 import java.util.List;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.Party;
@@ -28,13 +26,13 @@ public class PartyDisband extends AbstractCommand {
         }
         Party party = instances.getParty(player);
         if (party == null) {
-            return error("You are not in a party.");
+            throw new InvocationException("You are not in a party.");
         }
 
         if (instances.isLeaderDisband() && !party.getLeader().equals(player))  {
-            return error("You are not the party leader.");
+            throw new InvocationException("You are not the party leader.");
         }
-        party.emote(instances, player, " has disbanded the party.");
+        party.emote(instances, player, "has disbanded the party.");
         instances.disbandParty(party);
         return msg();
     }

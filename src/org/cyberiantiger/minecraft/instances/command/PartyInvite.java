@@ -27,28 +27,28 @@ public class PartyInvite extends AbstractCommand {
         }
         Party party = instances.getParty(player);
         if (party == null) {
-            return error("You are not in a party.");
+            throw new InvocationException("You are not in a party.");
         }
         if (instances.isLeaderInvite() && !player.equals(party.getLeader())) {
-            return error("You are not the party leader.");
+            throw new InvocationException("You are not the party leader.");
         }
         Player invitee = instances.getServer().getPlayer(args[0]);
         if (invitee == null) {
-            return error("No such player: " + args[0] + ".");
+            throw new InvocationException("No such player: " + args[0] + ".");
         }
         if (!invitee.isOnline()) {
-            return error(args[0] + " is not online.");
+            throw new InvocationException(args[0] + " is not online.");
         }
         boolean invited = party.getInvites().contains(invitee);
         boolean member = party.getMembers().contains(invitee);
         if (member) {
-            return error(args[0] + " is already a party member.");
+            throw new InvocationException(args[0] + " is already a party member.");
         }
         if (invited) {
-            return error(args[0] + " is already invited.");
+            throw new InvocationException(args[0] + " is already invited.");
         }
         party.getInvites().add(invitee);
-        party.message(instances, invitee.getDisplayName() + " has been invited to join by " + player.getDisplayName() + '.');
+        party.message(instances, invitee.getDisplayName() + "has been invited to join by " + player.getDisplayName() + '.');
         invitee.sendMessage("You have been invited to join party " + party.getName() + " type /pjoin " + party.getName());
         return msg();
     }

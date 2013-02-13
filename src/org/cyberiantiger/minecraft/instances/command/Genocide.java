@@ -31,7 +31,7 @@ public class Genocide extends AbstractCommand {
         EntityType type = EntityType.fromName(args[0]);
 
         if (type == null || !type.isAlive()) {
-            return error("Not a valid entity: " + args[0]);
+            throw new InvocationException("Not a valid entity: " + args[0]);
         }
 
         for (Entity e : player.getWorld().getEntities()) {

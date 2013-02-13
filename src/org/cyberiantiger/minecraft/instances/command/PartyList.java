@@ -30,7 +30,7 @@ public class PartyList extends AbstractCommand {
         Collections.sort(parties);
 
         if (parties.isEmpty()) {
-            return error("No parties");
+            throw new InvocationException("No parties");
         }
         StringBuilder tmp = new StringBuilder("Current parties: ");
         for (Party p : parties) {

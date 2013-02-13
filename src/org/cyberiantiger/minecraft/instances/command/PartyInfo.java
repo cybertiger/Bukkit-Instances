@@ -35,11 +35,11 @@ public class PartyInfo extends AbstractCommand {
         if (args.length == 0) {
             party = instances.getParty((Player)sender);
             if (party == null)
-                return error("You are not in a party.");
+                throw new InvocationException("You are not in a party.");
         } else {
             party = instances.getParty(args[0]);
             if (party == null)
-                return error(args[0] + " does not exist.");
+                throw new InvocationException(args[0] + " does not exist.");
         }
         List<String> ret = new ArrayList<String>();
         ret.add("Party name: " + party.getName());
@@ -62,6 +62,6 @@ public class PartyInfo extends AbstractCommand {
             }
             ret.add(tmp.toString());
         }
-        return msg(ret);
+        return ret;
     }
 }
