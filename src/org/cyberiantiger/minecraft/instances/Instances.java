@@ -4,7 +4,6 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import java.io.BufferedReader;
 import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -70,6 +68,8 @@ import org.cyberiantiger.minecraft.instances.command.SetEntrance;
 import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
+import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
+import org.cyberiantiger.minecraft.instances.unsafe.bank.BankFactory;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
@@ -96,7 +96,7 @@ public class Instances extends JavaPlugin implements Listener {
     private ItemStack selectionTool;
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
-    private MultiverseCore core;
+    private Bank bank;
 
     {
         commands.put("p", new PartyChat());
@@ -127,6 +127,10 @@ public class Instances extends JavaPlugin implements Listener {
         commands.put("imob", new Mob());
         commands.put("igenocide", new Genocide());
         commands.put("imodifyportal", new ModifyPortal());
+    }
+
+    public Bank getBank() {
+        return bank;
     }
 
     public Collection<PortalPair> getPortalPairs() {
@@ -309,13 +313,8 @@ public class Instances extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         super.onEnable();
-        this.core = (MultiverseCore) getServer().getPluginManager().getPlugin("Multiverse-Core");
-
-        // Test if the Core was found.
-        if (this.core == null) {
-            getLogger().warning("Multiverse-Core not found, economy support disabled.");
-        }
         saveDefaultConfig();
+        bank = BankFactory.createBank(this);
         getServer().getPluginManager().registerEvents(this, this);
         File dir = getDataFolder();
         if (!dir.exists()) {
@@ -324,10 +323,6 @@ public class Instances extends JavaPlugin implements Listener {
             }
         }
         load();
-    }
-
-    public MultiverseCore getCore() {
-        return core;
     }
 
     @Override
@@ -471,6 +466,12 @@ public class Instances extends JavaPlugin implements Listener {
             ConfigurationSection pairSection = portalSection.createSection(pair.getName());
             saveCuboid(pairSection.createSection("entrance"), pair.getEnter().getCuboid());
             saveCuboid(pairSection.createSection("destination"), pair.getDestination().getCuboid());
+            pairSection.set("entryItem", pair.getEntryItem());
+            pairSection.set("entryPrice", pair.getEntryPrice());
+            pairSection.set("createItem", pair.getCreateItem());
+            pairSection.set("createPrice", pair.getCreatePrice());
+            pairSection.set("unloadTime", pair.getUnloadTime());
+            pairSection.set("reenterTime", pair.getReenterTime());
         }
         saveConfig();
     }

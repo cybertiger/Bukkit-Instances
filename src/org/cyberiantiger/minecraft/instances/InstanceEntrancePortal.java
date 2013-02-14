@@ -4,12 +4,12 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
-import com.fernferret.allpay.multiverse.GenericBank;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
+import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
@@ -60,13 +60,15 @@ public class InstanceEntrancePortal extends Portal {
 
         World world;
         if (instance == null) {
-            if (pair.getCreateOrEntryPrice() > 0.0D && instances.getCore() != null) {
-                GenericBank bank = instances.getCore().getBank();
-                if (!bank.hasEnough(player, pair.getCreateOrEntryPrice(), -1)) {
+            if (pair.getCreateOrEntryPrice() > 0.0D) {
+                Bank bank = instances.getBank();
+                if (!bank.deduct(player, pair.getCreateOrEntryPrice())) {
+                    player.sendMessage(StringUtil.error("An fee of " + pair.getCreateOrEntryPrice() + " rem is required."));
                     e.setCancelled(true);
                     return;
                 }
-                bank.take(player, pair.getCreateOrEntryPrice(), -1);
+                player.sendMessage(StringUtil.success("Your bank account has been deducted " + pair.getCreateOrEntryPrice() + " rem"));
+
             }
             if (pair.getCreateOrEntryItem() != null) {
                 ItemStack itemInHand = player.getItemInHand();
@@ -81,6 +83,7 @@ public class InstanceEntrancePortal extends Portal {
                 } else {
                     itemInHand.setAmount(itemInHand.getAmount() - required.getAmount());
                 }
+                player.sendMessage(StringUtil.success("Your offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " has been accepted."));
             }
             World sourceWorld = instances.getServer().getWorld(destination.getCuboid().getWorld());
             if (sourceWorld == null) {
@@ -101,13 +104,14 @@ public class InstanceEntrancePortal extends Portal {
 
             instances.getLogger().info("Created instance: " + instance);
         } else {
-            if (pair.getEntryPrice() > 0.0D && instances.getCore() != null) {
-                GenericBank bank = instances.getCore().getBank();
-                if (!bank.hasEnough(player, pair.getEntryPrice(), -1)) {
+            if (pair.getEntryPrice() > 0.0D) {
+                Bank bank = instances.getBank();
+                if (!bank.deduct(player, pair.getEntryPrice())) {
+                    player.sendMessage(StringUtil.error("An fee of " + pair.getEntryPrice() + " rem is required."));
                     e.setCancelled(true);
                     return;
                 }
-                bank.take(player, pair.getEntryPrice(), -1);
+                player.sendMessage(StringUtil.success("Your bank account has been deducted " + pair.getEntryPrice() + " rem"));
             }
             if (pair.getEntryItem() != null) {
                 ItemStack itemInHand = player.getItemInHand();
@@ -122,6 +126,7 @@ public class InstanceEntrancePortal extends Portal {
                 } else {
                     itemInHand.setAmount(itemInHand.getAmount() - required.getAmount());
                 }
+                player.sendMessage(StringUtil.success("Your offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " has been accepted."));
             }
             world = instances.getServer().getWorld(instance.getInstance());
         }
