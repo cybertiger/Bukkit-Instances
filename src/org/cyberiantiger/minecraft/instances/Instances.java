@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -400,7 +401,6 @@ public class Instances extends JavaPlugin implements Listener {
                 int unloadTime = thisSection.getInt("unloadTime");
                 int reenterTime = thisSection.getInt("reenterTime");
                 addPortalPair(new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime));
-                new PortalPair(s, entrance, destination, entryPrice, createPrice, null, null, unloadTime, reenterTime);
             }
         }
     }
@@ -500,7 +500,11 @@ public class Instances extends JavaPlugin implements Listener {
             } else {
                 // TODO: Results paging.
                 if (!result.isEmpty()) {
-                    sender.sendMessage(result.toArray(new String[result.size()]));
+                    String[] msg = new String[result.size()];
+                    for (int i = 0; i < result.size(); i++) {
+                        msg[i] = StringUtil.success(result.get(i));
+                    }
+                    sender.sendMessage(msg);
                 }
             }
         } catch (NotAvailableException e) {

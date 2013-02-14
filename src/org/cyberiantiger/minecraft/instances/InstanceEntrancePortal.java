@@ -5,14 +5,13 @@
 package org.cyberiantiger.minecraft.instances;
 
 import com.fernferret.allpay.multiverse.GenericBank;
-import java.util.logging.Level;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
+import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
  *
@@ -39,20 +38,20 @@ public class InstanceEntrancePortal extends Portal {
         Player player = e.getPlayer();
         Party party = instances.getParty(player);
         if (party == null) {
-            player.sendMessage("You must be in a party to enter the dungeon.");
+            player.sendMessage(StringUtil.error("You must be in a party to enter the dungeon."));
             e.setCancelled(true);
             return;
         }
 
         if (pair == null) {
-            player.sendMessage("Portal does not connect anywhere.");
+            player.sendMessage(StringUtil.error("Portal does not connect anywhere."));
             e.setCancelled(true);
             return;
         }
 
         InstanceDestinationPortal destination = getPortalPair().getDestination();
         if (destination == null) {
-            player.sendMessage("Portal does not connect anywhere.");
+            player.sendMessage(StringUtil.error("Portal does not connect anywhere."));
             e.setCancelled(true);
             return;
         }
@@ -64,6 +63,7 @@ public class InstanceEntrancePortal extends Portal {
             if (pair.getCreateOrEntryPrice() > 0.0D && instances.getCore() != null) {
                 GenericBank bank = instances.getCore().getBank();
                 if (!bank.hasEnough(player, pair.getCreateOrEntryPrice(), -1)) {
+                    e.setCancelled(true);
                     return;
                 }
                 bank.take(player, pair.getCreateOrEntryPrice(), -1);
@@ -72,7 +72,8 @@ public class InstanceEntrancePortal extends Portal {
                 ItemStack itemInHand = player.getItemInHand();
                 ItemStack required = pair.getCreateOrEntryItem();
                 if (itemInHand == null || !required.isSimilar(itemInHand) || required.getAmount() > itemInHand.getAmount()) {
-                    player.sendMessage("An offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " is required.");
+                    player.sendMessage(StringUtil.error("An offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " is required."));
+                    e.setCancelled(true);
                     return;
                 }
                 if (required.getAmount() == itemInHand.getAmount()) {
@@ -83,13 +84,13 @@ public class InstanceEntrancePortal extends Portal {
             }
             World sourceWorld = instances.getServer().getWorld(destination.getCuboid().getWorld());
             if (sourceWorld == null) {
-                player.sendMessage("Portal does not connect anywhere.");
+                player.sendMessage(StringUtil.error("Portal does not connect anywhere."));
                 e.setCancelled(true);
                 return;
             }
             world = InstanceTools.createInstance(instances, sourceWorld);
             if (world == null) {
-                player.sendMessage("Could not create instance world.");
+                player.sendMessage(StringUtil.error("Could not create instance world."));
                 e.setCancelled(true);
                 return;
             }
@@ -103,6 +104,7 @@ public class InstanceEntrancePortal extends Portal {
             if (pair.getEntryPrice() > 0.0D && instances.getCore() != null) {
                 GenericBank bank = instances.getCore().getBank();
                 if (!bank.hasEnough(player, pair.getEntryPrice(), -1)) {
+                    e.setCancelled(true);
                     return;
                 }
                 bank.take(player, pair.getEntryPrice(), -1);
@@ -111,7 +113,8 @@ public class InstanceEntrancePortal extends Portal {
                 ItemStack itemInHand = player.getItemInHand();
                 ItemStack required = pair.getEntryItem();
                 if (itemInHand == null || !required.isSimilar(itemInHand) || required.getAmount() > itemInHand.getAmount()) {
-                    player.sendMessage("An offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " is required.");
+                    player.sendMessage(StringUtil.error("An offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " is required."));
+                    e.setCancelled(true);
                     return;
                 }
                 if (required.getAmount() == itemInHand.getAmount()) {
