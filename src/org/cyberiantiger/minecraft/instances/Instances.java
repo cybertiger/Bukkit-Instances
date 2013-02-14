@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.cyberiantiger.minecraft.instances.command.Command;
 import org.cyberiantiger.minecraft.instances.command.CreatePortal;
 import org.cyberiantiger.minecraft.instances.command.DeletePortal;
@@ -268,14 +270,20 @@ public class Instances extends JavaPlugin implements Listener {
     public void disbandParty(Party party) {
         for (Player p : party.getMembers()) {
             // Will cause calls to checkInstances(party) on the next tick.
+            // Instances should be empty anyway.
             removePlayerFromInstance(p);
             partyMap.remove(p);
         }
         // Clear party members so checkInstances() can delete any instances.
         party.getMembers().clear();
         party.setLeader(null);
-        // XXX: Do we need to force a call to checkInstances(party) before
-        // we deref it?
+        // Delete any party instances which are still hanging around.
+        Iterator<Instance> i = party.getInstances().iterator();
+        while (i.hasNext()) {
+            Instance instance = i.next();
+            deleteInstance(instance);
+            i.remove();
+        }
         parties.remove(party.getName());
     }
 
@@ -410,8 +418,15 @@ public class Instances extends JavaPlugin implements Listener {
                 ItemStack entryItem = thisSection.getItemStack("entryItem");
                 ItemStack createItem = thisSection.getItemStack("createItem");
                 int unloadTime = thisSection.getInt("unloadTime");
-                int reenterTime = thisSection.getInt("reenterTime");
-                addPortalPair(new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime));
+                int reenterTime = thisSection.getInt("recreateTime");
+                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime);
+                ConfigurationSection playerSection = thisSection.getConfigurationSection("lastCreate");
+                if (playerSection != null) {
+                    for (String p : playerSection.getKeys(false)) {
+                        portal.getLastCreate().put(p, playerSection.getLong(p));
+                    }
+                }
+                addPortalPair(portal);
             }
         }
     }
@@ -487,7 +502,11 @@ public class Instances extends JavaPlugin implements Listener {
             pairSection.set("createItem", pair.getCreateItem());
             pairSection.set("createPrice", pair.getCreatePrice());
             pairSection.set("unloadTime", pair.getUnloadTime());
-            pairSection.set("reenterTime", pair.getReenterTime());
+            pairSection.set("recreateTime", pair.getRecreateTime());
+            ConfigurationSection playerSection = pairSection.createSection("lastCreate");
+            for (Map.Entry<String,Long> e : pair.getLastCreate().entrySet()) {
+                playerSection.set(e.getKey(), e.getValue());
+            }
         }
         saveConfig();
     }
@@ -545,8 +564,6 @@ public class Instances extends JavaPlugin implements Listener {
         // TODO
         return super.onTabComplete(sender, command, alias, args);
     }
-
-
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent e) {
@@ -686,18 +703,34 @@ public class Instances extends JavaPlugin implements Listener {
                 });
     }
 
-    private void checkInstances(Party party) {
+    private void checkInstances(final Party party) {
         List<Instance> instances = new LinkedList(party.getInstances());
         for (Player p : party.getMembers()) {
-            instances.remove(party.getInstance(p));
+            Instance i = party.getInstance(p);
+            if (i != null) {
+                instances.remove(i);
+            }
         }
         for (Instance i : instances) {
-            party.removeInstance(i);
-            deleteInstance(i);
+            if (i.getPortal().getUnloadTime() > 0) {
+                BukkitTask task = i.getDeleteTask();
+                if (i.getDeleteTask() == null) {
+                    final Instance ii = i;
+                    i.setDeleteTask(getServer().getScheduler().runTaskLater(this, new Runnable() {
+                        public void run() {
+                            party.removeInstance(ii);
+                            deleteInstance(ii);
+                        }
+                    }, i.getPortal().getUnloadTime()));
+                }
+            } else {
+            }
         }
     }
 
     private void deleteInstance(Instance instance) {
+        // Make sure we're not called twice.
+        instance.cancelDelete();
         // Remove shared inventories and permissions.
         getInventories().removeShare(instance.getSourceWorld(), instance.getInstance());
         getPermissions().removeInheritance(instance.getSourceWorld(), instance.getInstance());
@@ -708,7 +741,6 @@ public class Instances extends JavaPlugin implements Listener {
         for (Player p : world.getPlayers()) {
             teleportToSpawn(p);
         }
-
         // Finally delete the instance without saving.
         getServer().unloadWorld(world, false);
     }

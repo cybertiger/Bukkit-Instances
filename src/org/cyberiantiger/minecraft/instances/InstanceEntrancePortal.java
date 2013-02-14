@@ -12,6 +12,7 @@ import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
+import org.cyberiantiger.minecraft.instances.util.TimeUtil;
 
 /**
  *
@@ -56,10 +57,22 @@ public class InstanceEntrancePortal extends Portal {
             return;
         }
 
+        long now = player.getWorld().getTime();
+
         Instance instance = party.getInstanceFromSourceWorld(destination.getCuboid().getWorld());
 
         World world;
         if (instance == null) {
+            if (pair.getRecreateTime() > 0 && pair.getLastCreate().containsKey(player.getName())) {
+                int recreateTime = pair.getRecreateTime();
+                long lastCreate = pair.getLastCreate().get(player.getName());
+                if (lastCreate + recreateTime > now) {
+                    player.sendMessage(StringUtil.error("You cannot recreate this dungeon for another " + TimeUtil.format(lastCreate + recreateTime - now)));
+                    e.setCancelled(true);
+                    return;
+                }
+            }
+            // XXX: If price and item are set, then code will charge entry price then deny entry.
             if (pair.getCreateOrEntryPrice() > 0.0D) {
                 Bank bank = instances.getBank();
                 if (!bank.deduct(player, pair.getCreateOrEntryPrice())) {
@@ -85,6 +98,10 @@ public class InstanceEntrancePortal extends Portal {
                 }
                 player.sendMessage(StringUtil.success("Your offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " has been accepted."));
             }
+
+            // Must be after other checks.
+            pair.getLastCreate().put(player.getName(), now);
+
             World sourceWorld = instances.getServer().getWorld(destination.getCuboid().getWorld());
             if (sourceWorld == null) {
                 player.sendMessage(StringUtil.error("Portal does not connect anywhere."));
@@ -101,7 +118,7 @@ public class InstanceEntrancePortal extends Portal {
             instances.getPermissions().addInheritance(sourceWorld.getName(), world.getName());
             instances.getInventories().addShare(sourceWorld.getName(), world.getName());
 
-            instance = new Instance(sourceWorld.getName(), world.getName());
+            instance = new Instance(getPortalPair(), sourceWorld.getName(), world.getName());
 
             party.addInstance(instance);
 

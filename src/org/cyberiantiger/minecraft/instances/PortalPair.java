@@ -5,6 +5,9 @@
 
 package org.cyberiantiger.minecraft.instances;
 
+import java.util.HashMap;
+import java.util.Map;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -21,13 +24,15 @@ public class PortalPair implements Comparable<PortalPair> {
     private double createPrice;
     private ItemStack createItem;
     private int unloadTime;
-    private int reenterTime;
+    private int recreateTime;
+    // Last time a player created a new instance of this portal's dungeon.
+    private Map<String, Long> lastCreate = new HashMap<String, Long>();
 
     public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination) {
         this(name, enter, destination, 0, 0, null, null, 0, 0);
     };
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int reenterTime) {
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime) {
         this.name = name;
         this.enter = enter;
         this.destination = destination;
@@ -36,9 +41,13 @@ public class PortalPair implements Comparable<PortalPair> {
         this.createPrice = createPrice;
         this.createItem = createItem;
         this.unloadTime = unloadTime;
-        this.reenterTime = reenterTime;
+        this.recreateTime = recreateTime;
         enter.setPortalPair(this);
         destination.setPortalPair(this);
+    }
+
+    public Map<String, Long> getLastCreate() {
+        return lastCreate;
     }
 
     public double getCreateOrEntryPrice() {
@@ -81,12 +90,12 @@ public class PortalPair implements Comparable<PortalPair> {
         this.entryPrice = entryPrice;
     }
 
-    public int getReenterTime() {
-        return reenterTime;
+    public int getRecreateTime() {
+        return recreateTime;
     }
 
-    public void setReenterTime(int reenterTime) {
-        this.reenterTime = reenterTime;
+    public void setRecreateTime(int reenterTime) {
+        this.recreateTime = reenterTime;
     }
 
     public int getUnloadTime() {

@@ -218,26 +218,26 @@ public class ModifyPortal extends AbstractCommand {
 
     }
 
-    private static class ReenterTime extends IntProperty {
+    private static class RecreateTime extends IntProperty {
 
         @Override
         public String getName() {
-            return "reenterTime";
+            return "recreateTime";
         }
 
         @Override
         public void set(PortalPair portal, Integer value) {
-            portal.setReenterTime(value);
+            portal.setRecreateTime(value);
         }
 
         @Override
         public Integer get(PortalPair portal) {
-            return portal.getReenterTime();
+            return portal.getRecreateTime();
         }
 
         @Override
         public void reset(PortalPair portal) {
-            portal.setReenterTime(0);
+            portal.setRecreateTime(0);
         }
 
     }
@@ -275,7 +275,7 @@ public class ModifyPortal extends AbstractCommand {
         addProperty(new EntryItem());
         addProperty(new CreatePrice());
         addProperty(new CreateItem());
-        addProperty(new ReenterTime());
+        addProperty(new RecreateTime());
         addProperty(new UnloadTime());
     }
 
