@@ -16,6 +16,7 @@ public final class ItemUtil {
     }
     
     public static String prettyName(Material m) {
+        // Could do better.
         String tmp = m.name();
         tmp = tmp.toLowerCase();
         tmp = tmp.replace('_', ' ');

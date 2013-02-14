@@ -70,6 +70,10 @@ import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.BankFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.inventories.Inventories;
+import org.cyberiantiger.minecraft.instances.unsafe.inventories.InventoriesFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.permissions.Permissions;
+import org.cyberiantiger.minecraft.instances.unsafe.permissions.PermissionsFactory;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
@@ -97,6 +101,8 @@ public class Instances extends JavaPlugin implements Listener {
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
     private Bank bank;
+    private Inventories inventories;
+    private Permissions permissions;
 
     {
         commands.put("p", new PartyChat());
@@ -131,6 +137,14 @@ public class Instances extends JavaPlugin implements Listener {
 
     public Bank getBank() {
         return bank;
+    }
+
+    public Inventories getInventories() {
+        return inventories;
+    }
+
+    public Permissions getPermissions() {
+        return permissions;
     }
 
     public Collection<PortalPair> getPortalPairs() {
@@ -315,6 +329,8 @@ public class Instances extends JavaPlugin implements Listener {
         super.onEnable();
         saveDefaultConfig();
         bank = BankFactory.createBank(this);
+        permissions = PermissionsFactory.createPermissions(this);
+        inventories = InventoriesFactory.createInventories(this);
         getServer().getPluginManager().registerEvents(this, this);
         File dir = getDataFolder();
         if (!dir.exists()) {
@@ -682,12 +698,18 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     private void deleteInstance(Instance instance) {
+        // Remove shared inventories and permissions.
+        getInventories().removeShare(instance.getSourceWorld(), instance.getInstance());
+        getPermissions().removeInheritance(instance.getSourceWorld(), instance.getInstance());
+        // Drop the world from the server, teleporting anyone inside it out.
         World world = getServer().getWorld(instance.getInstance());
         getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
         // Remove all players from the world.
         for (Player p : world.getPlayers()) {
             teleportToSpawn(p);
-        } // Finally delete the instance without saving.
+        }
+
+        // Finally delete the instance without saving.
         getServer().unloadWorld(world, false);
     }
 }

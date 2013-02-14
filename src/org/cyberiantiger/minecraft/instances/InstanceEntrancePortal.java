@@ -98,6 +98,9 @@ public class InstanceEntrancePortal extends Portal {
                 return;
             }
 
+            instances.getPermissions().addInheritance(sourceWorld.getName(), world.getName());
+            instances.getInventories().addShare(sourceWorld.getName(), world.getName());
+
             instance = new Instance(sourceWorld.getName(), world.getName());
 
             party.addInstance(instance);
