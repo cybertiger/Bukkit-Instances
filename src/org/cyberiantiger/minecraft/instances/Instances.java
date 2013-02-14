@@ -45,6 +45,7 @@ import org.cyberiantiger.minecraft.instances.command.Genocide;
 import org.cyberiantiger.minecraft.instances.command.Home;
 import org.cyberiantiger.minecraft.instances.command.InvocationException;
 import org.cyberiantiger.minecraft.instances.command.Mob;
+import org.cyberiantiger.minecraft.instances.command.ModifyPortal;
 import org.cyberiantiger.minecraft.instances.command.Motd;
 import org.cyberiantiger.minecraft.instances.command.NotAvailableException;
 import org.cyberiantiger.minecraft.instances.command.PartyChat;
@@ -124,6 +125,7 @@ public class Instances extends JavaPlugin implements Listener {
         commands.put("ideleteportal", new DeletePortal());
         commands.put("imob", new Mob());
         commands.put("igenocide", new Genocide());
+        commands.put("imodifyportal", new ModifyPortal());
     }
 
     public Collection<PortalPair> getPortalPairs() {

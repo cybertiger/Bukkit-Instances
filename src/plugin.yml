@@ -112,3 +112,6 @@ commands:
     description: Commit genocide.
     usage: /igenocide <type>
     permission: instances.genocide
+  imodifyportal:
+    description: Modify a portal's properties.
+    usage: /imodifyportal <portal> [<set|show|reset> [<property> [<value>]]]
