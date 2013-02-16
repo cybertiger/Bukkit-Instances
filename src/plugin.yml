@@ -110,8 +110,37 @@ commands:
     permission: instances.spawnmob
   igenocide:
     description: Commit genocide.
-    usage: /igenocide <type>
+    usage: /igenocide <type> [remove]
     permission: instances.genocide
   imodifyportal:
     description: Modify a portal's properties.
     usage: /imodifyportal <portal> [<set|show|reset> [<property> [<value>]]]
+    permission: instances.protal.modify
+  ispawner:
+    description: Modify a spawner's properties.
+    usage: |
+      /ispawner <monster> [<flags>]
+      -d <hand|feet|legs|body|head>:<always|chance> - Set the dropchance of an item, e.g. -d hand:0.5 or -d hand:always (default:0.05)
+      -e <max> - Set the number of entities close by required to disable this spawner. (default: 6)
+      -f <duration> - Copy your potion effects onto spawned monsters for the specified duration.
+      -h <health> - Set the health of the spawned monster.
+      -i - Print out information about the spawner.
+      -I <head|feet|legs|body|head> - Set the specified item to that which you are currently holding. (default: none)
+      -l <true|false> - Set whether spawned monsters can pick up loot. (default: false)
+      -L <true|false> - For creepers, spawn them powered or unpowered.
+      -m <delay> - Set the minimum delay between spawns. (default: 200)
+      -M <delay> - Set the maximum delay between spawns. (default: 800)
+      -p <range> - Activate when a player is within <range>. (default: 16)
+      -P <none|x,y,z> - Set the initial position of the monster, or remove it.
+      -r <range> - Range at which to spawn mobs up to (default: 4)
+      -s <count> - Set the number of monsters to spawn (default: 4)
+      -t <normal|wither> - Set the skeleton type to spawn.
+      -T <true|false> - Do not despawn naturally.
+      -v <true|false> - Make the spawned monsters invulnerable
+      -V <none|x,y,z> - Set the initial motion of the monster, or remove it.
+      -z <size> - Set the size of the spawned mob.
+#      -R - Remove the currently selection monster spawn (broken).
+#      -S <index> - Select a monster this spawner spawns (default: 0) (broken).
+#      -w <weight> - Set the weight of the currently selected monster (broken).
+#      -a <monster> - Add a monster to the spawner (broken).
+    permission: instances.spawner

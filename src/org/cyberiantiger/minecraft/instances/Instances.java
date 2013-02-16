@@ -70,6 +70,7 @@ import org.cyberiantiger.minecraft.instances.command.SetEntrance;
 import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
+import org.cyberiantiger.minecraft.instances.command.Spawner;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.BankFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.inventories.Inventories;
@@ -135,6 +136,7 @@ public class Instances extends JavaPlugin implements Listener {
         commands.put("imob", new Mob());
         commands.put("igenocide", new Genocide());
         commands.put("imodifyportal", new ModifyPortal());
+        commands.put("ispawner", new Spawner());
     }
 
     public Bank getBank() {

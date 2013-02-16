@@ -4,11 +4,9 @@
  */
 package org.cyberiantiger.minecraft.instances.command;
 
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;

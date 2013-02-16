@@ -29,7 +29,7 @@ public class PartyInfo extends AbstractCommand {
             return null;
         }
         if (!(sender instanceof Player) && args.length == 0) {
-            return Collections.singletonList("Only players can see information about their current party.");
+            throw new NotAvailableException("Only players can see information about their current party.");
         }
         Party party;
         if (args.length == 0) {
@@ -53,7 +53,7 @@ public class PartyInfo extends AbstractCommand {
             }
         }
         ret.add(tmp.toString());
-        if (sender.hasPermission("instances.party.info")) {
+        if (sender.hasPermission("instances.party.info.instances")) {
             tmp.setLength(0);
             tmp.append("Instances:");
             for (Instance i : party.getInstances()) {
