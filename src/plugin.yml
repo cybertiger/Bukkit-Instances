@@ -83,7 +83,7 @@ commands:
   imob:
     description: Spawn mobs.
     usage: /imob <type> [<count>]
-    permission: instances.spawnmob
+    permission: instances.general.spawnmob
   igenocide:
     description: Commit genocide.
     usage: /igenocide <type> [remove]
