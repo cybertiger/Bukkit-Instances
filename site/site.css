@@ -93,3 +93,15 @@ code span.syntax {
 code span.data {
     color: #ff0000;
 }
+
+@media print {
+.leftmenu {
+    display: none;
+    width: 0px;
+}
+.content {
+    display: compact;
+    margin: 32px;
+    padding: 32px;
+}
+}
