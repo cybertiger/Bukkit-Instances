@@ -1,0 +1,446 @@
+<html>
+<head>
+<title>Instances for Bukkit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="site.css" type="text/css"/>
+</head>
+<body>
+<div class="leftMenu">
+<div>
+<ul>
+<li><a href="#about">About</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#commands">Commands</a>
+<hr/>
+<ul>
+<li><a href="#commands-party">Party</a></li>
+<li><a href="#commands-general">General</a></li>
+<li><a href="#commands-portal">Portal</a></li>
+</ul>
+</li>
+<li><a href="#config">Configuration</a></li>
+<li><a href="#permissions">Permissions</a></li>
+</ul>
+</div>
+</div>
+<div class="content">
+<div>
+<div id="logo">
+<div id="donate">
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form></div>
+<img src="images/logo_beta.png" alt="Instances"/>
+</div>
+<h1 id="about">About</h1>
+<p>
+A Bukkit plugin which allows conversion of whole worlds to resetable dungeon instances. Also provided is a party system and commands for instance management. Originally created for <a href="http://dreamcraft.org">dreamcraft.org</a>. Features include the following.
+</p>
+<ul>
+<li>Ability to convert a world into an instanced dungeon.</li>
+<li>Multiple instances per world concurrently.</li>
+<li>Instances reset a configurable time after the party leaves.</li>
+<li>A fully featured party system.</li>
+<li>Economy support. (iConomy 4,5,6, BOSE 6,7, MultiCur, RealShop)</li>
+<li>Instance aware <code>/sethome</code> command.</li>
+<li>Full support for modifying monster spawners via the <code>/ispawner</code> command.</li>
+<li>PermissionsEx integration which allows world specific permissions to be automatically inherited by instances.</li>
+<li>Multiverse-Inventories integration to allow configurable inventory sharing per instances.</li>
+</ul>
+<h1 id="installation">Installation</h1>
+<p>Copy the jar to your plugins folder on your server. There are no hard depenencies, so everything should just work. The plugin has the following soft dependencies.</p>
+<h3>Multiverse-Inventories</h3>
+<p>If Multiverse-Inventories is present the plugin will integrate with the configuration and ensure than instances share inventories with their parent world.</p>
+<h3>Multiverse-Core</h3>
+<p>If Multiverse-Core is present, instance portals may require a payment to enter. Support is provided for the following economy plugins: iConomy 4,5,6, BOSE 6,7, MultiCur, RealShop.</p>
+<h3>PermissionsEx</h3>
+<p>If present then instance worlds will inherit permissions from their parent world.</p>
+<h2>Downloads</h2>
+<ul>
+<li><a href="downloads/1.0/Instances.jar">Instances 1.0 for Craftbukkit 1.4.7-R1.0</a></li>
+</ul>
+<h1 id="commands">Commands</h1>
+<p>Commands are split into 3 sections, party commands (those commands pertaining to party usage), general commands (those commands pertaining to general actions) and portal commands (which relate to instance portal administration).</p>
+<h2 id="commands-party">Party</h2>
+<p>
+Players can create, join, leave and administer their own parties with the following commands. Instanced worlds created for a party are only accessible to players in that party.
+</p>
+<table>
+<tr>
+<th>Command</th>
+<th>Permission</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>/pcreate &lt;name&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Create a party named <code>&lt;name&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>/pdisband</code></td>
+<td><code>instances.party</code></td>
+<td>Disband your party, normally you must be the leader of the party to do this, see <a href="#config">Configuration</a>.</td>
+</tr>
+<tr>
+<td><code>/pleader &lt;player&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Assign leadership of the party to <code>&lt;player&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>/pkick &lt;player&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Assign leadership of the party to <code>&lt;player&gt;</code>, normally you must be the leader of the party to do this, see <a href="#config">Configuration</a>.</td>
+<tr>
+<td><code>/pinvite &lt;player&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Invite <code>&lt;player&gt;</code> to join your party, normally any party member can do this, see <a href="#config">Configuration</a>.</td>
+</tr>
+<tr>
+<td><code>/puninvite &lt;player&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Remove an invite for <code>&lt;player&gt;</code> to join your party, normally any party member can do this, see <a href="#config">Configuration</a>.</td>
+</tr>
+<tr>
+<td><code>/pjoin &lt;name&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Join party <code>&lt;name&gt;</code> you have been invited to.</td>
+</tr>
+<tr>
+<td><code>/pleave</code></td>
+<td><code>instances.party</code></td>
+<td>Leave the party you are a member of.</td>
+</tr>
+<tr>
+<td><code>/p &lt;text&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Chat with other members of the party.</td>
+</tr>
+<tr>
+<td><code>/pme &lt;text&gt;</code></td>
+<td><code>instances.party</code></td>
+<td>Emote privately to other members of the party.</td>
+</tr>
+<tr>
+<td><code>/pinfo [&lt;name&gt;]</code></td>
+<td><code>instances.party</code></td>
+<td>Show information about your current party or party <code>&lt;name&gt;</code> if specified. Additional information is shown if you have the permission <code>instances.party.info</code>, see <a href="#permissions">Permissions</a></td>
+</tr>
+<tr>
+<td><code>/plist</code></td>
+<td><code>instances.party.list</code></td>
+<td>List current parties</td>
+</tr>
+</table>
+<h2 id="commands-general">General</h2>
+<p>The plugin includes several general commands which are often supplied by other plugins, feel free to comment them out in <code>plugin.yml</code> if you do not need them. These include motd and basic teleport commands, also a fully featured command to modify monster spawners is included.</p>
+<table>
+<tr>
+<th>Command</th>
+<th>Permission</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>/home</code></td>
+<td><code>instances.general.home</code></td>
+<td>Teleport to your home location.</td>
+</tr>
+<tr>
+<td><code>/sethome</code></td>
+<td><code>instances.general.home</code></td>
+<td>Set your home to your current location. Note this command will not allow you to set your home inside an instance.</td>
+</tr>
+<tr>
+<td><code>/spawn</code></td>
+<td><code>instances.general.spawn</code></td>
+<td>Teleport to the spawn world's spawn location.</td>
+</tr>
+<tr>
+<td><code>/setspawn</code></td>
+<td><code>instances.general.setspawn</code></td>
+<td>Set the spawn world to your current world. Note this command only sets the world, not the spawn location, use another plugin such as Multiverse for this.</td>
+</tr>
+<tr>
+<td><code>/motd</code></td>
+<td><code>instances.general.motd</code></td>
+<td>Show the message of the day. File is found in <code>plugins/Instances/motd.txt</code> Use § to obtain colour codes.</td>
+</tr>
+<tr>
+<td><code>/isave</code></td>
+<td><code>instances.general.save</code></td>
+<td>Save all Instances settings, such as homes, instance portals and home worlds. Typically saving is only performed when the plugin is unloaded at server shutdown.</td>
+</tr>
+<tr>
+<td><code>/ireload</code></td>
+<td><code>instances.general.reload</code></td>
+<td>Load settings from disk overwriting those in memory. Any settings in memory will be overwritten.</td>
+</tr>
+<tr>
+<td><code>/imob &lt;type&gt; [&lt;count&gt;]</code></td>
+<td><code>instances.general.spawnmob</code></td>
+<td>Spawn <code>&lt;type&gt;</code> mobs at the location you are looking at. 1 or <code>&lt;count&gt;</code> mobs are spawned. See <a href="mobs.txt">mobs.txt</a> for a list of valid mob names.</td>
+</tr>
+<tr>
+<td><code>/igenocide &lt;type&gt; [remove]</code></td>
+<td><code>instances.general.genocide</code></td>
+<td>Kill all <code>&lt;type&gt;</code> mobs in the current world, if <code>remove</code> is specified, remove them from the world instead of killing them.</td>
+</tr>
+</table>
+<h3><code>/ispawner [&lt;type&gt;] [&lt;flags&gt;]</code></h3>
+<p>Permission: <code>instances.general.spawner</code></p>
+<p>Modify the spawner you are looking at, set the type spawned to <code>&lt;type&gt;</code>. See <a href="mobs.txt">mobs.txt</a> for a list of valid mob names. Flags are listed in the following table.</p>
+<table>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>-i</code></td>
+<td>Show information about the spawner.</td>
+</tr>
+<tr>
+<td><code>-m &lt;delay&gt;</code></td>
+<td>Set the minimum <code>&lt;delay&gt;</code> between spawns in server ticks (1/20th of a second). (default: 200)</td>
+</tr>
+<tr>
+<td><code>-M &lt;delay&gt;</code></td>
+<td>Set the maximum <code>&lt;delay&gt;</code> between spawns in server ticks (1/20th of a second). (default: 800)</td>
+</tr>
+<tr>
+<td><code>-s &lt;count&gt;</code></td>
+<td>Set the <code>&lt;count&gt;</code> of mobs to spawn. (default: 4)</td>
+</tr>
+<tr>
+<td><code>-r &lt;range&gt;</code></td>
+<td>Set the <code>&lt;range&gt;</code> at which mobs can spawn from the spawner. (default: 4)</td>
+</tr>
+<tr>
+<td><code>-p &lt;range&gt;</code></td>
+<td>Set the <code>&lt;range&gt;</code> which players must be within in order to activate the spawner. (default: 16)</td>
+</tr>
+<tr>
+<td><code>-e &lt;max&gt;</code></td>
+<td>Set the <code>&lt;max&gt;</code> number of entities close by required to disable this spawner. (default: 6)</td>
+</tr>
+<tr>
+<td><code>-I (hand|feet|legs|body|head)</code></td>
+<td>Set the item carried by spawned monsters to the item you are currently holding.</td>
+</tr>
+<tr>
+<td><code>-d (hand|feet|legs|body|head):(always|&lt;chance&gt;)</code></td>
+<td>Set the drop chance of the carried item. Always means always drop the item, otherwise <code>&lt;chance&gt;</code> is a probability between 0 and 1, the item will be randomly damaged. e.g. <code>-d head:0.75</code></td>
+</tr>
+<tr>
+<td><code>-f &lt;duration&gt;</code></td>
+<td>Copy any potion effects you have to spawned monsters, granting them for <code>&lt;duration&gt;</code> in server ticks (1/20th of a second).</td>
+</tr>
+<tr>
+<td><code>-h &lt;health&gt;</code></td>
+<td>Set the <code>&lt;health&gt; of spawned monsters</td>
+</tr>
+<tr>
+<td><code>-l (true|false)</code></td>
+<td>If true, spawned monsters will loot items, otherwise they will not.</td>
+</tr>
+<tr>
+<td><code>-T (true|false)</code></td>
+<td>If <code>true</code> mobs created by this spawner will never despawn, otherwise they will. (default: false)</td>
+</tr>
+<tr>
+<td><code>-v (true|false)</code></td>
+<td>If <code>true</code> mobs created by this spawner will be invulnerable, otherwise they will not. (default: false)</td>
+</tr>
+<tr>
+<td><code>-L (true|false)</code></td>
+<td>For creepers, spawn powered if true, unpowered otherwise.</td>
+</tr>
+<tr>
+<td><code>-t (normal|wither)</code></td>
+<td>For skeletons, set the skeleton type to <code>normal</code> or <code>wither</code>.</td>
+</tr>
+<tr>
+<td><code>-z (&lt;size&gt;:random)</code></td>
+<td>For slimes and lava slimes, set the <code>&lt;size&gt;</code> of mobs spawned by this spawner. 1 = small, 2 = medium 4 = large, other values work but may result in unexpected behaviour. If <code>random</code> is specified slimes and lava slimes will have a random size. (default: random)</td>
+</tr>
+<tr>
+<td><code>-P (&lt;x,y,z&gt;|none)</code></td>
+<td>Set the initial absolute world position of spawned monsters or if <code>none</code> remove it.</td>
+</tr>
+<tr>
+<td><code>-V (&lt;x,y,z&gt;|none)</code></td>
+<td>Set the initial velocity of monsters spawned by this spawner. If <code>none</code> is specified unset it.</td>
+</tr>
+<tr>
+<td><code>-a &lt;type&gt;</code></td>
+<td>Add <code>&lt;type&gt;</code> to the list of monsters that the spawner can spawn with a weighting of 100. See <a href="mobs.txt">mobs.txt</a> for a list of valid mob names. (<b>Broken</b>, spawners don't correctly save multiple mob spawns)</td>
+</tr>
+<tr>
+<td><code>-S &lt;index&gt;<code></td>
+<td>Select a monster which the spawner spawns by <code>&lt;index&gt;</code>. (<b>Broken</b>, spawners don't correctly save multiple mob spawns)</td>
+</tr>
+<tr>
+<td><code>-w &lt;weight&gt;</code></td>
+<td>Set the <code>&lt;weight&gt;</code> of the currently selected monster (default: 100). (<b>Broken</b>, spawners don't correctly save multiple mob spawns)</td>
+</tr>
+<tr>
+<td><code>-R</code>
+<td>Remove the currently selected monster from the spawner. (<b>Broken</b>, spawners don't correctly save multiple mob spawns)</td>
+</tr>
+</table>
+<h2 id="commands-portal">Portal</h2>
+<p>Finally the plugin includes commands for creating portals to access world instances. Portal creation is accomplished by using the tool (default: feather) to select a cuboid in the world where the portal resides, and in the world which you wish to create an instance. First you select the entrance portal area, and execute <code>/isetentrance</code> then select the portal area in the world you wish to instance and execute <code>/isetdestination</code>. Once this is done you can create your instance via <code>/icreateportal &lt;name&gt;</code>.</p>
+<table>
+<tr>
+<th>Command</th>
+<th>Permission</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>/iselectiontool</code></td>
+<td><code>instances.portal.tool</code></td>
+<td>Set the selection tool used to mark portals to the item you are currently holding. (default: feather)</td>
+</tr>
+<tr>
+<td><code>/isetentrance</code></td>
+<td><code>instances.portal.create</code></td>
+<td>Set the entrance location of a subsequently created portal to your current selection.</td>
+</tr>
+<tr>
+<td><code>/isetdestination</code></td>
+<td><code>instances.portal.create</code></td>
+<td>Set the destination location of a subsequently created portal to your current selection.</td>
+</td>
+</tr>
+<tr>
+<td><code>/icreateportal &lt;name&gt;</code></td>
+<td><code>instances.portal.create</code></td>
+<td>Create a portal named <code>&lt;name&gt;</code> with the previously selected entrance and destination worlds.</td>
+</tr>
+<tr>
+<td><code>/ideleteportal &lt;name&gt;</code></td>
+<td><code>instances.portal.delete</code></td>
+<td>Delete the portal named &lt;name&gt;.</td>
+</tr>
+<tr>
+<td><code>/iportallist</code></td>
+<td><code>instances.portal.list</code></td>
+<td>List the instance portals on the server.</td>
+</tr>
+</table>
+<h3><code>/imodifyportal [(show|set|reset) &lt;property&gt; [&lt;value&gt;]]</code></h3>
+<p>Permission: <code>instances.portal.modify</code></p>
+<p><code>Show</code>, <code>set</code> or <code>reset</code> various portal properties, which are listed in the following table. Item properties are set to what you are holding in your hand when you type the command, other properties you must specify a <code>&lt;value&gt;</code>.</p>
+<table>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<td>Default</td>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>createPrice</code></td>
+<td>Number</td>
+<td>0.0</td>
+<td>The price in your currency for the first party member to pay in order to create the dungeon.</td>
+</tr>
+<tr>
+<td><code>createItem</code></td>
+<td>Item</td>
+<td>None</td>
+<td>The item required for the first party member to pay in order to create the dungeon.</td>
+</tr>
+<tr>
+<td><code>entryPrice</code></td>
+<td>Number</td>
+<td>0.0</td>
+<td>The price in your currency for all party members to pay in order to enter the dungeon (Note: if there is a <code>createPrice</code>, the first party member only pays that).</td>
+</tr>
+<tr>
+<td><code>entryItem</code></td>
+<td>Item</td>
+<td>None</td>
+<td>The item required for party members to pay in order fot enter the dungeon (Note: if there is a <code>createItem</code>, the first party member only pays that).</td>
+</tr>
+<tr>
+<td><code>recreateTime</code></td>
+<td>Duration</td>
+<td>0</td>
+<td>The cooldown in server ticks (1/20th of a second) which a player must wait before being able to create a dungeon instance with this portal (Note: they can still join other's parties and visit the instance during this time).</td>
+</tr>
+<tr>
+<td><code>unloadTime</code></td>
+<td>Duration</td>
+<td>0</td>
+<td>If an instance is empty of party members for <code>unloadTime</code> then it will be deleted.</td>
+</tr>
+</table>
+
+<h1 id="config">Configuration</h1>
+<p>There are only a handful of configuration options which should ever need to be modified manually, they are as follows.</p>
+<table>
+<tr><th>Property</th><th>Default</th><th>Description</th></tr>
+<tr>
+<td><code>partyNamePrefix</code></td>
+<td>§b[</td>
+<td>Party name prefix, used in party messages.</td>
+</tr>
+<tr>
+<td><code>partyNameSuffix</code></td>
+<td>]§r</td>
+<td>Party name suffix, used in party messages.</td>
+</tr>
+<tr>
+<td><code>leaderInvite</code></td>
+<td>false</td>
+<td>Allow only the party leader to invite members.</td>
+</tr>
+<tr>
+<td><code>leaderKick</code></td>
+<td>true</td>
+<td>Allow only the party leader to kick members.</td>
+</tr>
+<tr>
+<td><code>leaderDisband</code></td>
+<td>true</td>
+<td>Allow only the party leader to disband the party.</td>
+</tr>
+</table>
+<h3>Example configuration</h3>
+<p>
+<code>
+<span class="property">partyNamePrefix</span><span class="syntax">:</span> <span class="data">'§b['</span><br/>
+<span class="property">partyNameSuffix</span><span class="syntax">:</span> <span class="data">']§r'</span><br/>
+<span class="property">leaderInvite</span><span class="syntax">:</span> <span class="data">false</span><br/>
+<span class="property">leaderKick</span><span class="syntax">:</span> <span class="data">true</span><br/>
+<span class="property">leaderDisband</span><span class="syntax">:</span> <span class="data">true</span><br/>
+</code>
+</p>
+
+
+<h1 id="permissions">Permissions</h1>
+<p>There are only a handful of permissions other than those required for commands, they are as follows.</p>
+<table>
+<tr>
+<th>Permission</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>instances.general.motd</code></td>
+<td>Show the message of the day on login.</td>
+</tr>
+<tr>
+<td><code>instances.portal.create</code></td>
+<td>Allow usage of the cuboid selection tool, used with portal creation.</td>
+</tr>
+<tr>
+<td><code>instances.party.info</code></td>
+<td>Show information about party instances in <code>/pinfo</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+</body>
+</html>

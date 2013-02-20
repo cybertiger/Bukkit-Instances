@@ -645,7 +645,7 @@ public class Instances extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerLogin(PlayerJoinEvent e) {
-        if (e.getPlayer().hasPermission("instances.motd")) {
+        if (e.getPlayer().hasPermission("instances.general.motd")) {
             if (motd != null) {
                 e.getPlayer().sendMessage(motd);
             }

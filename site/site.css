@@ -1,0 +1,95 @@
+body {
+    background-color: #000000;
+    color: #ffffff;
+}
+a:link {
+    color: #aaccaa;
+}
+a:link:hover {
+    color: #ddffdd;
+}
+a:visited {
+    color: #ccaacc;
+}
+a:visited:hover {
+    color: #ffddff;
+}
+.leftmenu {
+    position: fixed;
+    padding: 32px;
+    width: 200px;
+}
+.leftmenu div {
+    border: 2px dashed;
+    border-color: #886688;
+    margin-bottom: 16px;
+}
+.leftmenu ul {
+    margin: 4px;
+    padding: 0px;
+    list-style-type: none;
+}
+.leftmenu li {
+    margin: 4px;
+    text-align: center;
+    background-color: #442244;
+    padding: 2px;
+}
+.leftmenu li:hover {
+    background-color: #664466;
+}
+.content {
+    display: compact;
+    margin: 32px;
+    margin-left: 264;
+    padding: 32px;
+}
+.content div {
+    border: 2px dashed;
+    border-color: #886688;
+    margin-bottom: 32px;
+    padding: 8px;
+}
+
+.content h1 {
+    margin: 0px;
+    color: #ddbbdd;
+    background-color: #442244;
+    text-align: center;
+    padding: 4px;
+}
+.content h2 {
+    margin: 0px;
+    color: #ddbbdd;
+    background-color: #442244;
+    text-align: left;
+    padding: 4px;
+}
+#donate {
+    float: right;
+    border: none;
+    border-color: transparent;
+    margin-bottom: 0px;
+    padding: 0px;
+}
+#logo {
+    margin: 0 auto;
+    text-align: center;
+    border: none;
+    border-color: transparent;
+    margin-bottom: 8px;
+    padding: 4px;
+    background-color: #442244;
+}
+#logo div {
+    padding: 4px;
+}
+code span.property {
+    color: #00ffff;
+}
+code span.syntax {
+    color: #ff00ff;
+}
+code span.data {
+    color: #ff0000;
+}

@@ -52,58 +52,34 @@ commands:
     description: List parties.
     usage: /plist
     permission: instances.party.list
-  setspawn:
-    description: Set the spawn world.
-    usage: /setspawn
-    permission: instances.setspawn
-  spawn:
-    description: Teleport to the spawn location.
-    usage: /spawn
-    permission: instances.spawn
-  isave:
-    description: Save instance settings.
-    usage: /isave
-    permission: instances.save
-  ireload:
-    description: Reload instance settings.
-    usage: /ireload
-    permission: instances.reload
   home:
     description: Teleport to your home.
     usage: /home
-    permission: instances.home
+    permission: instances.general.home
   sethome:
     description: Set your home.
     usage: /sethome
-    permission: instances.sethome
+    permission: instances.general.sethome
+  spawn:
+    description: Teleport to the spawn location.
+    usage: /spawn
+    permission: instances.general.spawn
+  setspawn:
+    description: Set the spawn world.
+    usage: /setspawn
+    permission: instances.general.setspawn
   motd:
     description: Show the motd.
     usage: /motd
-    permission: instances.motd
-  iselectiontool:
-    description: Set the selection tool to the item you are holding.
-    usage: /iselectiontool
-    permission: instances.portal.create
-  icreateportal:
-    description: Create an instance portal
-    usage: /icreateportal <name>
-    permission: instances.portal.create
-  isetentrance:
-    description: Set the entrance for a portal you are creating.
-    usage: /isetentrance
-    permission: instances.portal.create
-  isetdestination:
-    description: Set the destination for a portal you are creating.
-    usage: /isetdestination
-    permission: instances.portal.create
-  iportallist:
-    description: List all portals.
-    usage: /iportallist
-    permissions: instances.portal.list
-  ideleteportal:
-    description: Delete a portal.
-    usage: /ideleteportal <name>
-    permission: instances.portal.delete
+    permission: instances.general.motd
+  isave:
+    description: Save instance settings.
+    usage: /isave
+    permission: instances.general.save
+  ireload:
+    description: Reload instance settings.
+    usage: /ireload
+    permission: instances.general.reload
   imob:
     description: Spawn mobs.
     usage: /imob <type> [<count>]
@@ -111,11 +87,7 @@ commands:
   igenocide:
     description: Commit genocide.
     usage: /igenocide <type> [remove]
-    permission: instances.genocide
-  imodifyportal:
-    description: Modify a portal's properties.
-    usage: /imodifyportal <portal> [<set|show|reset> [<property> [<value>]]]
-    permission: instances.protal.modify
+    permission: instances.general.genocide
   ispawner:
     description: Modify a spawner's properties.
     usage: |
@@ -143,4 +115,32 @@ commands:
 #      -S <index> - Select a monster this spawner spawns (default: 0) (broken).
 #      -w <weight> - Set the weight of the currently selected monster (broken).
 #      -a <monster> - Add a monster to the spawner (broken).
-    permission: instances.spawner
+    permission: instances.general.spawner
+  iselectiontool:
+    description: Set the selection tool to the item you are holding.
+    usage: /iselectiontool
+    permission: instances.portal.tool
+  icreateportal:
+    description: Create an instance portal
+    usage: /icreateportal <name>
+    permission: instances.portal.create
+  isetentrance:
+    description: Set the entrance for a portal you are creating.
+    usage: /isetentrance
+    permission: instances.portal.create
+  isetdestination:
+    description: Set the destination for a portal you are creating.
+    usage: /isetdestination
+    permission: instances.portal.create
+  iportallist:
+    description: List all portals.
+    usage: /iportallist
+    permission: instances.portal.list
+  ideleteportal:
+    description: Delete a portal.
+    usage: /ideleteportal <name>
+    permission: instances.portal.delete
+  imodifyportal:
+    description: Modify a portal's properties.
+    usage: /imodifyportal <portal> [<set|show|reset> [<property> [<value>]]]
+    permission: instances.portal.modify

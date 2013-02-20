@@ -53,7 +53,7 @@ public class PartyInfo extends AbstractCommand {
             }
         }
         ret.add(tmp.toString());
-        if (sender.hasPermission("instances.party.info.instances")) {
+        if (sender.hasPermission("instances.party.info")) {
             tmp.setLength(0);
             tmp.append("Instances:");
             for (Instance i : party.getInstances()) {
