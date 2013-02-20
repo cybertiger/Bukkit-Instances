@@ -38,7 +38,7 @@
 </div>
 <h1 id="about">About</h1>
 <p>
-A Bukkit plugin which allows conversion of whole worlds to resetable dungeon instances. Also provided is a party system and commands for instance management. Originally created for <a href="http://dreamcraft.org">dreamcraft.org</a>. Features include the following.
+A Bukkit plugin which allows conversion of whole worlds to resettable dungeon instances. Also provided is a party system and commands for instance management. Originally created for <a href="http://dreamcraft.org">dreamcraft.org</a>. Features include the following.
 </p>
 <ul>
 <li>Ability to convert a world into an instanced dungeon.</li>
@@ -53,17 +53,20 @@ A Bukkit plugin which allows conversion of whole worlds to resetable dungeon ins
 </ul>
 <h1 id="installation">Installation</h1>
 <p>Copy the jar to your plugins folder on your server. There are no hard depenencies, so everything should just work. The plugin has the following soft dependencies.</p>
-<h3>Multiverse-Inventories</h3>
+<h3 id="Multiverse-Inventories">Multiverse-Inventories</h3>
 <p>If Multiverse-Inventories is present the plugin will integrate with the configuration and ensure than instances share inventories with their parent world.</p>
-<h3>Multiverse-Core</h3>
+<h3 id="Multiverse-Core">Multiverse-Core</h3>
 <p>If Multiverse-Core is present, instance portals may require a payment to enter. Support is provided for the following economy plugins: iConomy 4,5,6, BOSE 6,7, MultiCur, RealShop.</p>
-<h3>PermissionsEx</h3>
+<h3 id="PermissionsEx">PermissionsEx</h3>
 <p>If present then instance worlds will inherit permissions from their parent world.</p>
-<h2>Downloads</h2>
+<h2 id="downloads">Downloads</h2>
+<!--
 <ul>
 <li><a href="downloads/1.0/Instances.jar">Instances 1.0 for Craftbukkit 1.4.7-R1.0</a></li>
 </ul>
-<h2>Source code</h2>
+-->
+<p>Disabled until I get accepted on dev.bukkit.org since their policy requires that all downloads go via their website.</p>
+<h2 id="source">Source code</h2>
 <p>Source code is available on github <a href="http://github.com/cybertiger/Bukkit-Instances">here</a>.</p>
 <h1 id="commands">Commands</h1>
 <p>Commands are split into 3 sections, party commands (those commands pertaining to party usage), general commands (those commands pertaining to general actions) and portal commands (which relate to instance portal administration).</p>
@@ -77,61 +80,61 @@ Players can create, join, leave and administer their own parties with the follow
 <th>Permission</th>
 <th>Description</th>
 </tr>
-<tr>
+<tr id="pcreate">
 <td><code>/pcreate &lt;name&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Create a party named <code>&lt;name&gt;</code>.</td>
 </tr>
-<tr>
+<tr id="pdisband">
 <td><code>/pdisband</code></td>
 <td><code>instances.party</code></td>
 <td>Disband your party, normally you must be the leader of the party to do this, see <a href="#config">Configuration</a>.</td>
 </tr>
-<tr>
+<tr id="pleader">
 <td><code>/pleader &lt;player&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Assign leadership of the party to <code>&lt;player&gt;</code>.</td>
 </tr>
-<tr>
+<tr id="pkick">
 <td><code>/pkick &lt;player&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Assign leadership of the party to <code>&lt;player&gt;</code>, normally you must be the leader of the party to do this, see <a href="#config">Configuration</a>.</td>
-<tr>
+<tr id="pinvite">
 <td><code>/pinvite &lt;player&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Invite <code>&lt;player&gt;</code> to join your party, normally any party member can do this, see <a href="#config">Configuration</a>.</td>
 </tr>
-<tr>
+<tr id="puninvite">
 <td><code>/puninvite &lt;player&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Remove an invite for <code>&lt;player&gt;</code> to join your party, normally any party member can do this, see <a href="#config">Configuration</a>.</td>
 </tr>
-<tr>
+<tr id="pjoin">
 <td><code>/pjoin &lt;name&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Join party <code>&lt;name&gt;</code> you have been invited to.</td>
 </tr>
-<tr>
+<tr id="pleave">
 <td><code>/pleave</code></td>
 <td><code>instances.party</code></td>
 <td>Leave the party you are a member of.</td>
 </tr>
-<tr>
+<tr id="p">
 <td><code>/p &lt;text&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Chat with other members of the party.</td>
 </tr>
-<tr>
+<tr id="pme">
 <td><code>/pme &lt;text&gt;</code></td>
 <td><code>instances.party</code></td>
 <td>Emote privately to other members of the party.</td>
 </tr>
-<tr>
+<tr id="pinfo">
 <td><code>/pinfo [&lt;name&gt;]</code></td>
 <td><code>instances.party</code></td>
 <td>Show information about your current party or party <code>&lt;name&gt;</code> if specified. Additional information is shown if you have the permission <code>instances.party.info</code>, see <a href="#permissions">Permissions</a></td>
 </tr>
-<tr>
+<tr id="plist">
 <td><code>/plist</code></td>
 <td><code>instances.party.list</code></td>
 <td>List current parties</td>
@@ -146,52 +149,52 @@ Players can create, join, leave and administer their own parties with the follow
 <th>Description</th>
 </tr>
 <tr>
-<td><code>/home</code></td>
+<td id="home"><code>/home</code></td>
 <td><code>instances.general.home</code></td>
 <td>Teleport to your home location.</td>
 </tr>
-<tr>
+<tr id="sethome">
 <td><code>/sethome</code></td>
 <td><code>instances.general.home</code></td>
 <td>Set your home to your current location. Note this command will not allow you to set your home inside an instance.</td>
 </tr>
-<tr>
+<tr id="spawn">
 <td><code>/spawn</code></td>
 <td><code>instances.general.spawn</code></td>
 <td>Teleport to the spawn world's spawn location.</td>
 </tr>
-<tr>
+<tr id="setspawn">
 <td><code>/setspawn</code></td>
 <td><code>instances.general.setspawn</code></td>
 <td>Set the spawn world to your current world. Note this command only sets the world, not the spawn location, use another plugin such as Multiverse for this.</td>
 </tr>
-<tr>
+<tr id="motd">
 <td><code>/motd</code></td>
 <td><code>instances.general.motd</code></td>
 <td>Show the message of the day. File is found in <code>plugins/Instances/motd.txt</code> Use § to obtain colour codes.</td>
 </tr>
-<tr>
+<tr id="isave">
 <td><code>/isave</code></td>
 <td><code>instances.general.save</code></td>
 <td>Save all Instances settings, such as homes, instance portals and home worlds. Typically saving is only performed when the plugin is unloaded at server shutdown.</td>
 </tr>
-<tr>
+<tr id="ireload">
 <td><code>/ireload</code></td>
 <td><code>instances.general.reload</code></td>
 <td>Load settings from disk overwriting those in memory. Any settings in memory will be overwritten.</td>
 </tr>
-<tr>
+<tr id="imob">
 <td><code>/imob &lt;type&gt; [&lt;count&gt;]</code></td>
 <td><code>instances.general.spawnmob</code></td>
 <td>Spawn <code>&lt;type&gt;</code> mobs at the location you are looking at. 1 or <code>&lt;count&gt;</code> mobs are spawned. See <a href="mobs.txt">mobs.txt</a> for a list of valid mob names.</td>
 </tr>
-<tr>
+<tr id="igenocide">
 <td><code>/igenocide &lt;type&gt; [remove]</code></td>
 <td><code>instances.general.genocide</code></td>
 <td>Kill all <code>&lt;type&gt;</code> mobs in the current world, if <code>remove</code> is specified, remove them from the world instead of killing them.</td>
 </tr>
 </table>
-<h3><code>/ispawner [&lt;type&gt;] [&lt;flags&gt;]</code></h3>
+<h3 id="ispawner"><code>/ispawner [&lt;type&gt;] [&lt;flags&gt;]</code></h3>
 <p>Permission: <code>instances.general.spawner</code></p>
 <p>Modify the spawner you are looking at, set the type spawned to <code>&lt;type&gt;</code>. See <a href="mobs.txt">mobs.txt</a> for a list of valid mob names. Flags are listed in the following table.</p>
 <table>
@@ -300,39 +303,39 @@ Players can create, join, leave and administer their own parties with the follow
 <th>Permission</th>
 <th>Description</th>
 </tr>
-<tr>
+<tr id="iselectiontool">
 <td><code>/iselectiontool</code></td>
 <td><code>instances.portal.tool</code></td>
 <td>Set the selection tool used to mark portals to the item you are currently holding. (default: feather)</td>
 </tr>
-<tr>
+<tr id="isetentrance">
 <td><code>/isetentrance</code></td>
 <td><code>instances.portal.create</code></td>
 <td>Set the entrance location of a subsequently created portal to your current selection.</td>
 </tr>
-<tr>
+<tr id="isetdestination">
 <td><code>/isetdestination</code></td>
 <td><code>instances.portal.create</code></td>
 <td>Set the destination location of a subsequently created portal to your current selection.</td>
 </td>
 </tr>
-<tr>
+<tr id="icreateportal">
 <td><code>/icreateportal &lt;name&gt;</code></td>
 <td><code>instances.portal.create</code></td>
 <td>Create a portal named <code>&lt;name&gt;</code> with the previously selected entrance and destination worlds.</td>
 </tr>
-<tr>
+<tr id="ideleteportal">
 <td><code>/ideleteportal &lt;name&gt;</code></td>
 <td><code>instances.portal.delete</code></td>
 <td>Delete the portal named &lt;name&gt;.</td>
 </tr>
-<tr>
+<tr id="iportallist">
 <td><code>/iportallist</code></td>
 <td><code>instances.portal.list</code></td>
 <td>List the instance portals on the server.</td>
 </tr>
 </table>
-<h3><code>/imodifyportal [(show|set|reset) &lt;property&gt; [&lt;value&gt;]]</code></h3>
+<h3 id="imodifyportal"><code>/imodifyportal [(show|set|reset) &lt;property&gt; [&lt;value&gt;]]</code></h3>
 <p>Permission: <code>instances.portal.modify</code></p>
 <p><code>Show</code>, <code>set</code> or <code>reset</code> various portal properties, which are listed in the following table. Item properties are set to what you are holding in your hand when you type the command, other properties you must specify a <code>&lt;value&gt;</code>.</p>
 <table>
