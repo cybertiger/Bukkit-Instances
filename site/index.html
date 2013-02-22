@@ -60,10 +60,12 @@ A Bukkit plugin which allows conversion of whole worlds to resettable dungeon in
 <h3 id="PermissionsEx">PermissionsEx</h3>
 <p>If present then instance worlds will inherit permissions from their parent world.</p>
 <h2 id="downloads">Downloads</h2>
+<p>As of 1.1 we provide 'bare' downloads for those that do not wish to have <code>/home</code>, <code>/sethome</code>, <code>/spawn</code>, <code>/setspawn</code> and <code>/motd</code> commands included.</p>
 <ul>
+<li><a href="downloads/instances/1.1/Instances.jar">Instances-1.1 for Craftbukkit 1.4.7-R1.0</a></li>
+<li><a href="downloads/instances/1.1-bare/Instances.jar">Instances-1.1-bare for Craftbukkit 1.4.7-R1.0</a></li>
 <li><a href="http://dev.bukkit.org/media/files/674/243/Instances.jar">Instances 1.0 for Craftbukkit 1.4.7-R1.0</a></li>
 </ul>
-<p>Disabled until I get accepted on dev.bukkit.org since their policy requires that all downloads go via their website.</p>
 <h2 id="source">Source code</h2>
 <p>Source code is available on github <a href="http://github.com/cybertiger/Bukkit-Instances">here</a>.</p>
 <h1 id="commands">Commands</h1>
@@ -139,7 +141,7 @@ Players can create, join, leave and administer their own parties with the follow
 </tr>
 </table>
 <h2 id="commands-general">General</h2>
-<p>The plugin includes several general commands which are often supplied by other plugins, feel free to comment them out in <code>plugin.yml</code> if you do not need them. These include motd and basic teleport commands, also a fully featured command to modify monster spawners is included.</p>
+<p>The plugin includes several general commands which are often supplied by other plugins, these include motd and basic teleport commands, also a fully featured command to modify monster spawners is included. If you do not need the <code>/home</code>, <code>/sethome</code>, <code>/spawn</code>, <code>/setspawn</code> and <code>/motd</code> commands, download the bare version of the plugin.</p> 
 <table>
 <tr>
 <th>Command</th>
@@ -162,9 +164,9 @@ Players can create, join, leave and administer their own parties with the follow
 <td>Teleport to the spawn world's spawn location.</td>
 </tr>
 <tr id="setspawn">
-<td><code>/setspawn</code></td>
+<td><code>/setspawn [none]</code></td>
 <td><code>instances.general.setspawn</code></td>
-<td>Set the spawn world to your current world. Note this command only sets the world, not the spawn location, use another plugin such as Multiverse for this.</td>
+<td>Set the spawn world to your current world. Note this command only sets the world, not the spawn location, use another plugin such as Multiverse for this. If none is specified it sets the spawn world to null.</td>
 </tr>
 <tr id="motd">
 <td><code>/motd</code></td>
@@ -378,6 +380,12 @@ Players can create, join, leave and administer their own parties with the follow
 <td>Duration</td>
 <td>0</td>
 <td>If an instance is empty of party members for <code>unloadTime</code> then it will be deleted.</td>
+</tr>
+<tr>
+<td><code>difficulty</code></td>
+<td>Difficulty</td>
+<td>normal</td>
+<td>Sets the difficulty for the instance, valid values are peaceful, easy, normal and hard.</td>
 </tr>
 </table>
 
