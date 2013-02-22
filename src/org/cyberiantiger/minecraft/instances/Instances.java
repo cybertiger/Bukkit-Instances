@@ -78,6 +78,8 @@ import org.cyberiantiger.minecraft.instances.unsafe.inventories.Inventories;
 import org.cyberiantiger.minecraft.instances.unsafe.inventories.InventoriesFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.permissions.Permissions;
 import org.cyberiantiger.minecraft.instances.unsafe.permissions.PermissionsFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.worldmanager.WorldManager;
+import org.cyberiantiger.minecraft.instances.unsafe.worldmanager.WorldManagerFactory;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
@@ -107,6 +109,7 @@ public class Instances extends JavaPlugin implements Listener {
     private Bank bank;
     private Inventories inventories;
     private Permissions permissions;
+    private WorldManager worldManager;
 
     {
         commands.put("p", new PartyChat());
@@ -150,6 +153,10 @@ public class Instances extends JavaPlugin implements Listener {
 
     public Permissions getPermissions() {
         return permissions;
+    }
+
+    public WorldManager getWorldManager() {
+        return worldManager;
     }
 
     public Collection<PortalPair> getPortalPairs() {
@@ -342,6 +349,7 @@ public class Instances extends JavaPlugin implements Listener {
         bank = BankFactory.createBank(this);
         permissions = PermissionsFactory.createPermissions(this);
         inventories = InventoriesFactory.createInventories(this);
+        worldManager = WorldManagerFactory.createWorldManager(this);
         getServer().getPluginManager().registerEvents(this, this);
         File dir = getDataFolder();
         if (!dir.exists()) {
@@ -694,7 +702,7 @@ public class Instances extends JavaPlugin implements Listener {
                 // Teleport them to the last instance entrance they used.
                 InstanceEntrancePortal portal = lastPortal.get(player);
                 if (portal != null) {
-                    portal.teleport(player);
+                    portal.teleport(this, player);
                 } else {
                     teleportToSpawn(player);
                 }

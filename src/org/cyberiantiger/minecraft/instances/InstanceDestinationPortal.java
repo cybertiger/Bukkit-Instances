@@ -48,7 +48,7 @@ public class InstanceDestinationPortal extends Portal {
             return;
         }
 
-        entrance.teleport(player);
+        entrance.teleport(instances, player);
     }
 
     @Override
