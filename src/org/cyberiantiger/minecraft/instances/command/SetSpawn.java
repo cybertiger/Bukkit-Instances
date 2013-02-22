@@ -26,7 +26,7 @@ public class SetSpawn extends AbstractCommand {
         if (args.length != 0 && args.length != 1) {
             return null;
         }
-        if (args.length == 1 && !"none".equals(args[1])) {
+        if (args.length == 1 && !"none".equals(args[0])) {
             return null;
         }
         if (args.length == 1) {

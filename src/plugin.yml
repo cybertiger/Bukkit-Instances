@@ -1,7 +1,7 @@
 name: "Instances"
-version: "1.0"
+version: "1.1"
 main: "org.cyberiantiger.minecraft.instances.Instances"
-# website: "http://dev.bukkit.org/server-mods/skylandsplus/"
+website: "http://dev.bukkit.org/server-mods/Instances/"
 load: POSTWORLD
 commands:
   p:
