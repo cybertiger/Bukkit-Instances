@@ -12,8 +12,7 @@ import org.bukkit.Location;
  */
 public final class Coord implements Comparable<Coord> {
 
-    public static final Coord ZERO = new Coord(0,0,0);
-
+    public static final Coord ZERO = new Coord(0, 0, 0);
     private final int x;
     private final int y;
     private final int z;
@@ -86,11 +85,15 @@ public final class Coord implements Comparable<Coord> {
     public int compareTo(Coord coord) {
         if (this.y != coord.y) {
             return this.y - coord.y;
-        } else if(this.z != coord.y) {
+        } else if (this.z != coord.y) {
             return this.z - coord.z;
-        } else if(this.x != coord.x) {
+        } else if (this.x != coord.x) {
             return this.x - coord.x;
         }
         return 0;
+    }
+
+    public static Coord fromLocation(Location location) {
+        return new Coord(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 }

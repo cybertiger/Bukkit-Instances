@@ -7,6 +7,7 @@ package org.cyberiantiger.minecraft.instances;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Difficulty;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,14 +26,15 @@ public class PortalPair implements Comparable<PortalPair> {
     private ItemStack createItem;
     private int unloadTime;
     private int recreateTime;
+    private Difficulty difficulty;
     // Last time a player created a new instance of this portal's dungeon.
     private Map<String, Long> lastCreate = new HashMap<String, Long>();
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination) {
-        this(name, enter, destination, 0, 0, null, null, 0, 0);
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, Difficulty difficulty) {
+        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty);
     };
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime) {
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty) {
         this.name = name;
         this.enter = enter;
         this.destination = destination;
@@ -42,6 +44,7 @@ public class PortalPair implements Comparable<PortalPair> {
         this.createItem = createItem;
         this.unloadTime = unloadTime;
         this.recreateTime = recreateTime;
+        this.difficulty = difficulty;
         enter.setPortalPair(this);
         destination.setPortalPair(this);
     }
@@ -118,6 +121,14 @@ public class PortalPair implements Comparable<PortalPair> {
         return enter;
     }
 
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+    
     public int compareTo(PortalPair o) {
         return name.compareTo(o.name);
     }

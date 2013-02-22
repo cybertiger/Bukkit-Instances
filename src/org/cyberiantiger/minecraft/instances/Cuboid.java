@@ -109,13 +109,11 @@ public class Cuboid {
        return new Location(world, xCenter, yFloor, zCenter);
     }
 
-    // Note: does not test for the correct world.
     public boolean contains(Location location) {
-        return Math.floor(location.getX()) >= minX && Math.floor(location.getX()) <= maxX &&
-                Math.floor(location.getY()) >= minY && Math.floor(location.getY()) <= maxY &&
-                Math.floor(location.getZ()) >= minZ && Math.floor(location.getZ()) <= maxZ;
+        return contains(Coord.fromLocation(location)) && location.getWorld().getName().equals(world);
     }
 
+    @Override
     public String toString() {
         StringBuilder ret = new StringBuilder();
         ret.append(world);
@@ -133,5 +131,11 @@ public class Cuboid {
         ret.append(maxZ);
         ret.append(">");
         return ret.toString();
+    }
+
+    public boolean contains(Coord coord) {
+        return coord.getX() >= minX && coord.getX() <= maxX &&
+                coord.getY() >= minY && coord.getY() <= maxY &&
+                coord.getZ() >= minZ && coord.getZ() <= maxZ;
     }
 }

@@ -102,23 +102,19 @@ public class InstanceEntrancePortal extends Portal {
             // Must be after other checks.
             pair.getLastCreate().put(player.getName(), now);
 
-            World sourceWorld = instances.getServer().getWorld(destination.getCuboid().getWorld());
-            if (sourceWorld == null) {
-                player.sendMessage(StringUtil.error("Portal does not connect anywhere."));
-                e.setCancelled(true);
-                return;
-            }
-            world = InstanceTools.createInstance(instances, sourceWorld);
+            String sourceWorldName = destination.getCuboid().getWorld();
+
+            world = InstanceTools.createInstance(instances, pair, sourceWorldName);
             if (world == null) {
                 player.sendMessage(StringUtil.error("Could not create instance world."));
                 e.setCancelled(true);
                 return;
             }
 
-            instances.getPermissions().addInheritance(sourceWorld.getName(), world.getName());
-            instances.getInventories().addShare(sourceWorld.getName(), world.getName());
+            instances.getPermissions().addInheritance(sourceWorldName, world.getName());
+            instances.getInventories().addShare(sourceWorldName, world.getName());
 
-            instance = new Instance(getPortalPair(), sourceWorld.getName(), world.getName());
+            instance = new Instance(getPortalPair(), sourceWorldName, world.getName());
 
             party.addInstance(instance);
 

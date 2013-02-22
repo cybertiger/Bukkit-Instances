@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.bukkit.Difficulty;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -120,6 +121,39 @@ public class ModifyPortal extends AbstractCommand {
             } catch (NumberFormatException e) {
                 throw new InvocationException("Not a valid currency ammount: " + args[0]);
             }
+        }
+    }
+
+    private static class DifficultyProperty extends Property<Difficulty> {
+        public Difficulty parse(Instances instances, CommandSender sender, String[] args) {
+            if (args.length != 1) {
+                throw new InvocationException("You must specify a difficulty value for this property");
+            }
+            try {
+                return Difficulty.valueOf(args[0].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new InvocationException("Difficulty must be peaceful, easy, normal or hard");
+            }
+        }
+
+        @Override
+        public String getName() {
+            return "difficulty";
+        }
+
+        @Override
+        public void set(PortalPair portal, Difficulty value) {
+            portal.setDifficulty(value);
+        }
+
+        @Override
+        public Difficulty get(PortalPair portal) {
+            return portal.getDifficulty();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.setDifficulty(Difficulty.NORMAL);
         }
     }
 
@@ -277,6 +311,7 @@ public class ModifyPortal extends AbstractCommand {
         addProperty(new CreateItem());
         addProperty(new RecreateTime());
         addProperty(new UnloadTime());
+        addProperty(new DifficultyProperty());
     }
 
     @Override

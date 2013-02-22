@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -421,7 +422,8 @@ public class Instances extends JavaPlugin implements Listener {
                 ItemStack createItem = thisSection.getItemStack("createItem");
                 int unloadTime = thisSection.getInt("unloadTime");
                 int reenterTime = thisSection.getInt("recreateTime");
-                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime);
+                Difficulty difficulty = Difficulty.valueOf(thisSection.getString("difficulty", "NORMAL"));
+                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty);
                 ConfigurationSection playerSection = thisSection.getConfigurationSection("lastCreate");
                 if (playerSection != null) {
                     for (String p : playerSection.getKeys(false)) {
@@ -505,6 +507,7 @@ public class Instances extends JavaPlugin implements Listener {
             pairSection.set("createPrice", pair.getCreatePrice());
             pairSection.set("unloadTime", pair.getUnloadTime());
             pairSection.set("recreateTime", pair.getRecreateTime());
+            pairSection.set("difficulty", pair.getDifficulty().name());
             ConfigurationSection playerSection = pairSection.createSection("lastCreate");
             for (Map.Entry<String,Long> e : pair.getLastCreate().entrySet()) {
                 playerSection.set(e.getKey(), e.getValue());
@@ -618,6 +621,9 @@ public class Instances extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
         Player player = e.getPlayer();
         String world = e.getFrom().getWorld().getName();
         // Translate world names for players in instances.
@@ -628,12 +634,17 @@ public class Instances extends JavaPlugin implements Listener {
                 world = instance.getSourceWorld();
             }
         }
+        Coord from = Coord.fromLocation(e.getFrom());
+        Coord to = Coord.fromLocation(e.getTo());
+        if (from.equals(to))
+            return;
+
         // Check if they entered or left any portals in that world.
         List<Portal> pList = portalMap.get(world);
         if (pList != null) {
             for (Portal p : pList) {
-                boolean fromInside = p.getCuboid().contains(e.getFrom());
-                boolean toInside = p.getCuboid().contains(e.getTo());
+                boolean fromInside = p.getCuboid().contains(from);
+                boolean toInside = p.getCuboid().contains(to);
                 if (!fromInside && toInside) {
                     p.onEnter(this, e);
                 } else if (fromInside && !toInside) {
@@ -710,6 +721,7 @@ public class Instances extends JavaPlugin implements Listener {
         for (Player p : party.getMembers()) {
             Instance i = party.getInstance(p);
             if (i != null) {
+                i.cancelDelete();
                 instances.remove(i);
             }
         }
@@ -726,6 +738,7 @@ public class Instances extends JavaPlugin implements Listener {
                     }, i.getPortal().getUnloadTime()));
                 }
             } else {
+                deleteInstance(i);
             }
         }
     }
