@@ -394,9 +394,11 @@ public class Instances extends JavaPlugin implements Listener {
         leaderKick = config.getBoolean("leaderKick", true);
         leaderDisband = config.getBoolean("leaderDisband", true);
         selectionTool = config.getItemStack("selectionTool");
-        spawn = getServer().getWorld(config.getString("spawnWorld"));
-        if (spawn == null) {
-            spawn = getServer().getWorlds().get(0);
+        String spawnName = config.getString("spawnWorld");
+        if (spawnName != null) {
+            spawn = getServer().getWorld(spawnName);
+        } else {
+            spawn = null;
         }
         ConfigurationSection homeSection = config.getConfigurationSection("homes");
         if (homeSection != null) {
@@ -486,7 +488,9 @@ public class Instances extends JavaPlugin implements Listener {
         config.set("leaderInvite", leaderInvite);
         config.set("leaderKick", leaderKick);
         config.set("leaderDisband", leaderDisband);
-        config.set("spawnWorld", spawn.getName());
+        if (spawn != null) {
+            config.set("spawnWorld", spawn.getName());
+        }
         config.set("selectionTool", getSelectionTool());
         ConfigurationSection homeSection;
         if (!config.isConfigurationSection("homes")) {
@@ -517,7 +521,7 @@ public class Instances extends JavaPlugin implements Listener {
             pairSection.set("recreateTime", pair.getRecreateTime());
             pairSection.set("difficulty", pair.getDifficulty().name());
             ConfigurationSection playerSection = pairSection.createSection("lastCreate");
-            for (Map.Entry<String,Long> e : pair.getLastCreate().entrySet()) {
+            for (Map.Entry<String, Long> e : pair.getLastCreate().entrySet()) {
                 playerSection.set(e.getKey(), e.getValue());
             }
         }
@@ -619,7 +623,9 @@ public class Instances extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerRespawn(PlayerRespawnEvent e) {
-        e.setRespawnLocation(spawn.getSpawnLocation());
+        if (spawn != null) {
+            e.setRespawnLocation(spawn.getSpawnLocation());
+        }
         Party party = getParty(e.getPlayer());
         // Should run after the player has respawned (technically a teleport).
         if (party != null) {
@@ -644,8 +650,9 @@ public class Instances extends JavaPlugin implements Listener {
         }
         Coord from = Coord.fromLocation(e.getFrom());
         Coord to = Coord.fromLocation(e.getTo());
-        if (from.equals(to))
+        if (from.equals(to)) {
             return;
+        }
 
         // Check if they entered or left any portals in that world.
         List<Portal> pList = portalMap.get(world);
@@ -711,7 +718,12 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public void teleportToSpawn(Player player) {
-        player.teleport(spawn.getSpawnLocation());
+        if (spawn != null) {
+            player.teleport(spawn.getSpawnLocation());
+        } else {
+            // If we don't know about the spawn world, just teleport them to the first world in the list.
+            player.teleport(getServer().getWorlds().get(0).getSpawnLocation());
+        }
     }
 
     private void scheduleCheckInstances(final Party party) {
@@ -739,6 +751,7 @@ public class Instances extends JavaPlugin implements Listener {
                 if (i.getDeleteTask() == null) {
                     final Instance ii = i;
                     i.setDeleteTask(getServer().getScheduler().runTaskLater(this, new Runnable() {
+
                         public void run() {
                             party.removeInstance(ii);
                             deleteInstance(ii);

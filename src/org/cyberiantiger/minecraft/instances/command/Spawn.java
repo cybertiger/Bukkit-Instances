@@ -22,6 +22,9 @@ public class Spawn extends AbstractCommand {
     public List<String> execute(Instances instances, Player player, String[] args) {
         if (args.length != 0)
             return null;
+        if (instances.getSpawn() == null) {
+            throw new InvocationException("No spawn world set.");
+        }
         instances.teleportToSpawn(player);
         return msg();
     }

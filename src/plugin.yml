@@ -66,7 +66,7 @@ commands:
     permission: instances.general.spawn
   setspawn:
     description: Set the spawn world.
-    usage: /setspawn
+    usage: /setspawn [none]
     permission: instances.general.setspawn
   motd:
     description: Show the motd.
