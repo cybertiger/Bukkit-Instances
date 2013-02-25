@@ -96,14 +96,15 @@ public class Instances extends JavaPlugin implements Listener {
     private boolean leaderInvite;
     private boolean leaderKick;
     private boolean leaderDisband;
-    private World spawn;
+    private String spawnName;
+//     private World spawn;
     // Map of world name -> entrance portal.
     private Map<String, Party> parties = new HashMap<String, Party>();
     private Map<Player, Party> partyMap = new HashMap<Player, Party>();
     private Map<String, PortalPair> portals = new HashMap<String, PortalPair>();
     private Map<String, List<Portal>> portalMap = new HashMap<String, List<Portal>>();
     private Map<Player, InstanceEntrancePortal> lastPortal = new HashMap<Player, InstanceEntrancePortal>();
-    private Map<Player, Location> homes = new HashMap<Player, Location>();
+    private Map<Player, HomeLocation> homes = new HashMap<Player, HomeLocation>();
     private ItemStack selectionTool;
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
@@ -245,19 +246,20 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public World getSpawn() {
-        return spawn;
+        return spawnName == null ? null : getServer().getWorld(spawnName);
     }
 
     public void setSpawn(World spawn) {
-        this.spawn = spawn;
+        this.spawnName = spawn.getName();
     }
 
     public void setHome(Player player, Location home) {
-        homes.put(player, home);
+        homes.put(player, new HomeLocation(home));
     }
 
     public Location getHome(Player player) {
-        return homes.get(player);
+        HomeLocation home = homes.get(player);
+        return home == null ? null : home.getLocation(getServer());
     }
 
     public Collection<Party> getParties() {
@@ -324,15 +326,6 @@ public class Instances extends JavaPlugin implements Listener {
         lastPortal.put(player, portal);
     }
 
-    public World getRealWorld(String name) {
-        for (World world : getServer().getWorlds()) {
-            if (name.equals(world.getName()) && !isInstance(world)) {
-                return world;
-            }
-        }
-        return null;
-    }
-
     public boolean isInstance(World world) {
         for (Party p : parties.values()) {
             for (Instance i : p.getInstances()) {
@@ -396,12 +389,7 @@ public class Instances extends JavaPlugin implements Listener {
         leaderKick = config.getBoolean("leaderKick", true);
         leaderDisband = config.getBoolean("leaderDisband", true);
         selectionTool = config.getItemStack("selectionTool");
-        String spawnName = config.getString("spawnWorld");
-        if (spawnName != null) {
-            spawn = getServer().getWorld(spawnName);
-        } else {
-            spawn = null;
-        }
+        spawnName = config.getString("spawnWorld");
         ConfigurationSection homeSection = config.getConfigurationSection("homes");
         if (homeSection != null) {
             for (String s : homeSection.getKeys(false)) {
@@ -410,13 +398,7 @@ public class Instances extends JavaPlugin implements Listener {
                     continue;
                 }
                 ConfigurationSection home = homeSection.getConfigurationSection(s);
-                World world = getRealWorld(home.getString("world"));
-                double x = home.getDouble("x");
-                double y = home.getDouble("y");
-                double z = home.getDouble("z");
-                float pitch = (float) home.getDouble("pitch");
-                float yaw = (float) home.getDouble("yaw");
-                this.homes.put(player, new Location(world, x, y, z, yaw, pitch));
+                this.homes.put(player, new HomeLocation(home));
             }
         }
         loadMotd();
@@ -490,8 +472,8 @@ public class Instances extends JavaPlugin implements Listener {
         config.set("leaderInvite", leaderInvite);
         config.set("leaderKick", leaderKick);
         config.set("leaderDisband", leaderDisband);
-        if (spawn != null) {
-            config.set("spawnWorld", spawn.getName());
+        if (spawnName != null) {
+            config.set("spawnWorld", spawnName);
         }
         config.set("selectionTool", getSelectionTool());
         ConfigurationSection homeSection;
@@ -500,15 +482,9 @@ public class Instances extends JavaPlugin implements Listener {
         } else {
             homeSection = config.getConfigurationSection("homes");
         }
-        for (Map.Entry<Player, Location> e : this.homes.entrySet()) {
+        for (Map.Entry<Player, HomeLocation> e : this.homes.entrySet()) {
             ConfigurationSection home = homeSection.createSection(e.getKey().getName());
-            Location l = e.getValue();
-            home.set("world", l.getWorld().getName());
-            home.set("x", l.getX());
-            home.set("y", l.getY());
-            home.set("z", l.getZ());
-            home.set("yaw", l.getYaw());
-            home.set("pitch", l.getPitch());
+            e.getValue().save(home);
         }
         ConfigurationSection portalSection = config.createSection("portals");
         for (PortalPair pair : portals.values()) {
@@ -625,8 +601,8 @@ public class Instances extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerRespawn(PlayerRespawnEvent e) {
-        if (spawn != null) {
-            e.setRespawnLocation(spawn.getSpawnLocation());
+        if (spawnName != null) {
+            e.setRespawnLocation(getSpawn().getSpawnLocation());
         }
         Party party = getParty(e.getPlayer());
         // Should run after the player has respawned (technically a teleport).
@@ -720,8 +696,8 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public void teleportToSpawn(Player player) {
-        if (spawn != null) {
-            player.teleport(spawn.getSpawnLocation());
+        if (spawnName != null) {
+            player.teleport(getSpawn().getSpawnLocation());
         } else {
             // If we don't know about the spawn world, just teleport them to the first world in the list.
             player.teleport(getServer().getWorlds().get(0).getSpawnLocation());

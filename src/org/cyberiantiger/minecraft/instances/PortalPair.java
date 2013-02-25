@@ -8,7 +8,6 @@ package org.cyberiantiger.minecraft.instances;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Difficulty;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 
