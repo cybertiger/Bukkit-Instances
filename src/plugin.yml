@@ -116,6 +116,10 @@ commands:
 #      -w <weight> - Set the weight of the currently selected monster (broken).
 #      -a <monster> - Add a monster to the spawner (broken).
     permission: instances.general.spawner
+  icmd:
+    description: Create and modify command blocks without being an operator.
+    usage: /icmd (create|show|set <command>)
+    permission: instances.general.cmd
   iselectiontool:
     description: Set the selection tool to the item you are holding.
     usage: /iselectiontool

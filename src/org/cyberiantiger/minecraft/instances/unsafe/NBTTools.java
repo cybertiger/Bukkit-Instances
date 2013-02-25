@@ -60,46 +60,6 @@ import org.cyberiantiger.nbt.TagType;
  */
 public final class NBTTools {
 
-    private static final Map<Material, Field> TILE_ENTITY_FIELD = new EnumMap<Material, Field>(Material.class);
-
-    static {
-        try {
-            Field f;
-            f = CraftBrewingStand.class.getDeclaredField("brewingStand");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.BREWING_STAND, f);
-            f = CraftChest.class.getDeclaredField("chest");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.CHEST, f);
-            f = CraftCreatureSpawner.class.getDeclaredField("spawner");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.MOB_SPAWNER, f);
-            f = CraftDispenser.class.getDeclaredField("dispenser");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.DISPENSER, f);
-            f = CraftFurnace.class.getDeclaredField("furnace");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.FURNACE, f);
-            f = CraftJukebox.class.getDeclaredField("jukebox");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.JUKEBOX, f);
-            f = CraftNoteBlock.class.getDeclaredField("note");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.NOTE_BLOCK, f);
-            f = CraftSign.class.getDeclaredField("sign");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.SIGN, f);
-            TILE_ENTITY_FIELD.put(Material.SIGN_POST, f);
-            f = CraftSkull.class.getDeclaredField("skull");
-            f.setAccessible(true);
-            TILE_ENTITY_FIELD.put(Material.SKULL, f);
-        } catch (NoSuchFieldException ex) {
-            Logger.getLogger(NBTTools.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
-            Logger.getLogger(NBTTools.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public static NBTTagCompound toNativeCompound(CompoundTag tag) {
         NBTTagCompound result = new NBTTagCompound(tag.getName());
         for (Tag t : tag.getValue().values()) {
@@ -362,38 +322,24 @@ public final class NBTTools {
     }
 
     public static void writeTileEntity(Block block, CompoundTag tag) {
-        try {
-            Field f = TILE_ENTITY_FIELD.get(block.getType());
-            if (f == null) {
-                return;
-            }
-            TileEntity e = (TileEntity) f.get(block.getState());
-            e.a(toNativeCompound(tag));
-            e.update();
-            ((CraftWorld) block.getWorld()).getHandle().notify(block.getX(), block.getY(), block.getZ());
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(NBTTools.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(NBTTools.class.getName()).log(Level.SEVERE, null, ex);
+        CraftWorld craftWorld = (CraftWorld) block.getWorld();
+        TileEntity tileEntity = craftWorld.getTileEntityAt(block.getX(), block.getY(), block.getZ());
+        if (tileEntity == null) {
+            return;
         }
+        tileEntity.a(toNativeCompound(tag));
+        tileEntity.update();
     }
 
     public static CompoundTag readTileEntity(Block block) {
-        try {
-            Field f = TILE_ENTITY_FIELD.get(block.getType());
-            if (f == null) {
-                return null;
-            }
-            TileEntity e = (TileEntity) f.get(block.getState());
-            NBTTagCompound tag = new NBTTagCompound();
-            e.b(tag);
-            return fromNativeCompound(tag);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(NBTTools.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(NBTTools.class.getName()).log(Level.SEVERE, null, ex);
+        CraftWorld craftWorld = (CraftWorld) block.getWorld();
+        TileEntity tileEntity = craftWorld.getTileEntityAt(block.getX(), block.getY(), block.getZ());
+        if (tileEntity == null) {
+            return null;
         }
-        return null;
+        NBTTagCompound tag = new NBTTagCompound();
+        tileEntity.b(tag);
+        return fromNativeCompound(tag);
     }
 
     public static CompoundTag readItemStack(ItemStack stack) {
@@ -417,7 +363,7 @@ public final class NBTTools {
     }
 
     public static CompoundTag readEntity(Entity e) {
-        net.minecraft.server.v1_4_R1.Entity handle = ((CraftEntity)e).getHandle();
+        net.minecraft.server.v1_4_R1.Entity handle = ((CraftEntity) e).getHandle();
         NBTTagCompound compound = new NBTTagCompound();
         handle.d(compound);
         return fromNativeCompound(compound);

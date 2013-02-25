@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.cyberiantiger.minecraft.instances.command.Cmd;
 import org.cyberiantiger.minecraft.instances.command.Command;
 import org.cyberiantiger.minecraft.instances.command.CreatePortal;
 import org.cyberiantiger.minecraft.instances.command.DeletePortal;
@@ -141,6 +142,7 @@ public class Instances extends JavaPlugin implements Listener {
         commands.put("igenocide", new Genocide());
         commands.put("imodifyportal", new ModifyPortal());
         commands.put("ispawner", new Spawner());
+        commands.put("icmd", new Cmd());
     }
 
     public Bank getBank() {
