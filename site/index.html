@@ -193,6 +193,11 @@ Players can create, join, leave and administer their own parties with the follow
 <td><code>instances.general.genocide</code></td>
 <td>Kill all <code>&lt;type&gt;</code> mobs in the current world, if <code>remove</code> is specified, remove them from the world instead of killing them.</td>
 </tr>
+<tr id="icmd">
+<td><code>/icmd (create|show|set &lt;command&gt;)</code></td>
+<td><code>instances.general.cmd</code></td>
+<td>Turn the block you are looking at into a command block, or show it's command, or set it's <code>&lt;command&gt;</code>. See <a href="#permissions">Permissions</a>.</td>
+</tr>
 </table>
 <h3 id="ispawner"><code>/ispawner [&lt;type&gt;] [&lt;flags&gt;]</code></h3>
 <p>Permission: <code>instances.general.spawner</code></p>
@@ -449,6 +454,22 @@ Players can create, join, leave and administer their own parties with the follow
 <tr>
 <td><code>instances.party.info</code></td>
 <td>Show information about party instances in <code>/pinfo</code>.</td>
+</tr>
+<tr>
+<td><code>instances.general.cmd.create</code></td>
+<td>Allow creation of command blocks via <code>/icmd create</code>.</td>
+</tr>
+<tr>
+<td><code>instances.general.cmd.set.&lt;command&gt;</code></td>
+<td>Allow setting of command blocks to a specific command via <code>/icmd set &lt;command&gt; &lt;args&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>instances.general.cmd.show</code></td>
+<td>Allow showing a command block's command via <code>/icmd show</code>.</td>
+</tr>
+<tr>
+<td><code>instances.general.cmd.reset</code></td>
+<td>Allow resetting a command block's command to nothing via <code>/icmd set</code>.</td>
 </tr>
 </table>
 </div>
