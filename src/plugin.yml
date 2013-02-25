@@ -6,92 +6,92 @@ load: POSTWORLD
 commands:
   p:
     description: Chat to your party.
-    usage: /p <text>
+    usage: /<command> <text>
     permission: instances.party
   pme:
     description: Emote to your party.
-    usage: /pme <text>
+    usage: /<command> <text>
     permission: instances.party
   pcreate:
     description: Create a party.
-    usage: /pcreate <party name>
+    usage: /<command> <party name>
     permission: instances.party
   pdisband:
     description: Disband your party.
-    usage: /pdisband
+    usage: /<command>
     permission: instances.party
   pinfo:
     description: Show information about your party.
-    usage: /pinfo [<party name>]
+    usage: /<command> [<party name>]
     permission: instances.party
   pinvite:
     description: Invite someone to join your party.
-    usage: /pinvite <player>
+    usage: /<command> <player>
     permission: instances.party
   pjoin:
     description: Join a party.
-    usage: /pjoin <party name>
+    usage: /<command> <party name>
     permission: instances.party
   pkick:
     description: Kick a member from the party.
-    usage: /pkick <player>
+    usage: /<command> <player>
     permission: instances.party
   pleader:
     description: Change the party leader.
-    usage: /pleader <player>
+    usage: /<command> <player>
     permission: instances.party
   pleave:
     description: Leave your party
-    usage: /pleave
+    usage: /<command>
     permission: instances.party
   puninvite:
     description: Uninvite someone from joining your party.
-    usage: /puninvite <player>
+    usage: /<command> <player>
     permission: instances.party
   plist:
     description: List parties.
-    usage: /plist
+    usage: /<command>
     permission: instances.party.list
   home:
     description: Teleport to your home.
-    usage: /home
+    usage: /<command>
     permission: instances.general.home
   sethome:
     description: Set your home.
-    usage: /sethome
+    usage: /<command>
     permission: instances.general.sethome
   spawn:
     description: Teleport to the spawn location.
-    usage: /spawn
+    usage: /<command>
     permission: instances.general.spawn
   setspawn:
     description: Set the spawn world.
-    usage: /setspawn [none]
+    usage: /<command> [none]
     permission: instances.general.setspawn
   motd:
     description: Show the motd.
-    usage: /motd
+    usage: /<command>
     permission: instances.general.motd
   isave:
     description: Save instance settings.
-    usage: /isave
+    usage: /<command>
     permission: instances.general.save
   ireload:
     description: Reload instance settings.
-    usage: /ireload
+    usage: /<command>
     permission: instances.general.reload
   imob:
     description: Spawn mobs.
-    usage: /imob <type> [<count>]
+    usage: /<command> <type> [<count>]
     permission: instances.general.spawnmob
   igenocide:
     description: Commit genocide.
-    usage: /igenocide <type> [remove]
+    usage: /<command> <type> [remove]
     permission: instances.general.genocide
   ispawner:
     description: Modify a spawner's properties.
     usage: |
-      /ispawner <monster> [<flags>]
+      /<command> <monster> [<flags>]
       -d <hand|feet|legs|body|head>:<always|chance> - Set the dropchance of an item, e.g. -d hand:0.5 or -d hand:always (default:0.05)
       -e <max> - Set the number of entities close by required to disable this spawner. (default: 6)
       -f <duration> - Copy your potion effects onto spawned monsters for the specified duration.
@@ -118,33 +118,33 @@ commands:
     permission: instances.general.spawner
   icmd:
     description: Create and modify command blocks without being an operator.
-    usage: /icmd (create|show|set <command>)
+    usage: /<command> (create|show|set <command string>)
     permission: instances.general.cmd
   iselectiontool:
     description: Set the selection tool to the item you are holding.
-    usage: /iselectiontool
+    usage: /<command>
     permission: instances.portal.tool
   icreateportal:
     description: Create an instance portal
-    usage: /icreateportal <name>
+    usage: /<command> <name>
     permission: instances.portal.create
   isetentrance:
     description: Set the entrance for a portal you are creating.
-    usage: /isetentrance
+    usage: /<command>
     permission: instances.portal.create
   isetdestination:
     description: Set the destination for a portal you are creating.
-    usage: /isetdestination
+    usage: /<command>
     permission: instances.portal.create
   iportallist:
     description: List all portals.
-    usage: /iportallist
+    usage: /<command>
     permission: instances.portal.list
   ideleteportal:
     description: Delete a portal.
-    usage: /ideleteportal <name>
+    usage: /<command> <name>
     permission: instances.portal.delete
   imodifyportal:
     description: Modify a portal's properties.
-    usage: /imodifyportal <portal> [<set|show|reset> [<property> [<value>]]]
+    usage: /<command> <portal> [<set|show|reset> [<property> [<value>]]]
     permission: instances.portal.modify
