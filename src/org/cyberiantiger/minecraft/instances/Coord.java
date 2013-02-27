@@ -5,6 +5,7 @@
 package org.cyberiantiger.minecraft.instances;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 
 /**
  *
@@ -77,6 +78,17 @@ public final class Coord implements Comparable<Coord> {
         return translate(offset.getX(), offset.getY(), offset.getZ());
     }
 
+    public double distance(Coord other) {
+        return Math.sqrt(distanceSquared(other));
+    }
+
+    public int distanceSquared(Coord other) {
+        int x = other.x - this.x;
+        int y = other.y - this.y;
+        int z = other.z - this.z;
+        return x*x + y*y + z*z;
+    }
+
     @Override
     public String toString() {
         return "<" + x + ',' + y + ',' + z + '>';
@@ -95,5 +107,9 @@ public final class Coord implements Comparable<Coord> {
 
     public static Coord fromLocation(Location location) {
         return new Coord(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+
+    public Location toLocation(World world, float pitch, float yaw) {
+        return new Location(world, x + 0.5, y + 0.5, z + 0.5, yaw, pitch);
     }
 }
