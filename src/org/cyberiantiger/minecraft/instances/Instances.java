@@ -737,6 +737,7 @@ public class Instances extends JavaPlugin implements Listener {
                     }, i.getPortal().getUnloadTime()));
                 }
             } else {
+                party.removeInstance(i);
                 deleteInstance(i);
             }
         }
@@ -752,6 +753,7 @@ public class Instances extends JavaPlugin implements Listener {
         World world = getServer().getWorld(instance.getInstance());
         getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
         // Remove all players from the world.
+
         for (Player p : world.getPlayers()) {
             teleportToSpawn(p);
         }
