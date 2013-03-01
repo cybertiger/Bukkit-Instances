@@ -122,7 +122,7 @@ public class Spawner extends AbstractCommand {
                     }
                 }
             }
-            if (nearest == null) {
+            if (nearest == null || !nearest.hasLineOfSight(player)) {
                 throw new InvocationException("You need to be looking at a living entity to use this.");
             }
             if (!nearest.getType().isSpawnable()) {
