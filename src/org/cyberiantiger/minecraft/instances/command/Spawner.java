@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -102,27 +103,31 @@ public class Spawner extends AbstractCommand {
         Block b;
         if ("create".equals(args[0])) {
             // Shitty hack to get the looked at entity.
-            World world = player.getWorld();
-            world.getLivingEntities();
             Vector n1 = player.getLocation().toVector();
             Vector dir = player.getLocation().getDirection();
             LivingEntity nearest = null;
             double nearestDistance = Double.MAX_VALUE;
-            for (LivingEntity e : world.getLivingEntities()) {
-                Vector n0 = e.getLocation().toVector();
-                double distance = -n1.clone().subtract(n0).dot(dir) / dir.lengthSquared();
-                if (distance > 0) { // In front of the player, not behind.
-                    double lineDist = Math.sqrt(n1.distanceSquared(n0) - distance * distance);
-                    if (lineDist < 1) { // Tollerance value of within 3 blocks of the line.
-                        if (distance < nearestDistance) {
-                            nearestDistance = distance;
-                            nearest = e;
+            for (Entity e : player.getNearbyEntities(100, 100, 100)) {
+                if (e instanceof LivingEntity) {
+                    Vector n0 = e.getLocation().toVector();
+                    double distance = -n1.clone().subtract(n0).dot(dir) / dir.lengthSquared();
+                    if (distance > 0) { // In front of the player, not behind.
+                        double lineDist = Math.sqrt(n1.distanceSquared(n0) - distance * distance);
+                        if (lineDist < 1) { // Tollerance value of within 3 blocks of the line.
+                            if (distance < nearestDistance) {
+                                nearestDistance = distance;
+                                nearest = (LivingEntity) e;
+                            }
                         }
                     }
                 }
             }
             if (nearest == null) {
                 throw new InvocationException("You need to be looking at a living entity to use this.");
+            }
+            if (!nearest.getType().isSpawnable()) {
+                // Just in case a player tries to turn another player into a monster spawner.
+                throw new InvocationException(nearest.getType().name() + " cannot be spawned");
             }
             b = nearest.getLocation().getBlock();
             b.setType(Material.MOB_SPAWNER);
