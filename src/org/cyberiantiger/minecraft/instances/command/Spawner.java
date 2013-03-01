@@ -8,11 +8,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.unsafe.NBTTools;
 import org.cyberiantiger.nbt.CompoundTag;
@@ -58,7 +62,7 @@ public class Spawner extends AbstractCommand {
         SPAWN_COUNT('s', true),
         SELECT('S', true),
         SKELETON_TYPE('t', true),
-        PERSIST('T',true),
+        PERSIST('T', true),
         INVULNERABLE('v', true),
         MOTION('V', true),
         WEIGHT('w', true),
@@ -95,7 +99,48 @@ public class Spawner extends AbstractCommand {
         if (args.length == 0) {
             return null;
         }
-        Block b = player.getTargetBlock(null, 200);
+        Block b;
+        if ("create".equals(args[0])) {
+            // Shitty hack to get the looked at entity.
+            World world = player.getWorld();
+            world.getLivingEntities();
+            Vector n1 = player.getLocation().toVector();
+            Vector dir = player.getLocation().getDirection();
+            LivingEntity nearest = null;
+            double nearestDistance = Double.MAX_VALUE;
+            for (LivingEntity e : world.getLivingEntities()) {
+                Vector n0 = e.getLocation().toVector();
+                double distance = -n1.clone().subtract(n0).dot(dir) / dir.lengthSquared();
+                if (distance > 0) { // In front of the player, not behind.
+                    double lineDist = Math.sqrt(n1.distanceSquared(n0) - distance * distance);
+                    if (lineDist < 1) { // Tollerance value of within 3 blocks of the line.
+                        if (distance < nearestDistance) {
+                            nearestDistance = distance;
+                            nearest = e;
+                        }
+                    }
+                }
+            }
+            if (nearest == null) {
+                throw new InvocationException("You need to be looking at a living entity to use this.");
+            }
+            b = nearest.getLocation().getBlock();
+            b.setType(Material.MOB_SPAWNER);
+            CompoundTag entity = NBTTools.readEntity(nearest);
+            entity.remove("Pos");
+            entity.remove("Motion");
+            CompoundTag spawner = NBTTools.readTileEntity(b);
+            CompoundTag spawn = createSpawn(nearest.getType(), 100);
+            spawn.getCompound("Properties").getValue().putAll(entity.getValue());
+            spawner.setCompound("SpawnData");
+            spawner.getCompound("SpawnData").getValue().putAll(spawn.getValue());
+            spawner.setString("EntityId", nearest.getType().getName());
+            spawner.setList("SpawnPotentials", new ListTag("SpawnPotentials", TagType.COMPOUND, new CompoundTag[]{spawn}));
+            NBTTools.writeTileEntity(b, spawner);
+            args = shift(args, 1);
+        } else {
+            b = player.getTargetBlock(null, 200);
+        }
         if (b.getType() != Material.MOB_SPAWNER) {
             throw new InvocationException("You are not looking at a mob spawner.");
         }
@@ -142,6 +187,9 @@ public class Spawner extends AbstractCommand {
                         throw new InvocationException("Not a living entity: " + a);
                     }
                     spawn.setString("Type", type.getName());
+                    tileEntity.setString("EntityId", type.getName());
+                    tileEntity.setCompound("SpawnData");
+                    tileEntity.getCompound("SpawnData").getValue().putAll(spawn.getValue());
                     modified = true;
                 }
                 if (flag != null && !flag.hasArg()) {
@@ -314,7 +362,7 @@ public class Spawner extends AbstractCommand {
                         break;
                     case PERSIST:
                         boolean persist = Boolean.valueOf(a);
-                        getProperties(spawn).setByte("PersistenceRequired", persist ? (byte)1 : 0);
+                        getProperties(spawn).setByte("PersistenceRequired", persist ? (byte) 1 : 0);
                     case SKELETON_TYPE:
                         boolean wither;
                         if ("normal".equals(a)) {

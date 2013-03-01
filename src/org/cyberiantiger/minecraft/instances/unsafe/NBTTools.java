@@ -6,7 +6,6 @@ package org.cyberiantiger.minecraft.instances.unsafe;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -24,18 +23,9 @@ import net.minecraft.server.v1_4_R1.NBTTagLong;
 import net.minecraft.server.v1_4_R1.NBTTagShort;
 import net.minecraft.server.v1_4_R1.NBTTagString;
 import net.minecraft.server.v1_4_R1.TileEntity;
-import org.bukkit.Material;
+import net.minecraft.server.v1_4_R1.TileEntityMobSpawner;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftBrewingStand;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftChest;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftCreatureSpawner;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftDispenser;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftFurnace;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftJukebox;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftNoteBlock;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftSign;
-import org.bukkit.craftbukkit.v1_4_R1.block.CraftSkull;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -329,6 +319,7 @@ public final class NBTTools {
         }
         tileEntity.a(toNativeCompound(tag));
         tileEntity.update();
+        tileEntity.world.notify(block.getX(), block.getY(), block.getZ());
     }
 
     public static CompoundTag readTileEntity(Block block) {

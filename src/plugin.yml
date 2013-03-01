@@ -91,7 +91,7 @@ commands:
   ispawner:
     description: Modify a spawner's properties.
     usage: |
-      /<command> <monster> [<flags>]
+      /<command> (create|<monster>) [<flags>]
       -d <hand|feet|legs|body|head>:<always|chance> - Set the dropchance of an item, e.g. -d hand:0.5 or -d hand:always (default:0.05)
       -e <max> - Set the number of entities close by required to disable this spawner. (default: 6)
       -f <duration> - Copy your potion effects onto spawned monsters for the specified duration.
