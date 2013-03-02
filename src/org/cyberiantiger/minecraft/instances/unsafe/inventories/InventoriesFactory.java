@@ -18,7 +18,8 @@ public class InventoriesFactory {
             // Stupid class name conflicts.
             com.onarandombox.multiverseinventories.api.Inventories inventories =
                     (com.onarandombox.multiverseinventories.api.Inventories) instances.getServer().getPluginManager().getPlugin("Multiverse-Inventories");
-            return new MultiverseInventories(inventories);
+            if (inventories != null)
+                return new MultiverseInventories(inventories);
         } catch (Exception e) {
             instances.getLogger().log(Level.WARNING, "Could not find Multiverse-Core", e);
         } catch (Error e) {
