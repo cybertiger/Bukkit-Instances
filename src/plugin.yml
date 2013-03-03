@@ -117,8 +117,8 @@ commands:
 #      -a <monster> - Add a monster to the spawner (broken).
     permission: instances.general.spawner
   icmd:
-    description: Create and modify command blocks without being an operator.
-    usage: /<command> (create|show|set <command string>)
+    description: Set the item in your hand to a command block.
+    usage: /<command>
     permission: instances.general.cmd
   iselectiontool:
     description: Set the selection tool to the item you are holding.
