@@ -73,6 +73,7 @@ import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
 import org.cyberiantiger.minecraft.instances.command.Spawner;
+import org.cyberiantiger.minecraft.instances.unsafe.PacketHooks;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.bank.BankFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.inventories.Inventories;
@@ -96,6 +97,7 @@ public class Instances extends JavaPlugin implements Listener {
     private boolean leaderInvite;
     private boolean leaderKick;
     private boolean leaderDisband;
+    private boolean editCommandInCreative = true;
     private String spawnName;
 //     private World spawn;
     // Map of world name -> entrance portal.
@@ -112,6 +114,7 @@ public class Instances extends JavaPlugin implements Listener {
     private Inventories inventories;
     private Permissions permissions;
     private WorldManager worldManager;
+    private PacketHooks packetHooks;
 
     {
         commands.put("p", new PartyChat());
@@ -353,12 +356,28 @@ public class Instances extends JavaPlugin implements Listener {
             }
         }
         load();
+        try {
+            packetHooks = new PacketHooks(this);
+            packetHooks.setInstalled(true);
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Error loading packet hooks", e);
+        } catch (Error e) {
+            getLogger().log(Level.WARNING, "Error loading packet hooks", e);
+        }
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
         save();
+        try {
+            if (packetHooks != null) {
+                packetHooks.setInstalled(false);
+                packetHooks = null;
+            }
+        } catch (Exception e) {
+        } catch (Error e) {
+        }
         clear();
     }
 
@@ -388,6 +407,7 @@ public class Instances extends JavaPlugin implements Listener {
         leaderInvite = config.getBoolean("leaderInvite", false);
         leaderKick = config.getBoolean("leaderKick", true);
         leaderDisband = config.getBoolean("leaderDisband", true);
+        editCommandInCreative = config.getBoolean("editCommandInCreative", true);
         selectionTool = config.getItemStack("selectionTool");
         spawnName = config.getString("spawnWorld");
         ConfigurationSection homeSection = config.getConfigurationSection("homes");
@@ -472,6 +492,7 @@ public class Instances extends JavaPlugin implements Listener {
         config.set("leaderInvite", leaderInvite);
         config.set("leaderKick", leaderKick);
         config.set("leaderDisband", leaderDisband);
+        config.set("editCommandInCreative", editCommandInCreative);
         if (spawnName != null) {
             config.set("spawnWorld", spawnName);
         }
@@ -759,5 +780,9 @@ public class Instances extends JavaPlugin implements Listener {
         }
         // Finally delete the instance without saving.
         getServer().unloadWorld(world, false);
+    }
+
+    public boolean getEditCommandInCreative() {
+        return editCommandInCreative;
     }
 }

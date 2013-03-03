@@ -3,6 +3,7 @@ partyNameSuffix: "]§r"
 leaderInvite: false
 leaderKick: true
 leaderDisband: true
+editCommandInCreative: true
 selectionTool:
   ==: org.bukkit.inventory.ItemStack
   type: FEATHER
