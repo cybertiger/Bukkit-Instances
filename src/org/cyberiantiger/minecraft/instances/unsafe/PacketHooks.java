@@ -128,7 +128,6 @@ public class PacketHooks implements Listener {
             Packet250CustomPayload customPacket = (Packet250CustomPayload) packet;
             if ("MC|AdvCdm".equals(customPacket.tag)) {
                 try {
-                    EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
                     DataInputStream datainputstream = new DataInputStream(new ByteArrayInputStream(customPacket.data));
                     final int i = datainputstream.readInt();
                     final int j = datainputstream.readInt();
@@ -180,7 +179,6 @@ public class PacketHooks implements Listener {
 
     private static final class HackedInboundQueue extends ConcurrentLinkedQueue {
 
-        private Queue queue = new ConcurrentLinkedQueue();
         private final Player player;
         private final PacketHooks hooks;
 
@@ -192,7 +190,7 @@ public class PacketHooks implements Listener {
         @Override
         public boolean add(Object e) {
             if (hooks.handlePacket(player, (Packet) e)) {
-                return queue.add(e);
+                return super.add(e);
             } else {
                 return false;
             }
