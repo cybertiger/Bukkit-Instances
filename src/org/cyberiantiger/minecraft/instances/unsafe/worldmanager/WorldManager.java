@@ -16,6 +16,6 @@ public interface WorldManager {
 
     public boolean setGameModeOnTp(Player player, String destination);
 
-    public GameMode getGameMode(String destination);
+    public GameMode getGameMode(String destination, GameMode fallback);
 
 }

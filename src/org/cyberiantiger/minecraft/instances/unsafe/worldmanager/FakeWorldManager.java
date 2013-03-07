@@ -18,8 +18,8 @@ public class FakeWorldManager implements WorldManager {
         return false;
     }
 
-    public GameMode getGameMode(String destination) {
-        return null;
+    public GameMode getGameMode(String destination, GameMode fallback) {
+        return fallback;
     }
 
 }

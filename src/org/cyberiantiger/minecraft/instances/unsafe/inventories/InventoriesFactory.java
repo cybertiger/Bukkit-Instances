@@ -5,6 +5,8 @@
 package org.cyberiantiger.minecraft.instances.unsafe.inventories;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.bukkit.plugin.PluginManager;
 import org.cyberiantiger.minecraft.instances.Instances;
 
 /**
@@ -14,17 +16,19 @@ import org.cyberiantiger.minecraft.instances.Instances;
 public class InventoriesFactory {
 
     public static Inventories createInventories(Instances instances) {
-        try {
-            // Stupid class name conflicts.
-            com.onarandombox.multiverseinventories.api.Inventories inventories =
-                    (com.onarandombox.multiverseinventories.api.Inventories) instances.getServer().getPluginManager().getPlugin("Multiverse-Inventories");
-            if (inventories != null)
-                return new MultiverseInventories(inventories);
-        } catch (Exception e) {
-            instances.getLogger().log(Level.WARNING, "Could not find Multiverse-Core", e);
-        } catch (Error e) {
-            instances.getLogger().log(Level.WARNING, "Could not find Multiverse-Core", e);
+        PluginManager pm = instances.getServer().getPluginManager();
+        Logger log = instances.getLogger();
+        if (pm.isPluginEnabled(MultiverseInventories.PLUGIN_NAME)) {
+            log.info("Enabling support for Multiverse-Inventories");
+            try {
+                return new MultiverseInventories(log, pm);
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Error creating Multiverse-Inventories inventory interface", e);
+            } catch (Error e) {
+                log.log(Level.WARNING, "Error creating Multiverse-Inventories inventory interface", e);
+            }
         }
+        log.info("Disabling Inventory sharing support.");
         return new FakeInventories();
     }
 }

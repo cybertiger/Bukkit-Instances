@@ -6,6 +6,9 @@ package org.cyberiantiger.minecraft.instances.unsafe.bank;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.cyberiantiger.minecraft.instances.Instances;
 
 /**
@@ -15,14 +18,19 @@ import org.cyberiantiger.minecraft.instances.Instances;
 public class BankFactory {
 
     public static Bank createBank(Instances instances) {
-        try {
-            MultiverseCore core = (MultiverseCore) instances.getServer().getPluginManager().getPlugin("Multiverse-Core");
-            return new MultiverseCoreBank(core.getBank());
-        } catch (Error e) {
-            instances.getLogger().log(Level.WARNING, "Could not find Multiverse-Core", e);
-        } catch (Exception e) {
-            instances.getLogger().log(Level.WARNING, "Could not find Multiverse-Core", e);
+        PluginManager pm = instances.getServer().getPluginManager();
+        Logger log = instances.getLogger();
+        if (pm.isPluginEnabled(MultiverseCoreBank.PLUGIN_NAME)) {
+            log.info("Found Multiverse-Core, attempting to create banking interface.");
+            try {
+                return new MultiverseCoreBank(instances.getLogger(), instances.getServer().getPluginManager());
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Error creating Multiverse-Core banking interface", e);
+            } catch (Error e) {
+                log.log(Level.WARNING, "Error creating Multiverse-Core banking interface", e);
+            }
         }
+        log.info("Disabling bank support.");
         return new FakeBank();
     }
 }

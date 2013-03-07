@@ -35,7 +35,7 @@ public abstract class Portal {
         Location floor = cuboid.getCenterFloor(world);
         player.teleport(floor);
         if (instances.getWorldManager().setGameModeOnTp(player, cuboid.getWorld())) {
-            GameMode gm = instances.getWorldManager().getGameMode(cuboid.getWorld());
+            GameMode gm = instances.getWorldManager().getGameMode(cuboid.getWorld(), player.getGameMode());
             if (gm != null) {
                 player.setGameMode(gm);
             }

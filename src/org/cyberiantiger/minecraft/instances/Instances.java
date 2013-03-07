@@ -106,7 +106,7 @@ public class Instances extends JavaPlugin implements Listener {
     private Map<String, PortalPair> portals = new HashMap<String, PortalPair>();
     private Map<String, List<Portal>> portalMap = new HashMap<String, List<Portal>>();
     private Map<Player, InstanceEntrancePortal> lastPortal = new HashMap<Player, InstanceEntrancePortal>();
-    private Map<Player, HomeLocation> homes = new HashMap<Player, HomeLocation>();
+    private Map<String, HomeLocation> homes = new HashMap<String, HomeLocation>();
     private ItemStack selectionTool;
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
@@ -257,11 +257,11 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public void setHome(Player player, Location home) {
-        homes.put(player, new HomeLocation(home));
+        homes.put(player.getName(), new HomeLocation(home));
     }
 
     public Location getHome(Player player) {
-        HomeLocation home = homes.get(player);
+        HomeLocation home = homes.get(player.getName());
         return home == null ? null : home.getLocation(getServer());
     }
 
@@ -344,25 +344,28 @@ public class Instances extends JavaPlugin implements Listener {
     public void onEnable() {
         super.onEnable();
         saveDefaultConfig();
+        getLogger().info("Loading configuration");
+        load();
+        getLogger().info("Registering event handlers");
+        getServer().getPluginManager().registerEvents(this, this);
         bank = BankFactory.createBank(this);
         permissions = PermissionsFactory.createPermissions(this);
         inventories = InventoriesFactory.createInventories(this);
         worldManager = WorldManagerFactory.createWorldManager(this);
-        getServer().getPluginManager().registerEvents(this, this);
         File dir = getDataFolder();
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 getLogger().log(Level.WARNING, "Failed to create plugin directory:  {0}", dir);
             }
         }
-        load();
+        getLogger().info("Registering packet handler for no-op command block editing");
         try {
             packetHooks = new PacketHooks(this);
             packetHooks.setInstalled(true);
         } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Error loading packet hooks", e);
+            getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
         } catch (Error e) {
-            getLogger().log(Level.WARNING, "Error loading packet hooks", e);
+            getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
         }
     }
 
@@ -413,12 +416,8 @@ public class Instances extends JavaPlugin implements Listener {
         ConfigurationSection homeSection = config.getConfigurationSection("homes");
         if (homeSection != null) {
             for (String s : homeSection.getKeys(false)) {
-                Player player = getServer().getPlayer(s);
-                if (player == null) {
-                    continue;
-                }
                 ConfigurationSection home = homeSection.getConfigurationSection(s);
-                this.homes.put(player, new HomeLocation(home));
+                this.homes.put(s, new HomeLocation(home));
             }
         }
         loadMotd();
@@ -503,8 +502,8 @@ public class Instances extends JavaPlugin implements Listener {
         } else {
             homeSection = config.getConfigurationSection("homes");
         }
-        for (Map.Entry<Player, HomeLocation> e : this.homes.entrySet()) {
-            ConfigurationSection home = homeSection.createSection(e.getKey().getName());
+        for (Map.Entry<String, HomeLocation> e : this.homes.entrySet()) {
+            ConfigurationSection home = homeSection.createSection(e.getKey());
             e.getValue().save(home);
         }
         ConfigurationSection portalSection = config.createSection("portals");

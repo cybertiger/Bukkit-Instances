@@ -2,7 +2,10 @@ name: "Instances"
 version: "1.4"
 main: "org.cyberiantiger.minecraft.instances.Instances"
 website: "http://dev.bukkit.org/server-mods/Instances/"
-load: POSTWORLD
+softdepend:
+  - Multiverse-Core
+  - PermissionsEx
+  - Multiverse-Inventories
 commands:
   p:
     description: Chat to your party.

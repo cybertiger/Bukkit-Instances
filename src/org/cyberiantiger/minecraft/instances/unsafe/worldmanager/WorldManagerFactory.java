@@ -4,7 +4,9 @@
  */
 package org.cyberiantiger.minecraft.instances.unsafe.worldmanager;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.bukkit.plugin.PluginManager;
 import org.cyberiantiger.minecraft.instances.Instances;
 
 /**
@@ -14,12 +16,19 @@ import org.cyberiantiger.minecraft.instances.Instances;
 public class WorldManagerFactory {
 
     public static WorldManager createWorldManager(Instances instances) {
-        try {
-            MultiverseCore core = (MultiverseCore) instances.getServer().getPluginManager().getPlugin("Multiverse-Core");
-            return new MultiverseCoreWorldManager(instances, core);
-        } catch (Error e) {
-        } catch (Exception e) {
+        Logger log = instances.getLogger();
+        PluginManager pm = instances.getServer().getPluginManager();
+        if (pm.isPluginEnabled(MultiverseCoreWorldManager.PLUGIN_NAME)) {
+            log.info("Creating world manager interface for Multiverse-Core");
+            try {
+                return new MultiverseCoreWorldManager(log, pm);
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Error creating Multiverse-Core world manager interface", e);
+            } catch (Error e) {
+                log.log(Level.WARNING, "Error creating Multiverse-Core world manager interface", e);
+            }
         }
+        log.info("Disabling worldmanager support.");
         return new FakeWorldManager();
     }
 }
