@@ -51,6 +51,7 @@ A Bukkit plugin which allows conversion of whole worlds to resettable dungeon in
 <li>Full support for modifying monster spawners via the <code>/ispawner</code> command.</li>
 <li>PermissionsEx integration which allows world specific permissions to be automatically inherited by instances.</li>
 <li>Multiverse-Inventories integration to allow configurable inventory sharing per instances.</li>
+<li>Integration with WorldEdit for portal area selection.</li>
 </ul>
 <h1 id="installation">Installation</h1>
 <p>Copy the jar to your plugins folder on your server. There are no hard depenencies, so everything should just work. The plugin has the following soft dependencies.</p>
@@ -63,8 +64,10 @@ A Bukkit plugin which allows conversion of whole worlds to resettable dungeon in
 <h2 id="downloads">Downloads</h2>
 <p>As of 1.1 we provide 'bare' downloads for those that do not wish to have <code>/home</code>, <code>/sethome</code>, <code>/spawn</code>, <code>/setspawn</code> and <code>/motd</code> commands included.</p>
 <ul>
-<li><a href="downloads/1.4/Instances.jar">Instances-1.4 for Craftbukkit 1.4.7-R1.0</a></li>
-<li><a href="downloads/1.4-bare/Instances.jar">Instances-1.4-bare for Craftbukkit 1.4.7-R1.0</a></li>
+<li><a href="downloads/1.5/Instances.jar">Instances-1.5 for Craftbukkit 1.4.7-R1.0</a></li>
+<li><a href="downloads/1.5-bare/Instances.jar">Instances-1.5-bare for Craftbukkit 1.4.7-R1.0</a></li>
+<li><a href="http://dev.bukkit.org/media/files/677/308/Instances.jar">Instances-1.4 for Craftbukkit 1.4.7-R1.0</a></li>
+<li><a href="http://dev.bukkit.org/media/files/677/309/Instances.jar">Instances-1.4-bare for Craftbukkit 1.4.7-R1.0</a></li>
 <li><a href="http://dev.bukkit.org/media/files/677/83/Instances.jar">Instances-1.3 for Craftbukkit 1.4.7-R1.0</a></li>
 <li><a href="http://dev.bukkit.org/media/files/677/84/Instances.jar">Instances-1.3-bare for Craftbukkit 1.4.7-R1.0</a></li>
 <li><a href="http://dev.bukkit.org/media/files/676/305/Instances.jar">Instances-1.2 for Craftbukkit 1.4.7-R1.0</a></li>
@@ -318,7 +321,7 @@ Players can create, join, leave and administer their own parties with the follow
 <tr id="iselectiontool">
 <td><code>/iselectiontool</code></td>
 <td><code>instances.portal.tool</code></td>
-<td>Set the selection tool used to mark portals to the item you are currently holding. (default: feather)</td>
+<td>Set the selection tool used to mark portals to the item you are currently holding. This is disabled if WorldEdit is installed. (default: feather) </td>
 </tr>
 <tr id="isetentrance">
 <td><code>/isetentrance</code></td>
