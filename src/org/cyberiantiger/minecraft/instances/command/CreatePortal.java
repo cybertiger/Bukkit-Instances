@@ -5,10 +5,8 @@
 
 package org.cyberiantiger.minecraft.instances.command;
 
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.Difficulty;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.InstanceDestinationPortal;
 import org.cyberiantiger.minecraft.instances.InstanceEntrancePortal;
@@ -33,17 +31,17 @@ public class CreatePortal extends AbstractCommand {
         }
         Session session = instances.getSession(player);
 
-        if (session.getEntrance() == null || !session.getEntrance().isValid()) {
+        if (session.getEntrance() == null) {
             throw new InvocationException("You have not set the entrance portal location.");
         }
-        if (session.getDestination() == null || !session.getDestination().isValid()) {
+        if (session.getDestination() == null) {
             throw new InvocationException("You have not set the destination portal location.");
         }
         if (instances.getPortalPair(args[0]) != null) {
             throw new InvocationException("That portal pair already exists.");
         }
-        InstanceEntrancePortal entrance = new InstanceEntrancePortal(session.getEntrance().getCuboid());
-        InstanceDestinationPortal destination = new InstanceDestinationPortal(session.getDestination().getCuboid());
+        InstanceEntrancePortal entrance = new InstanceEntrancePortal(session.getEntrance());
+        InstanceDestinationPortal destination = new InstanceDestinationPortal(session.getDestination());
         Difficulty difficulty = instances.getServer().getWorld(destination.getCuboid().getWorld()).getDifficulty();
         PortalPair pair = new PortalPair(args[0], entrance, destination, difficulty);
         instances.addPortalPair(pair);

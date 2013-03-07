@@ -12,27 +12,27 @@ package org.cyberiantiger.minecraft.instances;
 public class Session {
 
     private Selection current = new Selection();
-    private Selection entrance;
-    private Selection destination;
+    private Cuboid entrance;
+    private Cuboid destination;
 
     public Selection getCurrent() {
         return current;
     }
 
-    public Selection getEntrance() {
+    public Cuboid getEntrance() {
         return entrance;
     }
 
-    public void setEntrance() {
-        entrance = (Selection) current.clone();
+    public void setEntrance(Cuboid entrance) {
+        this.entrance = entrance;
     }
 
-    public Selection getDestination() {
+    public Cuboid getDestination() {
         return destination;
     }
 
-    public void setDestination() {
-        destination = (Selection) current.clone();
+    public void setDestination(Cuboid destination) {
+        this.destination = destination;
     }
 
     public void clear() {

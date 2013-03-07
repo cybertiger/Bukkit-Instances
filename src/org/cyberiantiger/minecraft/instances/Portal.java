@@ -41,4 +41,6 @@ public abstract class Portal {
             }
         }
     }
+
+    public abstract boolean isDestination();
 }

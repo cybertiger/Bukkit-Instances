@@ -31,10 +31,6 @@ public class InstanceDestinationPortal extends Portal {
     protected void onEnter(Instances instances, PlayerMoveEvent e) {
         Player player = e.getPlayer();
 
-        if (!instances.isInstance(player.getWorld())) {
-            return;
-        }
-
         if (pair == null) {
             e.setCancelled(true);
             player.sendMessage("Portal is not connected");
@@ -56,4 +52,7 @@ public class InstanceDestinationPortal extends Portal {
         // NOOP
     }
 
+    public boolean isDestination() {
+        return true;
+    }
 }

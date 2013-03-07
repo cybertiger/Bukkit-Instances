@@ -23,6 +23,9 @@ public class SelectionTool extends AbstractCommand {
         if (args.length != 0) {
             return null;
         }
+        if (!instances.getCuboidSelection().isNative()) {
+            throw new InvocationException("Using WorldEdit selection tool.");
+        }
         Player player = (Player) sender;
         instances.setSelectionTool(player.getItemInHand());
         return msg("Selection tool set.");

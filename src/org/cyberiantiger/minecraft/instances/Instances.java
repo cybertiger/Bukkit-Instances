@@ -80,6 +80,8 @@ import org.cyberiantiger.minecraft.instances.unsafe.inventories.Inventories;
 import org.cyberiantiger.minecraft.instances.unsafe.inventories.InventoriesFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.permissions.Permissions;
 import org.cyberiantiger.minecraft.instances.unsafe.permissions.PermissionsFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.selection.CuboidSelection;
+import org.cyberiantiger.minecraft.instances.unsafe.selection.CuboidSelectionFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.worldmanager.WorldManager;
 import org.cyberiantiger.minecraft.instances.unsafe.worldmanager.WorldManagerFactory;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
@@ -114,6 +116,7 @@ public class Instances extends JavaPlugin implements Listener {
     private Inventories inventories;
     private Permissions permissions;
     private WorldManager worldManager;
+    private CuboidSelection cuboidSelection;
     private PacketHooks packetHooks;
 
     {
@@ -163,6 +166,10 @@ public class Instances extends JavaPlugin implements Listener {
 
     public WorldManager getWorldManager() {
         return worldManager;
+    }
+
+    public CuboidSelection getCuboidSelection() {
+        return cuboidSelection;
     }
 
     public Collection<PortalPair> getPortalPairs() {
@@ -352,6 +359,7 @@ public class Instances extends JavaPlugin implements Listener {
         permissions = PermissionsFactory.createPermissions(this);
         inventories = InventoriesFactory.createInventories(this);
         worldManager = WorldManagerFactory.createWorldManager(this);
+        cuboidSelection = CuboidSelectionFactory.createCuboidSelection(this);
         File dir = getDataFolder();
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
@@ -631,19 +639,18 @@ public class Instances extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.isCancelled()) {
-            return;
-        }
         Player player = e.getPlayer();
-        String world = e.getFrom().getWorld().getName();
+        String fromWorld = e.getFrom().getWorld().getName();
         // Translate world names for players in instances.
         Party party = getParty(player);
+        boolean isInstance = false;
         if (party != null) {
-            Instance instance = party.getInstanceFromInstanceWorld(world);
+            Instance instance = party.getInstanceFromInstanceWorld(fromWorld);
             if (instance != null) {
-                world = instance.getSourceWorld();
+                fromWorld = instance.getSourceWorld();
+                isInstance = true;
             }
         }
         Coord from = Coord.fromLocation(e.getFrom());
@@ -653,15 +660,19 @@ public class Instances extends JavaPlugin implements Listener {
         }
 
         // Check if they entered or left any portals in that world.
-        List<Portal> pList = portalMap.get(world);
+        List<Portal> pList = portalMap.get(fromWorld);
         if (pList != null) {
             for (Portal p : pList) {
-                boolean fromInside = p.getCuboid().contains(from);
-                boolean toInside = p.getCuboid().contains(to);
-                if (!fromInside && toInside) {
-                    p.onEnter(this, e);
-                } else if (fromInside && !toInside) {
-                    p.onLeave(this, e);
+                if (isInstance == p.isDestination()) {
+                    boolean fromInside = p.getCuboid().contains(from);
+                    boolean toInside = p.getCuboid().contains(to);
+                    if (!fromInside && toInside) {
+                        p.onEnter(this, e);
+                        break;
+                    } else if (fromInside && !toInside) {
+                        p.onLeave(this, e);
+                        break;
+                    }
                 }
             }
         }
@@ -676,8 +687,11 @@ public class Instances extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onClick(PlayerInteractEvent e) {
+        if (!cuboidSelection.isNative()) {
+            return;
+        }
         Player p = e.getPlayer();
         if (getSelectionTool() != null && getSelectionTool().equals(p.getItemInHand()) && p.hasPermission("instances.portal.create")) {
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {

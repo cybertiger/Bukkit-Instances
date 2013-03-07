@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.cyberiantiger.minecraft.instances;
 
 import java.util.UUID;
@@ -16,6 +15,7 @@ import org.bukkit.block.Block;
  * @author antony
  */
 public class Cuboid {
+
     private final String world;
     private final int minX;
     private final int maxX;
@@ -54,12 +54,27 @@ public class Cuboid {
 
     public Cuboid(String world, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
         this.world = world;
-        this.minX = minX;
-        this.maxX = maxX;
-        this.minY = minY;
-        this.maxY = maxY;
-        this.minZ = minZ;
-        this.maxZ = maxZ;
+        if (minX <= maxX) {
+            this.minX = minX;
+            this.maxX = maxX;
+        } else {
+            this.minX = maxX;
+            this.maxX = minX;
+        }
+        if (minY <= maxY) {
+            this.minY = minY;
+            this.maxY = maxY;
+        } else {
+            this.minY = maxY;
+            this.maxY = minY;
+        }
+        if (minZ <= maxZ) {
+            this.minZ = minZ;
+            this.maxZ = maxZ;
+        } else {
+            this.minZ = maxZ;
+            this.maxZ = minZ;
+        }
     }
 
     public String getWorld() {
@@ -91,22 +106,22 @@ public class Cuboid {
     }
 
     private boolean isEmpty(World world, double x, double y, double z) {
-        Block b1 = world.getBlockAt((int)Math.floor(x), (int)Math.floor(y), (int)Math.floor(z));
-        Block b2 = world.getBlockAt((int)Math.floor(x), (int)Math.floor(y)+1, (int)Math.floor(z));
+        Block b1 = world.getBlockAt((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+        Block b2 = world.getBlockAt((int) Math.floor(x), (int) Math.floor(y) + 1, (int) Math.floor(z));
 
         return (!b1.getType().isSolid()) && (!b2.getType().isSolid());
     }
 
     public Location getCenterFloor(World world) {
-       double xCenter = (minX+0.5 + maxX+0.5) / 2.0;
-       double yFloor = minY;
-       double zCenter = (minZ+0.5 + maxZ+0.5) / 2.0;
-       
-       while (!isEmpty(world, xCenter, yFloor, zCenter)) {
-           yFloor += 1.0;
-       }
+        double xCenter = (minX + 0.5 + maxX + 0.5) / 2.0;
+        double yFloor = minY;
+        double zCenter = (minZ + 0.5 + maxZ + 0.5) / 2.0;
 
-       return new Location(world, xCenter, yFloor, zCenter);
+        while (!isEmpty(world, xCenter, yFloor, zCenter)) {
+            yFloor += 1.0;
+        }
+
+        return new Location(world, xCenter, yFloor, zCenter);
     }
 
     public boolean contains(Location location) {
@@ -134,8 +149,8 @@ public class Cuboid {
     }
 
     public boolean contains(Coord coord) {
-        return coord.getX() >= minX && coord.getX() <= maxX &&
-                coord.getY() >= minY && coord.getY() <= maxY &&
-                coord.getZ() >= minZ && coord.getZ() <= maxZ;
+        return coord.getX() >= minX && coord.getX() <= maxX
+                && coord.getY() >= minY && coord.getY() <= maxY
+                && coord.getZ() >= minZ && coord.getZ() <= maxZ;
     }
 }

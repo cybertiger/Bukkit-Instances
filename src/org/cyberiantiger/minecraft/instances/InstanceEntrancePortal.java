@@ -148,7 +148,6 @@ public class InstanceEntrancePortal extends Portal {
         }
 
         instances.setLastEnterPortal(player, this);
-
         destination.teleport(instances, e.getPlayer(), world);
     }
 
@@ -160,5 +159,9 @@ public class InstanceEntrancePortal extends Portal {
     // Teleports a player TO this portal.
     protected void teleport(Instances instances, Player player) {
         super.teleport(instances, player, player.getServer().getWorld(getCuboid().getWorld()));
+    }
+
+    public boolean isDestination() {
+        return false;
     }
 }
