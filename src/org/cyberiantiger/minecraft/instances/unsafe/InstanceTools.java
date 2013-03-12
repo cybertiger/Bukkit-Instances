@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.minecraft.server.v1_4_R1.Chunk;
 import net.minecraft.server.v1_4_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_4_R1.EntityTracker;
@@ -147,6 +146,7 @@ public final class InstanceTools {
         instanceWorld.tracker = new EntityTracker(instanceWorld);
         instanceWorld.addIWorldAccess((IWorldAccess) new WorldManager(console, instanceWorld));
         instanceWorld.difficulty = portal.getDifficulty().getValue();
+        instanceWorld.keepSpawnInMemory = false;
         console.worlds.add(instanceWorld);
 
         if (generator != null) {
