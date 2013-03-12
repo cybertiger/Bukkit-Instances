@@ -49,10 +49,20 @@ public final class InstanceTools {
     public static final String FOLDER_NAME = "worlds";
 
     public static org.bukkit.World createInstance(final Instances instances, PortalPair portal, String sourceWorld) {
-        File dataFolder = new File(instances.getServer().getWorldContainer(), sourceWorld);
-        if (!dataFolder.isDirectory()) {
-            instances.getLogger().info("Failed to create instance, could not find data folder " + dataFolder.getAbsolutePath() + " for world " + sourceWorld);
-            return null;
+        World source = instances.getServer().getWorld(sourceWorld);
+        File dataFolder;
+        if (source != null) {
+            dataFolder = new File(instances.getServer().getWorldContainer(), sourceWorld);
+            if (!dataFolder.isDirectory()) {
+                instances.getLogger().info("Failed to create instance, could not find data folder " + dataFolder.getAbsolutePath() + " for world " + sourceWorld);
+                return null;
+            }
+        } else {
+            instances.getLogger().warning("Creating instance from loaded world " + sourceWorld + 
+                    "; This will increase loading time for instanced worlds and may cause " +
+                    "chunk corruption in the instance world, unload the source world in " +
+                    "a production environment e.g. via /mvunload <world>.");
+            dataFolder = source.getWorldFolder();
         }
 
         MinecraftServer console = ((CraftServer) instances.getServer()).getServer();
@@ -105,7 +115,7 @@ public final class InstanceTools {
         saveDataFolder.mkdirs();
 
         IDataManager dataManager =
-                new InstanceDataManager(instances, dataFolder, saveDataFolder);
+                new InstanceDataManager(instances, source, dataFolder, saveDataFolder);
 
         // XXX: Copy paste from craftbukkit.
         int dimension = 10 + console.worlds.size();
@@ -166,20 +176,23 @@ public final class InstanceTools {
         private final Instances instances;
         private final File loadDataFolder;
         private final String world;
-        private final UUID uid;
-        private WorldData worldData;
+        private final World source;
 
-        public InstanceDataManager(Instances instances, File loadDataFolder, File saveDataFolder) {
+        public InstanceDataManager(Instances instances, World source, File loadDataFolder, File saveDataFolder) {
             // false flag - do not create players directory.
             super(saveDataFolder.getParentFile(), saveDataFolder.getName(), false);
             this.instances = instances;
+            this.source = source;
             this.loadDataFolder = loadDataFolder;
             this.world = saveDataFolder.getName();
-            this.uid = UUID.randomUUID();
         }
 
         @Override
         public WorldData getWorldData() {
+            if (source != null) {
+                // Force the source world to save, this could be costly.
+                source.save();
+            }
             File levelData = new File(getDirectory(), WORLD_DATA);
             if (levelData.isFile()) {
                 return super.getWorldData();
@@ -233,11 +246,14 @@ public final class InstanceTools {
             }
             ChunkRegionLoader loadLoader = new ChunkRegionLoader(loadChunkDir);
             ChunkRegionLoader saveLoader = new ChunkRegionLoader(saveChunkDir);
-            return new InstanceChunkLoader(loadLoader, saveLoader);
+            return new InstanceChunkLoader(source, loadLoader, saveLoader);
         }
 
         @Override
         public File getDataFile(String string) {
+            if (source != null) {
+                source.save();
+            }
             File result = new File(this.loadDataFolder, string + ".dat");
             if (result.isFile()) {
                 return result;
@@ -258,10 +274,12 @@ public final class InstanceTools {
     // Safe not to extend ChunkRegionLoader - CB does not cast to ChunkRegionLoader anywhere.
     public static final class InstanceChunkLoader implements IChunkLoader, IAsyncChunkSaver {
 
+        private final World source;
         private final ChunkRegionLoader loadLoader;
         private final ChunkRegionLoader saveLoader;
 
-        public InstanceChunkLoader(ChunkRegionLoader loadLoader, ChunkRegionLoader saveLoader) {
+        public InstanceChunkLoader(World source, ChunkRegionLoader loadLoader, ChunkRegionLoader saveLoader) {
+            this.source = source;
             this.loadLoader = loadLoader;
             this.saveLoader = saveLoader;
         }
@@ -269,6 +287,9 @@ public final class InstanceTools {
         public Chunk a(net.minecraft.server.v1_4_R1.World world, int i, int j) {
             if (saveLoader.chunkExists(world, i, j)) {
                 return saveLoader.a(world, i, j);
+            }
+            if (source != null) {
+                source.save();
             }
             return loadLoader.a(world, i, j);
         }
