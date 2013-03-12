@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 import java.util.logging.Level;
 import net.minecraft.server.v1_4_R1.Chunk;
 import net.minecraft.server.v1_4_R1.ChunkRegionLoader;
@@ -51,7 +50,7 @@ public final class InstanceTools {
     public static org.bukkit.World createInstance(final Instances instances, PortalPair portal, String sourceWorld) {
         World source = instances.getServer().getWorld(sourceWorld);
         File dataFolder;
-        if (source != null) {
+        if (source == null) {
             dataFolder = new File(instances.getServer().getWorldContainer(), sourceWorld);
             if (!dataFolder.isDirectory()) {
                 instances.getLogger().info("Failed to create instance, could not find data folder " + dataFolder.getAbsolutePath() + " for world " + sourceWorld);
