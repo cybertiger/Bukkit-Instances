@@ -149,9 +149,7 @@ public final class InstanceTools {
         instanceWorld.keepSpawnInMemory = false;
         console.worlds.add(instanceWorld);
 
-        if (generator != null) {
-            instanceWorld.getWorld().getPopulators().addAll(generator.getDefaultPopulators(instanceWorld.getWorld()));
-        }
+        instanceWorld.getWorld().getPopulators().addAll(generator.getDefaultPopulators(instanceWorld.getWorld()));
 
         instances.getServer().getPluginManager().callEvent(new WorldInitEvent(instanceWorld.getWorld()));
         instances.getServer().getPluginManager().callEvent(new WorldLoadEvent(instanceWorld.getWorld()));
