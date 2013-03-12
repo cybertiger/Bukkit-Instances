@@ -153,22 +153,37 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public Bank getBank() {
+        if (bank == null) {
+            bank = BankFactory.createBank(this);
+        }
         return bank;
     }
 
     public Inventories getInventories() {
+        if (inventories == null) {
+            inventories = InventoriesFactory.createInventories(this);
+        }
         return inventories;
     }
 
     public Permissions getPermissions() {
+        if (permissions == null) {
+            permissions = PermissionsFactory.createPermissions(this);
+        }
         return permissions;
     }
 
     public WorldManager getWorldManager() {
+        if (worldManager == null) {
+            worldManager = WorldManagerFactory.createWorldManager(this);
+        }
         return worldManager;
     }
 
     public CuboidSelection getCuboidSelection() {
+        if (cuboidSelection == null) {
+            cuboidSelection = CuboidSelectionFactory.createCuboidSelection(this);
+        }
         return cuboidSelection;
     }
 
@@ -355,11 +370,6 @@ public class Instances extends JavaPlugin implements Listener {
         load();
         getLogger().info("Registering event handlers");
         getServer().getPluginManager().registerEvents(this, this);
-        bank = BankFactory.createBank(this);
-        permissions = PermissionsFactory.createPermissions(this);
-        inventories = InventoriesFactory.createInventories(this);
-        worldManager = WorldManagerFactory.createWorldManager(this);
-        cuboidSelection = CuboidSelectionFactory.createCuboidSelection(this);
         File dir = getDataFolder();
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
@@ -380,6 +390,11 @@ public class Instances extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         super.onDisable();
+        bank = null;
+        inventories = null;
+        permissions = null;
+        worldManager = null;
+        cuboidSelection = null;
         save();
         try {
             if (packetHooks != null) {
@@ -689,7 +704,7 @@ public class Instances extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onClick(PlayerInteractEvent e) {
-        if (!cuboidSelection.isNative()) {
+        if (!getCuboidSelection().isNative()) {
             return;
         }
         Player p = e.getPlayer();
