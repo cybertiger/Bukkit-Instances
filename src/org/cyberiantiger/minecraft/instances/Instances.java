@@ -299,14 +299,14 @@ public class Instances extends JavaPlugin implements Listener {
         return partyMap.get(player);
     }
 
-    public Party createParty(String name, Player player) {
+    public Party partyCreate(String name, Player player) {
         Party party = new Party(name, player);
         parties.put(name, party);
         partyMap.put(player, party);
         return party;
     }
 
-    public void disbandParty(Party party) {
+    public void partyDisband(Party party) {
         for (Player p : party.getMembers()) {
             // Will cause calls to checkInstances(party) on the next tick.
             // Instances should be empty anyway.
@@ -333,10 +333,13 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public void partyRemove(Party party, Player player) {
-        // Will cause a call to checkInstances next tick via teleport event.
+        // May cause a call to checkInstances next tick via teleport event.
         removePlayerFromInstance(player);
         party.getMembers().remove(player);
         partyMap.remove(player);
+        if (party.getMembers().isEmpty()) {
+            partyDisband(party);
+        }
     }
 
     public void partyInvite(Party party, Player player) {
@@ -459,7 +462,8 @@ public class Instances extends JavaPlugin implements Listener {
                 int unloadTime = thisSection.getInt("unloadTime");
                 int reenterTime = thisSection.getInt("recreateTime");
                 Difficulty difficulty = Difficulty.valueOf(thisSection.getString("difficulty", "NORMAL"));
-                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty);
+                String defaultParty = thisSection.getString("defaultParty", null);
+                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty, defaultParty);
                 ConfigurationSection playerSection = thisSection.getConfigurationSection("lastCreate");
                 if (playerSection != null) {
                     for (String p : playerSection.getKeys(false)) {
@@ -541,6 +545,9 @@ public class Instances extends JavaPlugin implements Listener {
             pairSection.set("unloadTime", pair.getUnloadTime());
             pairSection.set("recreateTime", pair.getRecreateTime());
             pairSection.set("difficulty", pair.getDifficulty().name());
+            if (pair.getDefaultParty() != null) {
+                pairSection.set("defaultParty", pair.getDefaultParty());
+            }
             ConfigurationSection playerSection = pairSection.createSection("lastCreate");
             for (Map.Entry<String, Long> e : pair.getLastCreate().entrySet()) {
                 playerSection.set(e.getKey(), e.getValue());
@@ -613,8 +620,10 @@ public class Instances extends JavaPlugin implements Listener {
             // Will teleport player out of an instance if they are in one.
             // Will cause a call to checkInstances(party) via teleport event.
             partyRemove(party, player);
-            if (!party.getMembers().isEmpty()) {
-                if (party.getLeader() == player) {
+            if (party.getMembers().isEmpty()) {
+                partyDisband(party);
+            } else {
+                if (player.equals(party.getLeader())) {
                     party.setLeader(party.getMembers().iterator().next());
                     party.sendAll(
                             getPartyNamePrefix() + party.getName() + getPartyNameSuffix() + ' '
@@ -626,11 +635,7 @@ public class Instances extends JavaPlugin implements Listener {
                 }
             }
             // If party is empty, disband the party.
-            if (party.getMembers().isEmpty()) {
-                disbandParty(party);
-            }
         }
-        System.out.println("Player quit: " + e.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

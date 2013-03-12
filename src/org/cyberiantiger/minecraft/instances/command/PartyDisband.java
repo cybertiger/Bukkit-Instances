@@ -29,11 +29,15 @@ public class PartyDisband extends AbstractCommand {
             throw new InvocationException("You are not in a party.");
         }
 
+        if (!party.hasLeader()) {
+            throw new InvocationException("You cannot disband leaderless parties.");
+        }
+
         if (instances.isLeaderDisband() && !party.getLeader().equals(player))  {
             throw new InvocationException("You are not the party leader.");
         }
         party.emote(instances, player, "has disbanded the party.");
-        instances.disbandParty(party);
+        instances.partyDisband(party);
         return msg();
     }
 }

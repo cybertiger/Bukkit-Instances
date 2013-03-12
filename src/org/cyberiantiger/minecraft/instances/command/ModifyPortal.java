@@ -124,6 +124,15 @@ public class ModifyPortal extends AbstractCommand {
         }
     }
 
+    private abstract static class StringProperty extends Property<String> {
+        public String parse(Instances instances, CommandSender sender, String[] args) {
+            if (args.length != 1) {
+                throw new InvocationException("You must specify a string value for this property.");
+            }
+            return args[0];
+        }
+    }
+
     private static class DifficultyProperty extends Property<Difficulty> {
         public Difficulty parse(Instances instances, CommandSender sender, String[] args) {
             if (args.length != 1) {
@@ -299,6 +308,28 @@ public class ModifyPortal extends AbstractCommand {
         }
 
     }
+
+    private static class DefaultParty extends StringProperty {
+        @Override
+        public String getName() {
+            return "defaultParty";
+        }
+
+        @Override
+        public void set(PortalPair portal, String value) {
+            portal.setDefaultParty(value);
+        }
+
+        @Override
+        public String get(PortalPair portal) {
+            return portal.getDefaultParty();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.setDefaultParty(null);
+        }
+    }
     private static final Map<String, Property> propertyMap = new TreeMap<String, Property>();
     private static void addProperty(Property prop) {
         propertyMap.put(prop.getName().toLowerCase(), prop);
@@ -312,6 +343,7 @@ public class ModifyPortal extends AbstractCommand {
         addProperty(new RecreateTime());
         addProperty(new UnloadTime());
         addProperty(new DifficultyProperty());
+        addProperty(new DefaultParty());
     }
 
     @Override

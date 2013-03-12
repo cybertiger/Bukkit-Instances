@@ -30,11 +30,17 @@ public class Party implements Comparable<Party> {
     public Party(String name, Player leader) {
         this.name = name;
         this.leader = leader;
-        members.add(leader);
+        if (leader != null) {
+            members.add(leader);
+        }
     }
 
     public String getName() {
         return name;
+    }
+
+    public boolean hasLeader() {
+        return leader != null;
     }
 
     public Player getLeader() {

@@ -39,9 +39,18 @@ public class InstanceEntrancePortal extends Portal {
         Player player = e.getPlayer();
         Party party = instances.getParty(player);
         if (party == null) {
-            player.sendMessage(StringUtil.error("You must be in a party to enter the dungeon."));
-            e.setCancelled(true);
-            return;
+            String defaultParty = getPortalPair().getDefaultParty();
+            if (defaultParty == null) {
+                player.sendMessage(StringUtil.error("You must be in a party to enter the dungeon."));
+                e.setCancelled(true);
+                return;
+            }
+            party = instances.getParty(defaultParty);
+            if (party == null) {
+                party = instances.partyCreate(defaultParty, null);
+            } 
+            instances.partyAdd(party, player);
+            party.emote(instances, player, " has joined.");
         }
 
         if (pair == null) {

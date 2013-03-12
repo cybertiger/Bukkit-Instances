@@ -5,7 +5,6 @@
 package org.cyberiantiger.minecraft.instances.command;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -43,7 +42,9 @@ public class PartyInfo extends AbstractCommand {
         }
         List<String> ret = new ArrayList<String>();
         ret.add("Party name: " + party.getName());
-        ret.add("Party leader: " + party.getLeader().getName());
+        if (party.hasLeader()) {
+            ret.add("Party leader: " + party.getLeader().getName());
+        }
         StringBuilder tmp = new StringBuilder();
         tmp.append("Members:");
         for (Player p : party.getMembers()) {

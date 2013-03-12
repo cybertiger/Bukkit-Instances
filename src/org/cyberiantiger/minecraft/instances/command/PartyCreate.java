@@ -37,7 +37,7 @@ public class PartyCreate extends AbstractCommand {
             throw new InvocationException("That party already exists.");
         }
 
-        party = instances.createParty(args[0], player);
+        party = instances.partyCreate(args[0], player);
 
         return msg("Party " + args[0] + " created.");
     }

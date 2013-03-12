@@ -26,14 +26,15 @@ public class PortalPair implements Comparable<PortalPair> {
     private int unloadTime;
     private int recreateTime;
     private Difficulty difficulty;
+    private String defaultParty;
     // Last time a player created a new instance of this portal's dungeon.
     private Map<String, Long> lastCreate = new HashMap<String, Long>();
 
     public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, Difficulty difficulty) {
-        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty);
+        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty, null);
     };
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty) {
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty, String defaultParty) {
         this.name = name;
         this.enter = enter;
         this.destination = destination;
@@ -44,6 +45,7 @@ public class PortalPair implements Comparable<PortalPair> {
         this.unloadTime = unloadTime;
         this.recreateTime = recreateTime;
         this.difficulty = difficulty;
+        this.defaultParty = defaultParty;
         enter.setPortalPair(this);
         destination.setPortalPair(this);
     }
@@ -126,6 +128,14 @@ public class PortalPair implements Comparable<PortalPair> {
 
     public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public String getDefaultParty() {
+        return defaultParty;
+    }
+
+    public void setDefaultParty(String defaultParty) {
+        this.defaultParty = defaultParty;
     }
     
     public int compareTo(PortalPair o) {
