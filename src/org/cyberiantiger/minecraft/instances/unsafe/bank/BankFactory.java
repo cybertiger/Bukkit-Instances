@@ -20,6 +20,16 @@ public class BankFactory {
     public static Bank createBank(Instances instances) {
         PluginManager pm = instances.getServer().getPluginManager();
         Logger log = instances.getLogger();
+        if (pm.isPluginEnabled(VaultBank.PLUGIN_NAME)) {
+            log.info("Found Vault, attempting to create banking interface.");
+            try {
+                return new VaultBank(instances.getLogger(), instances);
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Error creating Vault banking interface", e);
+            } catch (Error e) {
+                log.log(Level.WARNING, "Error creating Vault banking interface", e);
+            }
+        }
         if (pm.isPluginEnabled(MultiverseCoreBank.PLUGIN_NAME)) {
             log.info("Found Multiverse-Core, attempting to create banking interface.");
             try {

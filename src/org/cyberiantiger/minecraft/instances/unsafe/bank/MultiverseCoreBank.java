@@ -15,6 +15,7 @@ import org.bukkit.plugin.PluginManager;
  *
  * @author antony
  */
+@Deprecated
 public class MultiverseCoreBank implements Bank {
     public static final String PLUGIN_NAME = "Multiverse-Core";
     private final Logger log;
