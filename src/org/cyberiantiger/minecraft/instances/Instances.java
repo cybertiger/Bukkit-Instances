@@ -451,10 +451,12 @@ public class Instances extends JavaPlugin implements Listener {
         if (portalSection != null) {
             for (String s : portalSection.getKeys(false)) {
                 ConfigurationSection thisSection = portalSection.getConfigurationSection(s);
-                InstanceEntrancePortal entrance = new InstanceEntrancePortal(
-                        loadCuboid(thisSection.getConfigurationSection("entrance")));
-                InstanceDestinationPortal destination = new InstanceDestinationPortal(
-                        loadCuboid(thisSection.getConfigurationSection("destination")));
+                ConfigurationSection entranceSection = thisSection.getConfigurationSection("entrance");
+                ConfigurationSection destinationSection = thisSection.getConfigurationSection("destination");
+                InstanceEntrancePortal entrance = new InstanceEntrancePortal(loadCuboid(entranceSection));
+                InstanceDestinationPortal destination = new InstanceDestinationPortal(loadCuboid(destinationSection));
+                Facing entranceFacing = loadFacing(entranceSection);
+                Facing destinationFacing = loadFacing(destinationSection);
                 double entryPrice = thisSection.getDouble("entryPrice");
                 double createPrice = thisSection.getDouble("createPrice");
                 ItemStack entryItem = thisSection.getItemStack("entryItem");
@@ -463,7 +465,7 @@ public class Instances extends JavaPlugin implements Listener {
                 int reenterTime = thisSection.getInt("recreateTime");
                 Difficulty difficulty = Difficulty.valueOf(thisSection.getString("difficulty", "NORMAL"));
                 String defaultParty = thisSection.getString("defaultParty", null);
-                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty, defaultParty);
+                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty, defaultParty, entranceFacing, destinationFacing);
                 ConfigurationSection playerSection = thisSection.getConfigurationSection("lastCreate");
                 if (playerSection != null) {
                     for (String p : playerSection.getKeys(false)) {
@@ -484,6 +486,15 @@ public class Instances extends JavaPlugin implements Listener {
         int minZ = section.getInt("minZ");
         int maxZ = section.getInt("maxZ");
         return new Cuboid(world, minX, maxX, minY, maxY, minZ, maxZ);
+    }
+
+    private Facing loadFacing(ConfigurationSection section) {
+        if (section.contains("facing")) {
+            ConfigurationSection facingSection = section.getConfigurationSection("facing");
+            return new Facing(facingSection.getDouble("yaw"), facingSection.getDouble("pitch"));
+        } else {
+            return null;
+        }
     }
 
     private void loadMotd() {
@@ -536,8 +547,12 @@ public class Instances extends JavaPlugin implements Listener {
         ConfigurationSection portalSection = config.createSection("portals");
         for (PortalPair pair : portals.values()) {
             ConfigurationSection pairSection = portalSection.createSection(pair.getName());
-            saveCuboid(pairSection.createSection("entrance"), pair.getEnter().getCuboid());
-            saveCuboid(pairSection.createSection("destination"), pair.getDestination().getCuboid());
+            ConfigurationSection entranceSection = pairSection.createSection("entrance");
+            ConfigurationSection destinationSection = pairSection.createSection("destination");
+            saveCuboid(entranceSection, pair.getEnter().getCuboid());
+            saveCuboid(destinationSection, pair.getDestination().getCuboid());
+            saveFacing(entranceSection, pair.getEnter().getFacing());
+            saveFacing(destinationSection, pair.getDestination().getFacing());
             pairSection.set("entryItem", pair.getEntryItem());
             pairSection.set("entryPrice", pair.getEntryPrice());
             pairSection.set("createItem", pair.getCreateItem());
@@ -564,6 +579,15 @@ public class Instances extends JavaPlugin implements Listener {
         section.set("maxY", cuboid.getMaxY());
         section.set("minZ", cuboid.getMinZ());
         section.set("maxZ", cuboid.getMaxZ());
+    }
+
+    private void saveFacing(ConfigurationSection section, Facing facing) {
+        if (facing == null) {
+            return;
+        }
+        ConfigurationSection facingSection = section.createSection("facing");
+        facingSection.set("yaw", facing.getYaw());
+        facingSection.set("pitch", facing.getPitch());
     }
 
     @Override

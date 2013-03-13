@@ -31,10 +31,10 @@ public class PortalPair implements Comparable<PortalPair> {
     private Map<String, Long> lastCreate = new HashMap<String, Long>();
 
     public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, Difficulty difficulty) {
-        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty, null);
+        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty, null, null, null);
     };
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty, String defaultParty) {
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty, String defaultParty, Facing entranceFacing, Facing destinationFacing) {
         this.name = name;
         this.enter = enter;
         this.destination = destination;

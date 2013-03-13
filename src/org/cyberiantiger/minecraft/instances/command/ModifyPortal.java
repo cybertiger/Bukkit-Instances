@@ -12,6 +12,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.cyberiantiger.minecraft.instances.Facing;
 import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.PortalPair;
 
@@ -130,6 +131,33 @@ public class ModifyPortal extends AbstractCommand {
                 throw new InvocationException("You must specify a string value for this property.");
             }
             return args[0];
+        }
+    }
+
+    private abstract static class FacingProperty extends Property<Facing> {
+        @Override
+        public Facing parse(Instances instances, CommandSender sender, String[] args) {
+            if (args.length == 1) {
+                if ("north".equalsIgnoreCase(args[0])) {
+                    return Facing.NORTH;
+                } else if("east".equalsIgnoreCase(args[0])) {
+                    return Facing.EAST;
+                } else if("south".equalsIgnoreCase(args[0])) {
+                    return Facing.SOUTH;
+                } else if("west".equalsIgnoreCase(args[0])) {
+                    return Facing.WEST;
+                } else {
+                    throw new InvocationException("Invalid argument, must be north/south/east/west");
+                }
+            } else if (args.length == 0) {
+                if (sender instanceof Player) {
+                    return new Facing(((Player)sender).getLocation());
+                } else {
+                    throw new NotAvailableException("Only players can set facing to their current facing.");
+                }
+            } else {
+                throw new InvocationException("Setting a facing accepts 0 or 1 arguments only.");
+            }
         }
     }
 
@@ -330,6 +358,51 @@ public class ModifyPortal extends AbstractCommand {
             portal.setDefaultParty(null);
         }
     }
+
+    private static class EntranceFacing extends FacingProperty {
+
+        @Override
+        public String getName() {
+            return "entrance.facing";
+        }
+
+        @Override
+        public void set(PortalPair portal, Facing value) {
+            portal.getEnter().setFacing(value);
+        }
+
+        @Override
+        public Facing get(PortalPair portal) {
+            return portal.getEnter().getFacing();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.getEnter().setFacing(null);
+        }
+    }
+    private static class DestinationFacing extends FacingProperty {
+
+        @Override
+        public String getName() {
+            return "destination.facing";
+        }
+
+        @Override
+        public void set(PortalPair portal, Facing value) {
+            portal.getDestination().setFacing(value);
+        }
+
+        @Override
+        public Facing get(PortalPair portal) {
+            return portal.getDestination().getFacing();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.getDestination().setFacing(null);
+        }
+    }
     private static final Map<String, Property> propertyMap = new TreeMap<String, Property>();
     private static void addProperty(Property prop) {
         propertyMap.put(prop.getName().toLowerCase(), prop);
@@ -344,6 +417,8 @@ public class ModifyPortal extends AbstractCommand {
         addProperty(new UnloadTime());
         addProperty(new DifficultyProperty());
         addProperty(new DefaultParty());
+        addProperty(new EntranceFacing());
+        addProperty(new DestinationFacing());
     }
 
     @Override

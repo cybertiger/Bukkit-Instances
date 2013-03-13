@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public abstract class Portal {
 
     private final Cuboid cuboid;
+    private Facing facing;
 
     public Portal(Cuboid cuboid) {
         this.cuboid = cuboid;
@@ -33,6 +34,14 @@ public abstract class Portal {
     // Teleports a player TO this portal.
     protected void teleport(Instances instances, Player player, World world) {
         Location floor = cuboid.getCenterFloor(world);
+        if (facing != null) {
+            floor.setYaw(facing.getYaw());
+            floor.setPitch(facing.getPitch());
+        } else {
+            Location playerLocation = player.getLocation();
+            floor.setYaw(playerLocation.getYaw());
+            floor.setPitch(playerLocation.getPitch());
+        }
         player.teleport(floor);
         if (instances.getWorldManager().setGameModeOnTp(player, cuboid.getWorld())) {
             GameMode gm = instances.getWorldManager().getGameMode(cuboid.getWorld(), player.getGameMode());
@@ -40,6 +49,14 @@ public abstract class Portal {
                 player.setGameMode(gm);
             }
         }
+    }
+
+    public Facing getFacing() {
+        return facing;
+    }
+
+    public void setFacing(Facing facing) {
+        this.facing = facing;
     }
 
     public abstract boolean isDestination();
