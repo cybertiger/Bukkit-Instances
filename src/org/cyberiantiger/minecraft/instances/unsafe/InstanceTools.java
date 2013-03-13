@@ -47,7 +47,7 @@ import org.cyberiantiger.minecraft.instances.generator.VoidGenerator;
 public final class InstanceTools {
     public static final String FOLDER_NAME = "worlds";
 
-    public static org.bukkit.World createInstance(final Instances instances, PortalPair portal, String sourceWorld) {
+    public static org.bukkit.World createInstance(final Instances instances, PortalPair portal, String sourceWorld, int startNumber) {
         World source = instances.getServer().getWorld(sourceWorld);
         File dataFolder;
         if (source == null) {
@@ -70,7 +70,7 @@ public final class InstanceTools {
             return null;
         }
 
-        int i = 0;
+        int i = startNumber;
         while (instances.getServer().getWorld(sourceWorld + '-' + i) != null) {
             i++;
         }

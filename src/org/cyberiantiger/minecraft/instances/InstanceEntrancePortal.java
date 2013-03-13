@@ -113,7 +113,7 @@ public class InstanceEntrancePortal extends Portal {
 
             String sourceWorldName = destination.getCuboid().getWorld();
 
-            world = InstanceTools.createInstance(instances, pair, sourceWorldName);
+            world = InstanceTools.createInstance(instances, pair, sourceWorldName, party.hasLeader()? 1 : 0);
             if (world == null) {
                 player.sendMessage(StringUtil.error("Could not create instance world."));
                 e.setCancelled(true);
