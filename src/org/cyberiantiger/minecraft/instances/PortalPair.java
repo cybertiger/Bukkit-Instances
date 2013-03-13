@@ -46,6 +46,8 @@ public class PortalPair implements Comparable<PortalPair> {
         this.recreateTime = recreateTime;
         this.difficulty = difficulty;
         this.defaultParty = defaultParty;
+        enter.setFacing(entranceFacing);
+        destination.setFacing(destinationFacing);
         enter.setPortalPair(this);
         destination.setPortalPair(this);
     }

@@ -12,10 +12,10 @@ import org.bukkit.Location;
  * @author antony
  */
 public final class Facing {
-    public static final Facing NORTH = new Facing(0, 0);
-    public static final Facing EAST = new Facing(90, 0);
-    public static final Facing SOUTH = new Facing(180, 0);
-    public static final Facing WEST = new Facing (270, 0);
+    public static final Facing SOUTH = new Facing(0, 0);
+    public static final Facing WEST = new Facing(90, 0);
+    public static final Facing NORTH = new Facing(180, 0);
+    public static final Facing EAST = new Facing (270, 0);
 
     private final float yaw;
     private final float pitch;
