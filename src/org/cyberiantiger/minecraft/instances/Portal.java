@@ -4,7 +4,6 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;

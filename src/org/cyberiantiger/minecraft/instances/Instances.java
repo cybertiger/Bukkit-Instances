@@ -668,12 +668,22 @@ public class Instances extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         String fromWorld = e.getFrom().getWorld().getName();
         // Translate world names for players in instances.
         Party party = getParty(player);
+        Coord from = Coord.fromLocation(e.getFrom());
+        Coord to = Coord.fromLocation(e.getTo());
+        if (from.equals(to)) {
+            return;
+        }
+        // Disable portals for players in a vehicle.
+        if (player.isInsideVehicle()) {
+            return;
+        }
+
         boolean isInstance = false;
         if (party != null) {
             Instance instance = party.getInstanceFromInstanceWorld(fromWorld);
@@ -681,11 +691,6 @@ public class Instances extends JavaPlugin implements Listener {
                 fromWorld = instance.getSourceWorld();
                 isInstance = true;
             }
-        }
-        Coord from = Coord.fromLocation(e.getFrom());
-        Coord to = Coord.fromLocation(e.getTo());
-        if (from.equals(to)) {
-            return;
         }
 
         // Check if they entered or left any portals in that world.
