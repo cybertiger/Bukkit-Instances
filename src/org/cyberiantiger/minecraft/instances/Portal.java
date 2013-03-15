@@ -43,12 +43,6 @@ public abstract class Portal {
             floor.setPitch(playerLocation.getPitch());
         }
         player.teleport(floor);
-        if (instances.getWorldManager().setGameModeOnTp(player, cuboid.getWorld())) {
-            GameMode gm = instances.getWorldManager().getGameMode(cuboid.getWorld(), player.getGameMode());
-            if (gm != null) {
-                player.setGameMode(gm);
-            }
-        }
     }
 
     public Facing getFacing() {

@@ -74,16 +74,17 @@ import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
 import org.cyberiantiger.minecraft.instances.command.Spawner;
 import org.cyberiantiger.minecraft.instances.unsafe.PacketHooks;
-import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
-import org.cyberiantiger.minecraft.instances.unsafe.bank.BankFactory;
-import org.cyberiantiger.minecraft.instances.unsafe.inventories.Inventories;
-import org.cyberiantiger.minecraft.instances.unsafe.inventories.InventoriesFactory;
-import org.cyberiantiger.minecraft.instances.unsafe.permissions.Permissions;
-import org.cyberiantiger.minecraft.instances.unsafe.permissions.PermissionsFactory;
-import org.cyberiantiger.minecraft.instances.unsafe.selection.CuboidSelection;
-import org.cyberiantiger.minecraft.instances.unsafe.selection.CuboidSelectionFactory;
-import org.cyberiantiger.minecraft.instances.unsafe.worldmanager.WorldManager;
-import org.cyberiantiger.minecraft.instances.unsafe.worldmanager.WorldManagerFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldInheritance;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.CuboidSelection;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.InstancesCuboidSelectionFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseCoreWorldInheritanceFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseInventoriesWorldInheritanceFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.PEXWorldInheritanceFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.VaultBankFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldEditCuboidSelectionFactory;
+import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
+import org.cyberiantiger.minecraft.instances.util.DependencyUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 
 /**
@@ -101,8 +102,6 @@ public class Instances extends JavaPlugin implements Listener {
     private boolean leaderDisband;
     private boolean editCommandInCreative = true;
     private String spawnName;
-//     private World spawn;
-    // Map of world name -> entrance portal.
     private Map<String, Party> parties = new HashMap<String, Party>();
     private Map<Player, Party> partyMap = new HashMap<Player, Party>();
     private Map<String, PortalPair> portals = new HashMap<String, PortalPair>();
@@ -113,9 +112,7 @@ public class Instances extends JavaPlugin implements Listener {
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
     private Bank bank;
-    private Inventories inventories;
-    private Permissions permissions;
-    private WorldManager worldManager;
+    private WorldInheritance worldInheritance;
     private CuboidSelection cuboidSelection;
     private PacketHooks packetHooks;
 
@@ -153,37 +150,14 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     public Bank getBank() {
-        if (bank == null) {
-            bank = BankFactory.createBank(this);
-        }
         return bank;
     }
 
-    public Inventories getInventories() {
-        if (inventories == null) {
-            inventories = InventoriesFactory.createInventories(this);
-        }
-        return inventories;
-    }
-
-    public Permissions getPermissions() {
-        if (permissions == null) {
-            permissions = PermissionsFactory.createPermissions(this);
-        }
-        return permissions;
-    }
-
-    public WorldManager getWorldManager() {
-        if (worldManager == null) {
-            worldManager = WorldManagerFactory.createWorldManager(this);
-        }
-        return worldManager;
+    public WorldInheritance getWorldInheritance() {
+        return worldInheritance;
     }
 
     public CuboidSelection getCuboidSelection() {
-        if (cuboidSelection == null) {
-            cuboidSelection = CuboidSelectionFactory.createCuboidSelection(this);
-        }
         return cuboidSelection;
     }
 
@@ -388,15 +362,26 @@ public class Instances extends JavaPlugin implements Listener {
         } catch (Error e) {
             getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
         }
+        List<DependencyFactory<WorldInheritance>> worldInheritanceFactories = new ArrayList<DependencyFactory<WorldInheritance>>();
+        worldInheritanceFactories.add(new MultiverseCoreWorldInheritanceFactory(this));
+        worldInheritanceFactories.add(new MultiverseInventoriesWorldInheritanceFactory(this));
+        worldInheritanceFactories.add(new PEXWorldInheritanceFactory(this));
+        this.worldInheritance = DependencyUtil.merge(getLogger(), WorldInheritance.class, worldInheritanceFactories);
+        List<DependencyFactory<Bank>> bankFactories = new ArrayList<DependencyFactory<Bank>>();
+        bankFactories.add(new VaultBankFactory(this));
+        this.bank = DependencyUtil.first(getLogger(), Bank.class, bankFactories);
+        List<DependencyFactory<CuboidSelection>> cuboidSelectionFactories = new ArrayList<DependencyFactory<CuboidSelection>>();
+        cuboidSelectionFactories.add(new WorldEditCuboidSelectionFactory(this));
+        cuboidSelectionFactories.add(new InstancesCuboidSelectionFactory(this));
+        this.cuboidSelection = DependencyUtil.first(getLogger(), CuboidSelection.class, cuboidSelectionFactories);
     }
+
 
     @Override
     public void onDisable() {
         super.onDisable();
         bank = null;
-        inventories = null;
-        permissions = null;
-        worldManager = null;
+        worldInheritance = null;
         cuboidSelection = null;
         save();
         try {
@@ -825,8 +810,7 @@ public class Instances extends JavaPlugin implements Listener {
         // Make sure we're not called twice.
         instance.cancelDelete();
         // Remove shared inventories and permissions.
-        getInventories().removeShare(instance.getSourceWorld(), instance.getInstance());
-        getPermissions().removeInheritance(instance.getSourceWorld(), instance.getInstance());
+        getWorldInheritance().removeInheritance(instance.getSourceWorld(), instance.getInstance());
         // Drop the world from the server, teleporting anyone inside it out.
         World world = getServer().getWorld(instance.getInstance());
         getLogger().log(Level.INFO, "Deleting instance: {0}", instance);

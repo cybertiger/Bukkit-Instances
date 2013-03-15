@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cyberiantiger.minecraft.instances.unsafe.selection;
+package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
@@ -12,42 +12,45 @@ import com.sk89q.worldedit.bukkit.WorldEditAPI;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import java.util.logging.Logger;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.Cuboid;
 import org.cyberiantiger.minecraft.instances.command.InvocationException;
+import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 
 /**
  *
  * @author antony
  */
-public class WorldEditCuboidSelection implements CuboidSelection {
+public class WorldEditCuboidSelectionFactory extends DependencyFactory<CuboidSelection> {
 
     public static final String PLUGIN_NAME = "WorldEdit";
-    private final Logger log;
-    private final PluginManager manager;
 
-    public WorldEditCuboidSelection(Logger log, PluginManager manager) {
-        this.log = log;
-        this.manager = manager;
+    public WorldEditCuboidSelectionFactory(Plugin thisPlugin) {
+        super(thisPlugin, PLUGIN_NAME);
     }
 
-    protected boolean isPluginEnabled() {
-        return manager.isPluginEnabled(PLUGIN_NAME);
+    @Override
+    public Class<CuboidSelection> getInterfaceClass() {
+        return CuboidSelection.class;
     }
 
-    protected WorldEditPlugin getPlugin() {
-        return (WorldEditPlugin) manager.getPlugin(PLUGIN_NAME);
+    @Override
+    protected CuboidSelection createInterface(Plugin plugin) throws Exception {
+        return new WorldEditCuboidSelection(plugin);
     }
 
-    protected WorldEditAPI getAPI() {
-        return new WorldEditAPI(getPlugin());
-    }
+    public static class WorldEditCuboidSelection implements CuboidSelection {
 
-    public Cuboid getCurrentSelection(Player player) {
-        if (isPluginEnabled()) {
-            WorldEditAPI api = getAPI();
+        private final WorldEditPlugin plugin;
+        private final WorldEditAPI api;
+
+        public WorldEditCuboidSelection(Plugin plugin) {
+            this.plugin = (WorldEditPlugin) plugin;
+            this.api = new WorldEditAPI(this.plugin);
+        }
+
+        public Cuboid getCurrentSelection(Player player) throws InvocationException {
             LocalSession session = api.getSession(player);
             LocalWorld world = session.getSelectionWorld();
             try {
@@ -64,10 +67,13 @@ public class WorldEditCuboidSelection implements CuboidSelection {
                 throw new InvocationException(ex.getLocalizedMessage());
             }
         }
-        throw new InvocationException("Selection disabled: WorldEdit is disabled.");
-    }
 
-    public boolean isNative() {
-        return false;
+        public boolean isNative() {
+            return false;
+        }
+
+        public Plugin getPlugin() {
+            return plugin;
+        }
     }
 }

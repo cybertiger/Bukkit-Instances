@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
-import org.cyberiantiger.minecraft.instances.unsafe.bank.Bank;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 import org.cyberiantiger.minecraft.instances.util.TimeUtil;
@@ -83,14 +83,17 @@ public class InstanceEntrancePortal extends Portal {
             }
             // XXX: If price and item are set, then code will charge entry price then deny entry.
             if (pair.getCreateOrEntryPrice() > 0.0D) {
-                Bank bank = instances.getBank();
-                if (!bank.deduct(player, pair.getCreateOrEntryPrice())) {
-                    player.sendMessage(StringUtil.error("An fee of " + pair.getCreateOrEntryPrice() + " rem is required."));
-                    e.setCancelled(true);
-                    return;
+                try {
+                    Bank bank = instances.getBank();
+                    if (!bank.deduct(player, pair.getCreateOrEntryPrice())) {
+                        player.sendMessage(StringUtil.error("An fee of " + pair.getCreateOrEntryPrice() + " rem is required."));
+                        e.setCancelled(true);
+                        return;
+                    }
+                    player.sendMessage(StringUtil.success("Your bank account has been deducted " + pair.getCreateOrEntryPrice() + " rem"));
+                } catch (UnsupportedOperationException ex) {
+                    instances.getLogger().warning("No economy support and portals have prices.");
                 }
-                player.sendMessage(StringUtil.success("Your bank account has been deducted " + pair.getCreateOrEntryPrice() + " rem"));
-
             }
             if (pair.getCreateOrEntryItem() != null) {
                 ItemStack itemInHand = player.getItemInHand();
@@ -120,8 +123,7 @@ public class InstanceEntrancePortal extends Portal {
                 return;
             }
 
-            instances.getPermissions().addInheritance(sourceWorldName, world.getName());
-            instances.getInventories().addShare(sourceWorldName, world.getName());
+            instances.getWorldInheritance().addInheritance(sourceWorldName, world.getName());
 
             instance = new Instance(getPortalPair(), sourceWorldName, world.getName());
 
@@ -130,13 +132,17 @@ public class InstanceEntrancePortal extends Portal {
             instances.getLogger().info("Created instance: " + instance);
         } else {
             if (pair.getEntryPrice() > 0.0D) {
-                Bank bank = instances.getBank();
-                if (!bank.deduct(player, pair.getEntryPrice())) {
-                    player.sendMessage(StringUtil.error("An fee of " + pair.getEntryPrice() + " rem is required."));
-                    e.setCancelled(true);
-                    return;
+                try {
+                    Bank bank = instances.getBank();
+                    if (!bank.deduct(player, pair.getEntryPrice())) {
+                        player.sendMessage(StringUtil.error("An fee of " + pair.getEntryPrice() + " rem is required."));
+                        e.setCancelled(true);
+                        return;
+                    }
+                    player.sendMessage(StringUtil.success("Your bank account has been deducted " + pair.getEntryPrice() + " rem"));
+                } catch (UnsupportedOperationException ex) {
+                    instances.getLogger().warning("No economy support and portals have prices.");
                 }
-                player.sendMessage(StringUtil.success("Your bank account has been deducted " + pair.getEntryPrice() + " rem"));
             }
             if (pair.getEntryItem() != null) {
                 ItemStack itemInHand = player.getItemInHand();
