@@ -23,7 +23,7 @@ public class DependencyUtil {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 // We only support merging for methods which return void.
-                if (method.getReturnType() != Void.class)  {
+                if (method.getReturnType() != Void.TYPE)  {
                     throw new UnsupportedOperationException();
                 }
                 Iterator<DependencyFactory<T>> i = factories.iterator();
@@ -38,10 +38,10 @@ public class DependencyUtil {
                             // passed up the stack.
                             for (Class<?> exceptionType : method.getExceptionTypes()) {
                                 if (exceptionType.isInstance(e.getTargetException()))
-                                    throw e;
+                                    throw e.getTargetException();
                             }
                             if (e.getTargetException() instanceof RuntimeException) {
-                                throw e;
+                                throw e.getTargetException();
                             }
                             // The exception is not declared or a runtime exception,
                             // blacklist the dependency.
@@ -70,10 +70,10 @@ public class DependencyUtil {
                             // passed up the stack.
                             for (Class<?> exceptionType : method.getExceptionTypes()) {
                                 if (exceptionType.isInstance(e.getTargetException()))
-                                    throw e;
+                                    throw e.getTargetException();
                             }
                             if (e.getTargetException() instanceof RuntimeException) {
-                                throw e;
+                                throw e.getTargetException();
                             }
                             // The exception is not declared or a runtime exception,
                             // blacklist the dependency.

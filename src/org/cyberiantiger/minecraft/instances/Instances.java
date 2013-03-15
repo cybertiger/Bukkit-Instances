@@ -809,18 +809,19 @@ public class Instances extends JavaPlugin implements Listener {
     private void deleteInstance(Instance instance) {
         // Make sure we're not called twice.
         instance.cancelDelete();
-        // Remove shared inventories and permissions.
-        getWorldInheritance().removeInheritance(instance.getSourceWorld(), instance.getInstance());
         // Drop the world from the server, teleporting anyone inside it out.
         World world = getServer().getWorld(instance.getInstance());
-        getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
-        // Remove all players from the world.
-
-        for (Player p : world.getPlayers()) {
-            teleportToSpawn(p);
+        if (world != null) {
+            // Remove any world inheritance.
+            getWorldInheritance().removeInheritance(instance.getSourceWorld(), instance.getInstance());
+            getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
+            // Remove all players from the world.
+            for (Player p : world.getPlayers()) {
+                teleportToSpawn(p);
+            }
+            // Finally delete the instance without saving.
+            getServer().unloadWorld(world, false);
         }
-        // Finally delete the instance without saving.
-        getServer().unloadWorld(world, false);
     }
 
     public boolean getEditCommandInCreative() {
