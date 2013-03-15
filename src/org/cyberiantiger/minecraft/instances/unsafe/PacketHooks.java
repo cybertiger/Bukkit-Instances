@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import net.minecraft.server.v1_4_R1.EntityPlayer;
 import net.minecraft.server.v1_4_R1.NetworkManager;
 import net.minecraft.server.v1_4_R1.Packet;
-import net.minecraft.server.v1_4_R1.Packet0KeepAlive;
 import net.minecraft.server.v1_4_R1.Packet250CustomPayload;
 import net.minecraft.server.v1_4_R1.Packet9Respawn;
 import net.minecraft.server.v1_4_R1.PlayerConnection;
@@ -30,7 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.cyberiantiger.minecraft.instances.Instances;
+import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.nbt.CompoundTag;
 
 /**
@@ -53,11 +52,13 @@ public class PacketHooks implements Listener {
         }
         INBOUND_QUEUE = f;
     }
-    private final Instances instances;
     private AtomicBoolean installed = new AtomicBoolean(false);
+    private final Plugin plugin;
+    private final boolean editInCreative;
 
-    public PacketHooks(Instances instances) {
-        this.instances = instances;
+    public PacketHooks(Plugin plugin, boolean editInCreative) {
+        this.plugin = plugin;
+        this.editInCreative = editInCreative;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -69,14 +70,14 @@ public class PacketHooks implements Listener {
 
     public void setInstalled(boolean installed) {
         if (installed != this.installed.get()) {
-            instances.getServer().getPluginManager().registerEvents(this, instances);
+            plugin.getServer().getPluginManager().registerEvents(this, plugin);
             this.installed.set(installed);
             if (installed) {
-                for (Player p : instances.getServer().getOnlinePlayers()) {
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
                     installPacketHooks(p);
                 }
             } else {
-                for (Player p : instances.getServer().getOnlinePlayers()) {
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
                     uninstallPacketHooks(p);
                 }
             }
@@ -136,11 +137,11 @@ public class PacketHooks implements Listener {
                     final int k = datainputstream.readInt();
                     final String s = Packet.a(datainputstream, 256);
                     // Switch to main server thread.
-                    if (!((CraftServer) instances.getServer()).getServer().getEnableCommandBlock()) {
+                    if (!((CraftServer) plugin.getServer()).getServer().getEnableCommandBlock()) {
                         player.sendMessage("Command blocks are not enabled, set enable-command-block=true in server.properties.");
                         return false;
                     }
-                    if (instances.getEditCommandInCreative() && player.getGameMode() != GameMode.CREATIVE) {
+                    if (editInCreative && player.getGameMode() != GameMode.CREATIVE) {
                         player.sendMessage("You need to be in creative to edit command blocks.");
                         return false;
                     }
@@ -166,7 +167,7 @@ public class PacketHooks implements Listener {
                     player.sendMessage("Command set: " + s);
                     return false;
                 } catch (IOException e) {
-                    instances.getLogger().log(Level.SEVERE, null, e);
+                    plugin.getLogger().log(Level.SEVERE, null, e);
                     return false;
                 }
             }

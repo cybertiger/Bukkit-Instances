@@ -34,9 +34,9 @@ import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.Coord;
 import org.cyberiantiger.minecraft.instances.FileUtils;
-import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.PortalPair;
 import org.cyberiantiger.minecraft.instances.generator.VoidGenerator;
 
@@ -47,7 +47,7 @@ import org.cyberiantiger.minecraft.instances.generator.VoidGenerator;
 public final class InstanceTools {
     public static final String FOLDER_NAME = "worlds";
 
-    public static org.bukkit.World createInstance(final Instances instances, PortalPair portal, String sourceWorld, int startNumber) {
+    public static org.bukkit.World createInstance(final Plugin instances, PortalPair portal, String sourceWorld, int startNumber) {
         World source = instances.getServer().getWorld(sourceWorld);
         File dataFolder;
         if (source == null) {
@@ -172,12 +172,12 @@ public final class InstanceTools {
         private static final String WORLD_DATA = "level.dat";
         private static final String WORLD_DATA_OLD = "level.dat_old";
 
-        private final Instances instances;
+        private final Plugin instances;
         private final File loadDataFolder;
         private final String world;
         private final World source;
 
-        public InstanceDataManager(Instances instances, World source, File loadDataFolder, File saveDataFolder) {
+        public InstanceDataManager(Plugin instances, World source, File loadDataFolder, File saveDataFolder) {
             // false flag - do not create players directory.
             super(saveDataFolder.getParentFile(), saveDataFolder.getName(), false);
             this.instances = instances;

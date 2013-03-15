@@ -23,7 +23,6 @@ import net.minecraft.server.v1_4_R1.NBTTagLong;
 import net.minecraft.server.v1_4_R1.NBTTagShort;
 import net.minecraft.server.v1_4_R1.NBTTagString;
 import net.minecraft.server.v1_4_R1.TileEntity;
-import net.minecraft.server.v1_4_R1.TileEntityMobSpawner;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;

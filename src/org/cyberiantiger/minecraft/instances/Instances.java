@@ -355,7 +355,7 @@ public class Instances extends JavaPlugin implements Listener {
         }
         getLogger().info("Registering packet handler for no-op command block editing");
         try {
-            packetHooks = new PacketHooks(this);
+            packetHooks = new PacketHooks(this, getEditCommandInCreative());
             packetHooks.setInstalled(true);
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
