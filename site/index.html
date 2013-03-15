@@ -46,21 +46,27 @@ A Bukkit plugin which allows conversion of whole worlds to resettable dungeon in
 <li>Instances reset a configurable time after the party leaves.</li>
 <li>Abilty to allow non operators to create and edit command blocks.</li>
 <li>A fully featured party system.</li>
-<li>Economy support. (iConomy 4,5,6, BOSE 6,7, MultiCur, RealShop)</li>
 <li>Instance aware <code>/sethome</code> command.</li>
 <li>Full support for modifying monster spawners via the <code>/ispawner</code> command.</li>
+<li>Command block editing support without requiring creating and operator.</li>
 <li>PermissionsEx integration which allows world specific permissions to be automatically inherited by instances.</li>
 <li>Multiverse-Inventories integration to allow configurable inventory sharing per instances.</li>
-<li>Integration with WorldEdit for portal area selection.</li>
+<li>Multiverse-Core integration to allow instance worlds to inherit Multiverse-Core settings from their parent world.</li>
+<li>WorldEdit integration for portal area selection.</li>
+<li>Vault integration for economy support.</li>
 </ul>
 <h1 id="installation">Installation</h1>
 <p>Copy the jar to your plugins folder on your server. There are no hard depenencies, so everything should just work. The plugin has the following soft dependencies.</p>
 <h3 id="Multiverse-Inventories">Multiverse-Inventories</h3>
 <p>If Multiverse-Inventories is present the plugin will integrate with the configuration and ensure than instances share inventories with their parent world.</p>
 <h3 id="Multiverse-Core">Multiverse-Core</h3>
-<p>If Multiverse-Core is present, instance portals may require a payment to enter. Support is provided for the following economy plugins: iConomy 4,5,6, BOSE 6,7, MultiCur, RealShop.</p>
+<p>If Multiverse-Core is present, instance worlds will inherit all the Multiverse-Core settings of their parent world.</p>
 <h3 id="PermissionsEx">PermissionsEx</h3>
 <p>If present then instance worlds will inherit permissions from their parent world.</p>
+<h3 id="Vault">Vault</h3>
+<p>If present then you can set portal prices.</p>
+<h3 id="WorldEdit">WorldEdit</h3>
+<p>If present then Instances uses the WorldEdit selection tool rather than it's own.</p>
 <h2 id="downloads">Downloads</h2>
 <p>As of 1.1 we provide 'bare' downloads for those that do not wish to have <code>/home</code>, <code>/sethome</code>, <code>/spawn</code>, <code>/setspawn</code> and <code>/motd</code> commands included.</p>
 <ul>
@@ -313,7 +319,7 @@ Players can create, join, leave and administer their own parties with the follow
 </tr>
 </table>
 <h2 id="commands-portal">Portal</h2>
-<p>Finally the plugin includes commands for creating portals to access world instances. Portal creation is accomplished by using the tool (default: feather) to select a cuboid in the world where the portal resides, and in the world which you wish to create an instance. First you select the entrance portal area, and execute <code>/isetentrance</code> then select the portal area in the world you wish to instance and execute <code>/isetdestination</code>. Once this is done you can create your instance via <code>/icreateportal &lt;name&gt;</code>.</p>
+<p>Finally the plugin includes commands for creating portals to access world instances. Portal creation is accomplished by using the tool (default: feather) to select a cuboid in the world where the portal resides, and in the world which you wish to create an instance. First you select the entrance portal area, and execute <code>/isetentrance</code> then select the portal area in the world you wish to instance and execute <code>/isetdestination</code>. Once this is done you can create your instance via <code>/icreateportal &lt;name&gt;</code>. Note: In a production environment you should unload the source world, if the source world saves a chunk at the same time as the destination world creates a chunk this may result in chunk corruption in the instance.</p>
 <table>
 <tr>
 <th>Command</th>
