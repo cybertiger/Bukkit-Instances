@@ -47,6 +47,9 @@ public class DependencyUtil {
                             // blacklist the dependency.
                             log.log(Level.WARNING, "Blacklisting dependency on " + factory.getPlugin(), e.getTargetException());
                             i.remove();
+                        } catch (Throwable t) {
+                            log.log(Level.WARNING, "Blacklisting dependency on " + factory.getPlugin(), t);
+                            i.remove();
                         }
                     }
                 }
@@ -78,6 +81,9 @@ public class DependencyUtil {
                             // The exception is not declared or a runtime exception,
                             // blacklist the dependency.
                             log.log(Level.WARNING, "Blacklisting dependency on " + factory.getPlugin(), e.getTargetException());
+                            i.remove();
+                        } catch (Throwable t) {
+                            log.log(Level.WARNING, "Blacklisting dependency on " + factory.getPlugin(), t);
                             i.remove();
                         }
                     }
