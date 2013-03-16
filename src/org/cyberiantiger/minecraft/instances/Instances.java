@@ -73,7 +73,7 @@ import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
 import org.cyberiantiger.minecraft.instances.command.Spawner;
-import org.cyberiantiger.minecraft.instances.unsafe.CBShim;
+import org.cyberiantiger.minecraft.unsafe.CBShim;
 import org.cyberiantiger.minecraft.instances.unsafe.PacketHooks;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldInheritance;

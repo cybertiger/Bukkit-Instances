@@ -5,17 +5,15 @@
 package org.cyberiantiger.minecraft.instances;
 
 import org.bukkit.World;
-import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.cyberiantiger.minecraft.instances.generator.VoidGenerator;
-import org.cyberiantiger.minecraft.instances.unsafe.CBShim;
 import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 import org.cyberiantiger.minecraft.instances.util.TimeUtil;
+import org.cyberiantiger.minecraft.unsafe.CBShim;
 
 /**
  *

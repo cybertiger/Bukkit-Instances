@@ -17,13 +17,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.cyberiantiger.minecraft.instances.Instances;
-import org.cyberiantiger.minecraft.instances.unsafe.CBShim;
-import org.cyberiantiger.minecraft.instances.unsafe.NBTTools;
-import org.cyberiantiger.nbt.CompoundTag;
-import org.cyberiantiger.nbt.DoubleTag;
-import org.cyberiantiger.nbt.FloatTag;
-import org.cyberiantiger.nbt.ListTag;
-import org.cyberiantiger.nbt.TagType;
+import org.cyberiantiger.minecraft.nbt.CompoundTag;
+import org.cyberiantiger.minecraft.nbt.DoubleTag;
+import org.cyberiantiger.minecraft.nbt.FloatTag;
+import org.cyberiantiger.minecraft.nbt.ListTag;
+import org.cyberiantiger.minecraft.nbt.TagType;
+import org.cyberiantiger.minecraft.unsafe.CBShim;
+import org.cyberiantiger.minecraft.unsafe.NBTTools;
 
 /**
  *

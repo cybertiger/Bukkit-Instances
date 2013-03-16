@@ -30,7 +30,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-import org.cyberiantiger.nbt.CompoundTag;
+import org.cyberiantiger.minecraft.nbt.CompoundTag;
+import org.cyberiantiger.minecraft.unsafe.v1_5_R1.NBTTools;
 
 /**
  *

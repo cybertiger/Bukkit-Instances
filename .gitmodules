@@ -1,0 +1,3 @@
+[submodule "bukkit-lib"]
+	path = bukkit-lib
+	url = git@github.com:cybertiger/Bukkit-Lib.git
