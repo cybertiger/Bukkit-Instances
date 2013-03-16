@@ -356,7 +356,7 @@ public class Instances extends JavaPlugin implements Listener {
         }
         getLogger().info("Registering packet handler for no-op command block editing");
         try {
-            packetHooks = CBShim.getShim(PacketHooks.class, getServer());
+            packetHooks = CBShim.createShim(PacketHooks.class, this);
             packetHooks.configure(this, getEditCommandInCreative());
             packetHooks.setInstalled(true);
         } catch (Exception e) {

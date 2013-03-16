@@ -119,7 +119,7 @@ public class InstanceEntrancePortal extends Portal {
 
             int firstInstance = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
 
-            world = CBShim.getShim(InstanceTools.class, instances.getServer()).createInstance(instances, pair.getDifficulty(), sourceWorldName, firstInstance);
+            world = CBShim.createShim(InstanceTools.class, instances).createInstance(instances, pair.getDifficulty(), sourceWorldName, firstInstance);
             if (world == null) {
                 player.sendMessage(StringUtil.error("Could not create instance world."));
                 e.setCancelled(true);

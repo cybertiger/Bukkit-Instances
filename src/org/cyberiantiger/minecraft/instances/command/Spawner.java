@@ -99,7 +99,7 @@ public class Spawner extends AbstractCommand {
         if (args.length == 0) {
             return null;
         }
-        NBTTools nbtTools = CBShim.getShim(NBTTools.class, instances.getServer());
+        NBTTools nbtTools = CBShim.createShim(NBTTools.class, instances);
         Block b;
         if ("create".equals(args[0])) {
             // Shitty hack to get the looked at entity.
