@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cyberiantiger.minecraft.instances;
+package org.cyberiantiger.minecraft.instances.util;
 
 import java.io.File;
 import java.io.IOException;

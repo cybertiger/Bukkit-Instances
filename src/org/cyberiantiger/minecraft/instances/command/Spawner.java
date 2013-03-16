@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -19,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.cyberiantiger.minecraft.instances.Instances;
+import org.cyberiantiger.minecraft.instances.unsafe.CBShim;
 import org.cyberiantiger.minecraft.instances.unsafe.NBTTools;
 import org.cyberiantiger.nbt.CompoundTag;
 import org.cyberiantiger.nbt.DoubleTag;
@@ -100,6 +99,7 @@ public class Spawner extends AbstractCommand {
         if (args.length == 0) {
             return null;
         }
+        NBTTools nbtTools = CBShim.getShim(NBTTools.class, instances.getServer());
         Block b;
         if ("create".equals(args[0])) {
             // Shitty hack to get the looked at entity.
@@ -131,17 +131,17 @@ public class Spawner extends AbstractCommand {
             }
             b = nearest.getLocation().getBlock();
             b.setType(Material.MOB_SPAWNER);
-            CompoundTag entity = NBTTools.readEntity(nearest);
+            CompoundTag entity = nbtTools.readEntity(nearest);
             entity.remove("Pos");
             entity.remove("Motion");
-            CompoundTag spawner = NBTTools.readTileEntity(b);
+            CompoundTag spawner = nbtTools.readTileEntity(b);
             CompoundTag spawn = createSpawn(nearest.getType(), 100);
             spawn.getCompound("Properties").getValue().putAll(entity.getValue());
             spawner.setCompound("SpawnData");
             spawner.getCompound("SpawnData").getValue().putAll(spawn.getValue());
             spawner.setString("EntityId", nearest.getType().getName());
             spawner.setList("SpawnPotentials", new ListTag("SpawnPotentials", TagType.COMPOUND, new CompoundTag[]{spawn}));
-            NBTTools.writeTileEntity(b, spawner);
+            nbtTools.writeTileEntity(b, spawner);
             args = shift(args, 1);
         } else {
             b = player.getTargetBlock(null, 200);
@@ -153,7 +153,7 @@ public class Spawner extends AbstractCommand {
         List<String> ret = new ArrayList<String>();
         boolean modified = false;
 
-        CompoundTag tileEntity = NBTTools.readTileEntity(b);
+        CompoundTag tileEntity = nbtTools.readTileEntity(b);
         ListTag spawnPotentials = tileEntity.getList("SpawnPotentials");
         CompoundTag spawn;
         if (spawnPotentials == null) {
@@ -471,7 +471,7 @@ public class Spawner extends AbstractCommand {
                                 equipment.getValue()[slot.ordinal()] = new CompoundTag();
                                 modified = true;
                             } else {
-                                CompoundTag tag = NBTTools.readItemStack(stack);
+                                CompoundTag tag = nbtTools.readItemStack(stack);
                                 if (tag != null) {
                                     equipment.getValue()[slot.ordinal()] = tag;
                                     modified = true;
@@ -514,7 +514,7 @@ public class Spawner extends AbstractCommand {
                             if (duration < 0) {
                                 throw new InvocationException("Duration must be positive.");
                             }
-                            CompoundTag playerTag = NBTTools.readEntity(player);
+                            CompoundTag playerTag = nbtTools.readEntity(player);
                             ListTag effects = playerTag.getList("ActiveEffects");
                             if (effects == null) {
                                 getProperties(spawn).remove("ActiveEffects");
@@ -535,7 +535,7 @@ public class Spawner extends AbstractCommand {
             }
         }
         if (modified) {
-            NBTTools.writeTileEntity(b, tileEntity);
+            nbtTools.writeTileEntity(b, tileEntity);
             ret.add("Spawner modified.");
         }
         return ret;

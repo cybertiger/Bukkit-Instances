@@ -5,9 +5,12 @@
 package org.cyberiantiger.minecraft.instances;
 
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.cyberiantiger.minecraft.instances.generator.VoidGenerator;
+import org.cyberiantiger.minecraft.instances.unsafe.CBShim;
 import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
@@ -116,7 +119,9 @@ public class InstanceEntrancePortal extends Portal {
 
             String sourceWorldName = destination.getCuboid().getWorld();
 
-            world = InstanceTools.createInstance(instances, pair, sourceWorldName, party.hasLeader()? 1 : 0);
+            int firstInstance = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
+
+            world = CBShim.getShim(InstanceTools.class, instances.getServer()).createInstance(instances, pair.getDifficulty(), sourceWorldName, firstInstance);
             if (world == null) {
                 player.sendMessage(StringUtil.error("Could not create instance world."));
                 e.setCancelled(true);

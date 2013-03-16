@@ -73,6 +73,7 @@ import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
 import org.cyberiantiger.minecraft.instances.command.Spawner;
+import org.cyberiantiger.minecraft.instances.unsafe.CBShim;
 import org.cyberiantiger.minecraft.instances.unsafe.PacketHooks;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldInheritance;
@@ -355,7 +356,8 @@ public class Instances extends JavaPlugin implements Listener {
         }
         getLogger().info("Registering packet handler for no-op command block editing");
         try {
-            packetHooks = new PacketHooks(this, getEditCommandInCreative());
+            packetHooks = CBShim.getShim(PacketHooks.class, getServer());
+            packetHooks.configure(this, getEditCommandInCreative());
             packetHooks.setInstalled(true);
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
