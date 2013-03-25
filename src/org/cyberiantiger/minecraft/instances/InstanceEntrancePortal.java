@@ -8,12 +8,10 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 import org.cyberiantiger.minecraft.instances.util.TimeUtil;
-import org.cyberiantiger.minecraft.unsafe.CBShim;
 
 /**
  *
@@ -119,7 +117,7 @@ public class InstanceEntrancePortal extends Portal {
 
             int firstInstance = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
 
-            world = CBShim.createShim(InstanceTools.class, instances).createInstance(instances, pair.getDifficulty(), sourceWorldName, firstInstance);
+            world = instances.getInstanceTools().createInstance(instances, pair.getDifficulty(), sourceWorldName, firstInstance);
             if (world == null) {
                 player.sendMessage(StringUtil.error("Could not create instance world."));
                 e.setCancelled(true);

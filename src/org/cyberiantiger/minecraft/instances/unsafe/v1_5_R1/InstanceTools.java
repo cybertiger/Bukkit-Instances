@@ -10,7 +10,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.minecraft.server.v1_5_R1.Chunk;
 import net.minecraft.server.v1_5_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_5_R1.EntityTracker;
@@ -26,10 +30,13 @@ import net.minecraft.server.v1_5_R1.WorldManager;
 import net.minecraft.server.v1_5_R1.WorldProvider;
 import net.minecraft.server.v1_5_R1.WorldServer;
 import net.minecraft.server.v1_5_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_5_R1.RegionFile;
+import net.minecraft.server.v1_5_R1.RegionFileCache;
 import net.minecraft.server.v1_5_R1.ServerNBTManager;
 import net.minecraft.server.v1_5_R1.WorldProviderHell;
 import net.minecraft.server.v1_5_R1.WorldProviderTheEnd;
 import org.bukkit.Difficulty;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
@@ -46,6 +53,46 @@ import org.cyberiantiger.minecraft.instances.generator.VoidGenerator;
  */
 public final class InstanceTools implements org.cyberiantiger.minecraft.instances.unsafe.InstanceTools {
     public static final String FOLDER_NAME = "worlds";
+
+    private boolean isParent(File parent, File child) {
+        if (child == null) {
+            return false;
+        } else if (child == parent) {
+            return true;
+        } else {
+            return isParent(parent, child.getParentFile());
+        }
+    }
+
+    public void unloadWorld(Plugin plugin, World world) {
+        try {
+            plugin.getServer().unloadWorld(world, false);
+            File folder = world.getWorldFolder();
+            Field field = RegionFileCache.class.getDeclaredField("a");
+            field.setAccessible(true);
+            Map<File,RegionFile> fileCache = (Map<File,RegionFile>) field.get(null);
+            Iterator<Map.Entry<File,RegionFile>> i = fileCache.entrySet().iterator();
+            while (i.hasNext()) {
+                Map.Entry<File,RegionFile> e = i.next();
+                if (isParent(folder, e.getKey())) {
+                    i.remove();
+                    try {
+                        e.getValue().c();
+                    } catch (IOException ex) {
+                        plugin.getLogger().log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        } catch (NoSuchFieldException ex) {
+            plugin.getLogger().log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            plugin.getLogger().log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            plugin.getLogger().log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            plugin.getLogger().log(Level.SEVERE, null, ex);
+        }
+    }
 
     @Override
     public org.bukkit.World createInstance(final Plugin instances, Difficulty difficulty, String sourceWorld, int startNumber) {

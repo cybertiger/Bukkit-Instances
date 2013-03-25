@@ -73,6 +73,7 @@ import org.cyberiantiger.minecraft.instances.command.SetHome;
 import org.cyberiantiger.minecraft.instances.command.SetSpawn;
 import org.cyberiantiger.minecraft.instances.command.Spawn;
 import org.cyberiantiger.minecraft.instances.command.Spawner;
+import org.cyberiantiger.minecraft.instances.unsafe.InstanceTools;
 import org.cyberiantiger.minecraft.unsafe.CBShim;
 import org.cyberiantiger.minecraft.instances.unsafe.PacketHooks;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
@@ -120,6 +121,7 @@ public class Instances extends JavaPlugin implements Listener {
     private CuboidSelection cuboidSelection;
     private PacketHooks packetHooks;
     private NBTTools nbtTools;
+    private InstanceTools instanceTools;
 
     {
         commands.put("p", new PartyChat());
@@ -172,6 +174,10 @@ public class Instances extends JavaPlugin implements Listener {
 
     public NBTTools getNBTTools() {
         return nbtTools;
+    }
+
+    public InstanceTools getInstanceTools() {
+        return instanceTools;
     }
 
     public PortalPair getPortalPair(String name) {
@@ -364,13 +370,20 @@ public class Instances extends JavaPlugin implements Listener {
         }
         getLogger().info("Creating NBTTools interface");
         try {
-            nbtTools = CBShim.createShim(NBTTools.class, this);
+            this.nbtTools = CBShim.createShim(NBTTools.class, this);
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Error loading NBTTools.", e);
         } catch (Error e) {
             getLogger().log(Level.WARNING, "Error loading NBTTools.", e);
         }
-        getLogger().info("Registering packet handler for no-op command block editing");
+        getLogger().info("Creating InstanceTools interface");
+        try {
+            this.instanceTools = CBShim.createShim(InstanceTools.class, this);
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Error loading InstanceTools.", e);
+        } catch (Error e) {
+            getLogger().log(Level.WARNING, "Error loading InstanceTools.", e);
+        }
         List<DependencyFactory<PacketHooks>> packetHooksFactories = new ArrayList<DependencyFactory<PacketHooks>>();
         packetHooksFactories.add(new ProtocolLibPacketHooksFactory(this));
         packetHooksFactories.add(new InstancesPacketHooksFactory(this));
@@ -387,7 +400,7 @@ public class Instances extends JavaPlugin implements Listener {
         cuboidSelectionFactories.add(new WorldEditCuboidSelectionFactory(this));
         cuboidSelectionFactories.add(new InstancesCuboidSelectionFactory(this));
         this.cuboidSelection = DependencyUtil.first(getLogger(), CuboidSelection.class, cuboidSelectionFactories);
-
+        getLogger().info("Registering packet handler for no-op command block editing");
         try {
             packetHooks.install();
         } catch (Exception e) {
@@ -845,7 +858,7 @@ public class Instances extends JavaPlugin implements Listener {
                 teleportToSpawn(p);
             }
             // Finally delete the instance without saving.
-            getServer().unloadWorld(world, false);
+            getInstanceTools().unloadWorld(this, world);
         }
     }
 
