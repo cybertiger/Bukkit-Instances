@@ -8,8 +8,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,8 +31,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
+import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.nbt.CompoundTag;
-import org.cyberiantiger.minecraft.unsafe.v1_4_R1.NBTTools;
+import org.cyberiantiger.minecraft.unsafe.NBTTools;
 
 /**
  *
@@ -39,7 +41,6 @@ import org.cyberiantiger.minecraft.unsafe.v1_4_R1.NBTTools;
  */
 public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe.PacketHooks, Listener {
 
-    private static final NBTTools nbtTools = new NBTTools();
     private static final Field INBOUND_QUEUE;
 
     static {
@@ -58,10 +59,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
     private Plugin plugin;
     private boolean editInCreative;
 
-    public PacketHooks() {
-    }
-
-    public void configure(Plugin plugin, boolean editInCreative) {
+    public PacketHooks(Plugin plugin, boolean editInCreative) {
         this.plugin = plugin;
         this.editInCreative = editInCreative;
     }
@@ -98,18 +96,16 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
             PlayerConnection connection = handle.playerConnection;
             NetworkManager netMan = (NetworkManager) connection.networkManager;
             Queue inboundQueue = (Queue) INBOUND_QUEUE.get(netMan);
-            Queue hackedInboundQueue = new HackedInboundQueue(player, this);
+            Queue hackedInboundQueue = new HackedInboundQueue(player, this, inboundQueue);
             INBOUND_QUEUE.set(netMan, hackedInboundQueue);
-            // XXX: May reorder packets.
-            while (!inboundQueue.isEmpty()) {
-                hackedInboundQueue.add(inboundQueue.poll());
-            }
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(PacketHooks.class.getName()).log(Level.SEVERE, null, ex);
+            plugin.getLogger().log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(PacketHooks.class.getName()).log(Level.SEVERE, null, ex);
+            plugin.getLogger().log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(PacketHooks.class.getName()).log(Level.SEVERE, null, ex);
+            plugin.getLogger().log(Level.SEVERE, null, ex);
+        } catch (ClassCastException ex) {
+            plugin.getLogger().log(Level.SEVERE, null, ex);
         }
     }
 
@@ -119,18 +115,17 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
             PlayerConnection connection = handle.playerConnection;
             NetworkManager netMan = (NetworkManager) connection.networkManager;
             Queue inboundQueue = (Queue) INBOUND_QUEUE.get(netMan);
-            Queue vanillaInboundQueue = new ConcurrentLinkedQueue();
-            INBOUND_QUEUE.set(netMan, vanillaInboundQueue);
-            // XXX: May reorder packets.
-            while (!inboundQueue.isEmpty()) {
-                vanillaInboundQueue.add(inboundQueue.poll());
+            if (inboundQueue instanceof HackedInboundQueue) {
+                INBOUND_QUEUE.set(netMan, ((HackedInboundQueue)inboundQueue).delegate);
             }
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(PacketHooks.class.getName()).log(Level.SEVERE, null, ex);
+            plugin.getLogger().log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(PacketHooks.class.getName()).log(Level.SEVERE, null, ex);
+            plugin.getLogger().log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
-            Logger.getLogger(PacketHooks.class.getName()).log(Level.SEVERE, null, ex);
+            plugin.getLogger().log(Level.SEVERE, null, ex);
+        } catch (ClassCastException ex) {
+            plugin.getLogger().log(Level.SEVERE, null, ex);
         }
     }
 
@@ -144,7 +139,6 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
                     final int j = datainputstream.readInt();
                     final int k = datainputstream.readInt();
                     final String s = Packet.a(datainputstream, 256);
-                    // Switch to main server thread.
                     if (!((CraftServer) plugin.getServer()).getServer().getEnableCommandBlock()) {
                         player.sendMessage("Command blocks are not enabled, set enable-command-block=true in server.properties.");
                         return false;
@@ -169,6 +163,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
                             return false;
                         }
                     }
+                    NBTTools nbtTools = ((Instances)plugin).getNBTTools();
                     CompoundTag e = nbtTools.readTileEntity(b);
                     e.setString("Command", s);
                     nbtTools.writeTileEntity(b, e);
@@ -184,30 +179,138 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
         return true;
     }
 
-    private static final class HackedInboundQueue extends ConcurrentLinkedQueue {
+    public void install() {
+        setInstalled(true);
+    }
+
+    public void uninstall() {
+        setInstalled(false);
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    private static final class HackedInboundQueue implements Queue {
 
         private final Player player;
         private final PacketHooks hooks;
-        // This packet is a NOOP when received from the client.
-        // It is normally only sent server -> client.
-        private static final Packet NOOP = new Packet9Respawn();
+        private final Queue delegate;
 
-        public HackedInboundQueue(Player player, PacketHooks hooks) {
+        public HackedInboundQueue(Player player, PacketHooks hooks, Queue delegate) {
             this.player = player;
             this.hooks = hooks;
+            this.delegate = delegate;
         }
 
         @Override
         public Object poll() {
-            // Hook into poll even though it's more of a pain, because if we
-            // eat the packet, we cannot return null.
-            // This is processed on the main server thread, .add() is not.
-            Object ret = super.poll();
-            if (hooks.handlePacket(player, (Packet) ret)) {
-                return ret;
-            } else {
-                return NOOP;
+            while (true) {
+                Object ret = delegate.poll();
+                if (!hooks.handlePacket(player, (Packet) ret)) {
+                    return ret;
+                }
             }
+        }
+
+        @Override
+        public boolean add(Object e) {
+            return delegate.add(e);
+        }
+
+        @Override
+        public boolean offer(Object e) {
+            return delegate.offer(e);
+        }
+
+        @Override
+        public Object remove() {
+            return delegate.remove();
+        }
+
+        @Override
+        public Object element() {
+            return delegate.element();
+        }
+
+        @Override
+        public Object peek() {
+            return delegate.peek();
+        }
+
+        @Override
+        public int size() {
+            return delegate.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return delegate.isEmpty();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            return delegate.contains(o);
+        }
+
+        @Override
+        public Iterator iterator() {
+            return delegate.iterator();
+        }
+
+        @Override
+        public Object[] toArray() {
+            return delegate.toArray();
+        }
+
+        @Override
+        public Object[] toArray(Object[] a) {
+            return delegate.toArray(a);
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            return delegate.remove(o);
+        }
+
+        @Override
+        public boolean containsAll(Collection c) {
+            return delegate.containsAll(c);
+        }
+
+        @Override
+        public boolean addAll(Collection c) {
+            return delegate.addAll(c);
+        }
+
+        @Override
+        public boolean removeAll(Collection c) {
+            return delegate.removeAll(c);
+        }
+
+        @Override
+        public boolean retainAll(Collection c) {
+            return delegate.retainAll(c);
+        }
+
+        @Override
+        public void clear() {
+            delegate.clear();
+        }
+
+        @Override
+        public int hashCode() {
+            return delegate.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return delegate.equals(obj);
+        }
+
+        @Override
+        public String toString() {
+            return delegate.toString();
         }
     }
 }

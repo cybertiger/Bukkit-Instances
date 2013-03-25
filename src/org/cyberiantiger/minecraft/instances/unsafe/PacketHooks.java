@@ -4,16 +4,16 @@
  */
 package org.cyberiantiger.minecraft.instances.unsafe;
 
-import org.bukkit.plugin.Plugin;
+import org.cyberiantiger.minecraft.instances.util.Dependency;
 
 /**
  *
  * @author antony
  */
-public interface PacketHooks {
-
-    public void configure(Plugin plugin, boolean editCommandInCreative);
-
-    public void setInstalled(boolean b);
+public interface PacketHooks extends Dependency {
     
+    public void install();
+
+    public void uninstall();
+
 }

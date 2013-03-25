@@ -27,6 +27,10 @@ public abstract class DependencyFactory<T extends Dependency> {
         return plugin;
     }
 
+    public final Plugin getThisPlugin() {
+        return thisPlugin;
+    }
+
     public final T getDependecy() {
         if (!thisPlugin.isEnabled()) {
             dependency = null;

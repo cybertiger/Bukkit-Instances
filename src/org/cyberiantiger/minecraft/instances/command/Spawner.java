@@ -22,7 +22,6 @@ import org.cyberiantiger.minecraft.nbt.DoubleTag;
 import org.cyberiantiger.minecraft.nbt.FloatTag;
 import org.cyberiantiger.minecraft.nbt.ListTag;
 import org.cyberiantiger.minecraft.nbt.TagType;
-import org.cyberiantiger.minecraft.unsafe.CBShim;
 import org.cyberiantiger.minecraft.unsafe.NBTTools;
 
 /**
@@ -99,7 +98,7 @@ public class Spawner extends AbstractCommand {
         if (args.length == 0) {
             return null;
         }
-        NBTTools nbtTools = CBShim.createShim(NBTTools.class, instances);
+        NBTTools nbtTools = instances.getNBTTools();
         Block b;
         if ("create".equals(args[0])) {
             // Shitty hack to get the looked at entity.

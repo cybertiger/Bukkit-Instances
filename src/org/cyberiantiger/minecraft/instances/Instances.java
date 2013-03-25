@@ -79,14 +79,17 @@ import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldInheritance;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.CuboidSelection;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.InstancesCuboidSelectionFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.InstancesPacketHooksFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseCoreWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseInventoriesWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.PEXWorldInheritanceFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.ProtocolLibPacketHooksFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.VaultBankFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldEditCuboidSelectionFactory;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.cyberiantiger.minecraft.instances.util.DependencyUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
+import org.cyberiantiger.minecraft.unsafe.NBTTools;
 
 /**
  *
@@ -116,6 +119,7 @@ public class Instances extends JavaPlugin implements Listener {
     private WorldInheritance worldInheritance;
     private CuboidSelection cuboidSelection;
     private PacketHooks packetHooks;
+    private NBTTools nbtTools;
 
     {
         commands.put("p", new PartyChat());
@@ -164,6 +168,10 @@ public class Instances extends JavaPlugin implements Listener {
 
     public Collection<PortalPair> getPortalPairs() {
         return portals.values();
+    }
+
+    public NBTTools getNBTTools() {
+        return nbtTools;
     }
 
     public PortalPair getPortalPair(String name) {
@@ -354,16 +362,19 @@ public class Instances extends JavaPlugin implements Listener {
                 getLogger().log(Level.WARNING, "Failed to create plugin directory:  {0}", dir);
             }
         }
-        getLogger().info("Registering packet handler for no-op command block editing");
+        getLogger().info("Creating NBTTools interface");
         try {
-            packetHooks = CBShim.createShim(PacketHooks.class, this);
-            packetHooks.configure(this, getEditCommandInCreative());
-            packetHooks.setInstalled(true);
+            nbtTools = CBShim.createShim(NBTTools.class, this);
         } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
+            getLogger().log(Level.WARNING, "Error loading NBTTools.", e);
         } catch (Error e) {
-            getLogger().log(Level.WARNING, "Error loading packet hooks, command block editing will not work.", e);
+            getLogger().log(Level.WARNING, "Error loading NBTTools.", e);
         }
+        getLogger().info("Registering packet handler for no-op command block editing");
+        List<DependencyFactory<PacketHooks>> packetHooksFactories = new ArrayList<DependencyFactory<PacketHooks>>();
+        packetHooksFactories.add(new ProtocolLibPacketHooksFactory(this));
+        packetHooksFactories.add(new InstancesPacketHooksFactory(this));
+        packetHooks = DependencyUtil.first(getLogger(), PacketHooks.class, packetHooksFactories);
         List<DependencyFactory<WorldInheritance>> worldInheritanceFactories = new ArrayList<DependencyFactory<WorldInheritance>>();
         worldInheritanceFactories.add(new MultiverseCoreWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new MultiverseInventoriesWorldInheritanceFactory(this));
@@ -376,6 +387,14 @@ public class Instances extends JavaPlugin implements Listener {
         cuboidSelectionFactories.add(new WorldEditCuboidSelectionFactory(this));
         cuboidSelectionFactories.add(new InstancesCuboidSelectionFactory(this));
         this.cuboidSelection = DependencyUtil.first(getLogger(), CuboidSelection.class, cuboidSelectionFactories);
+
+        try {
+            packetHooks.install();
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Error installing PacketHooks.", e);
+        } catch (Error e) {
+            getLogger().log(Level.WARNING, "Error installing PacketHooks.", e);
+        }
     }
 
 
@@ -387,12 +406,11 @@ public class Instances extends JavaPlugin implements Listener {
         cuboidSelection = null;
         save();
         try {
-            if (packetHooks != null) {
-                packetHooks.setInstalled(false);
-                packetHooks = null;
-            }
+            packetHooks.uninstall();
         } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Error uninstalling PacketHooks.", e);
         } catch (Error e) {
+            getLogger().log(Level.WARNING, "Error uninstalling PacketHooks.", e);
         }
         clear();
     }

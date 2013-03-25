@@ -18,10 +18,8 @@ import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
  */
 public class InstancesCuboidSelectionFactory extends DependencyFactory<CuboidSelection> {
 
-    public static final String PLUGIN_NAME = "Instances";
-
     public InstancesCuboidSelectionFactory(Plugin plugin) {
-        super(plugin, PLUGIN_NAME);
+        super(plugin, plugin.getName());
     }
 
     @Override
