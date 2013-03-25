@@ -14,7 +14,6 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.logging.Level;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

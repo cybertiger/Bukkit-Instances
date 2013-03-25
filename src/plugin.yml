@@ -8,6 +8,7 @@ softdepend:
   - Multiverse-Inventories
   - WorldEdit
   - Vault
+  - ProtocolLib
 commands:
   p:
     description: Chat to your party.

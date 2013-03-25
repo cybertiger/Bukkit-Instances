@@ -32,10 +32,6 @@ public abstract class DependencyFactory<T extends Dependency> {
     }
 
     public final T getDependecy() {
-        if (!thisPlugin.isEnabled()) {
-            dependency = null;
-            return null;
-        }
         Plugin depPlugin;
         if (plugin.equals(thisPlugin.getName()))  {
             depPlugin = thisPlugin;
