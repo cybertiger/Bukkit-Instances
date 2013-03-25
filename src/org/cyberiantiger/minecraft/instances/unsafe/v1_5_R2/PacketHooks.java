@@ -39,6 +39,7 @@ import org.cyberiantiger.minecraft.unsafe.NBTTools;
  * @author antony
  */
 public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe.PacketHooks, Listener {
+
     private static final Field INBOUND_QUEUE;
 
     static {
@@ -65,30 +66,36 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (installed.get()) {
-            installPacketHooks(e.getPlayer());
-        }
-    }
-
-    public void setInstalled(boolean installed) {
-        if (plugin == null) {
-            throw new IllegalStateException("Not configured");
-        }
-        if (installed != this.installed.get()) {
-            plugin.getServer().getPluginManager().registerEvents(this, plugin);
-            this.installed.set(installed);
-            if (installed) {
-                for (Player p : plugin.getServer().getOnlinePlayers()) {
-                    installPacketHooks(p);
-                }
-            } else {
-                for (Player p : plugin.getServer().getOnlinePlayers()) {
-                    uninstallPacketHooks(p);
-                }
+            if (! installPacketHooks(e.getPlayer())) {
+                plugin.getLogger().warning("Disabling packet hooks, server seems not to support them, consider using ProtocolLib");
+                uninstall();
             }
         }
     }
 
-    private void installPacketHooks(Player player) {
+    public void install() {
+        if (this.installed.getAndSet(true))
+            return;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            if (!installPacketHooks(p)) {
+                plugin.getLogger().warning("Disabling packet hooks, server seems not to support them, consider using ProtocolLib");
+                uninstall();
+                break;
+            }
+        }
+    }
+
+    public void uninstall() {
+        if (!this.installed.getAndSet(false))
+            return;
+        PlayerJoinEvent.getHandlerList().unregister(this);
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            uninstallPacketHooks(p);
+        }
+    }
+
+    private boolean installPacketHooks(Player player) {
         try {
             EntityPlayer handle = ((CraftPlayer) player).getHandle();
             PlayerConnection connection = handle.playerConnection;
@@ -96,6 +103,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
             Queue inboundQueue = (Queue) INBOUND_QUEUE.get(netMan);
             Queue hackedInboundQueue = new HackedInboundQueue(player, this, inboundQueue);
             INBOUND_QUEUE.set(netMan, hackedInboundQueue);
+            return true;
         } catch (IllegalArgumentException ex) {
             plugin.getLogger().log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
@@ -105,9 +113,10 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
         } catch (ClassCastException ex) {
             plugin.getLogger().log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
-    private void uninstallPacketHooks(Player player) {
+    private boolean uninstallPacketHooks(Player player) {
         try {
             EntityPlayer handle = ((CraftPlayer) player).getHandle();
             PlayerConnection connection = handle.playerConnection;
@@ -115,6 +124,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
             Queue inboundQueue = (Queue) INBOUND_QUEUE.get(netMan);
             if (inboundQueue instanceof HackedInboundQueue) {
                 INBOUND_QUEUE.set(netMan, ((HackedInboundQueue)inboundQueue).delegate);
+                return true;
             }
         } catch (IllegalArgumentException ex) {
             plugin.getLogger().log(Level.SEVERE, null, ex);
@@ -125,6 +135,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
         } catch (ClassCastException ex) {
             plugin.getLogger().log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
     private boolean handlePacket(final Player player, final Packet packet) {
@@ -175,14 +186,6 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
 
         }
         return true;
-    }
-
-    public void install() {
-        setInstalled(true);
-    }
-
-    public void uninstall() {
-        setInstalled(false);
     }
 
     public Plugin getPlugin() {
