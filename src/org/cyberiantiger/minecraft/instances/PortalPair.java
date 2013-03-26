@@ -27,14 +27,16 @@ public class PortalPair implements Comparable<PortalPair> {
     private int recreateTime;
     private Difficulty difficulty;
     private String defaultParty;
+    private int maxPlayers;
+    private int maxInstances;
     // Last time a player created a new instance of this portal's dungeon.
     private Map<String, Long> lastCreate = new HashMap<String, Long>();
 
     public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, Difficulty difficulty) {
-        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty, null, null, null);
+        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty, null, null, null, 0, 0);
     };
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty, String defaultParty, Facing entranceFacing, Facing destinationFacing) {
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty, String defaultParty, Facing entranceFacing, Facing destinationFacing, int maxPlayers, int maxInstances) {
         this.name = name;
         this.enter = enter;
         this.destination = destination;
@@ -46,6 +48,8 @@ public class PortalPair implements Comparable<PortalPair> {
         this.recreateTime = recreateTime;
         this.difficulty = difficulty;
         this.defaultParty = defaultParty;
+        this.maxPlayers = maxPlayers;
+        this.maxInstances = maxInstances;
         enter.setFacing(entranceFacing);
         destination.setFacing(destinationFacing);
         enter.setPortalPair(this);
@@ -138,6 +142,22 @@ public class PortalPair implements Comparable<PortalPair> {
 
     public void setDefaultParty(String defaultParty) {
         this.defaultParty = defaultParty;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public int getMaxInstances() {
+        return maxInstances;
+    }
+
+    public void setMaxInstances(int maxInstances) {
+        this.maxInstances = maxInstances;
     }
     
     public int compareTo(PortalPair o) {

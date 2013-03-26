@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -113,6 +114,7 @@ public class Instances extends JavaPlugin implements Listener {
     private Map<String, List<Portal>> portalMap = new HashMap<String, List<Portal>>();
     private Map<Player, InstanceEntrancePortal> lastPortal = new HashMap<Player, InstanceEntrancePortal>();
     private Map<String, HomeLocation> homes = new HashMap<String, HomeLocation>();
+    private Map<String, List<Instance>> instanceMap = new HashMap<String, List<Instance>>();
     private ItemStack selectionTool;
     private Map<Player, Session> sessions = new HashMap<Player, Session>();
     private final static Map<String, Command> commands = new HashMap<String, Command>();
@@ -343,6 +345,42 @@ public class Instances extends JavaPlugin implements Listener {
         lastPortal.put(player, portal);
     }
 
+    public World createInstance(Party party, Player player, PortalPair pair) {
+        String sourceWorldName = pair.getDestination().getCuboid().getWorld();
+
+        int firstInstance = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
+
+        World world = getInstanceTools().createInstance(this, pair.getDifficulty(), sourceWorldName, firstInstance);
+
+        if (world == null) {
+            return null;
+        }
+        pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
+
+        getWorldInheritance().addInheritance(sourceWorldName, world.getName());
+
+        Instance instance = new Instance(pair, sourceWorldName, world.getName());
+
+        party.addInstance(instance);
+        List<Instance> instances;
+        if (!instanceMap.containsKey(pair.getName())) {
+            instances = new ArrayList<Instance>();
+            instanceMap.put(pair.getName(), instances);
+        } else {
+            instances = instanceMap.get(pair.getName());
+        }
+        instances.add(instance);
+
+        getLogger().info("Created instance: " + instance);
+
+        return world;
+    }
+
+    public List<Instance> getInstances(PortalPair portal) {
+        List<Instance> ret = instanceMap.get(portal.getName());
+        return ret == null ? Collections.<Instance>emptyList() : ret;
+    }
+    
     public boolean isInstance(World world) {
         for (Party p : parties.values()) {
             for (Instance i : p.getInstances()) {
@@ -481,9 +519,11 @@ public class Instances extends JavaPlugin implements Listener {
                 ItemStack createItem = thisSection.getItemStack("createItem");
                 int unloadTime = thisSection.getInt("unloadTime");
                 int reenterTime = thisSection.getInt("recreateTime");
+                int maxPlayers = thisSection.getInt("maxPlayers", 0);
+                int maxInstances = thisSection.getInt("maxInstances", 0);
                 Difficulty difficulty = Difficulty.valueOf(thisSection.getString("difficulty", "NORMAL"));
                 String defaultParty = thisSection.getString("defaultParty", null);
-                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty, defaultParty, entranceFacing, destinationFacing);
+                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty, defaultParty, entranceFacing, destinationFacing, maxPlayers, maxInstances);
                 ConfigurationSection playerSection = thisSection.getConfigurationSection("lastCreate");
                 if (playerSection != null) {
                     for (String p : playerSection.getKeys(false)) {
@@ -581,6 +621,8 @@ public class Instances extends JavaPlugin implements Listener {
             if (pair.getDefaultParty() != null) {
                 pairSection.set("defaultParty", pair.getDefaultParty());
             }
+            pairSection.set("maxPlayers", pair.getMaxPlayers());
+            pairSection.set("maxInstances", pair.getMaxInstances());
             ConfigurationSection playerSection = pairSection.createSection("lastCreate");
             for (Map.Entry<String, Long> e : pair.getLastCreate().entrySet()) {
                 playerSection.set(e.getKey(), e.getValue());
@@ -859,6 +901,10 @@ public class Instances extends JavaPlugin implements Listener {
             }
             // Finally delete the instance without saving.
             getInstanceTools().unloadWorld(this, world);
+
+            if (instanceMap.containsKey(instance.getPortal().getName())) {
+                instanceMap.get(instance.getPortal().getName()).remove(instance);
+            }
         }
     }
 

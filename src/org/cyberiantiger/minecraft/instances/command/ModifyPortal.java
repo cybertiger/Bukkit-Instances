@@ -337,6 +337,53 @@ public class ModifyPortal extends AbstractCommand {
 
     }
 
+    private static class MaxPlayersProperty extends IntProperty {
+
+        @Override
+        public String getName() {
+            return "maxPlayers";
+        }
+
+        @Override
+        public void set(PortalPair portal, Integer value) {
+            portal.setMaxPlayers(value);
+        }
+
+        @Override
+        public Integer get(PortalPair portal) {
+            return portal.getMaxPlayers();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.setMaxPlayers(0);
+        }
+    }
+
+    private static class MaxInstancesProperty extends IntProperty {
+
+        @Override
+        public String getName() {
+            return "maxInstances";
+        }
+
+        @Override
+        public void set(PortalPair portal, Integer value) {
+            portal.setMaxInstances(value);
+        }
+
+        @Override
+        public Integer get(PortalPair portal) {
+            return portal.getMaxInstances();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.setMaxInstances(0);
+        }
+        
+    }
+
     private static class DefaultParty extends StringProperty {
         @Override
         public String getName() {
@@ -419,6 +466,8 @@ public class ModifyPortal extends AbstractCommand {
         addProperty(new DefaultParty());
         addProperty(new EntranceFacing());
         addProperty(new DestinationFacing());
+        addProperty(new MaxPlayersProperty());
+        addProperty(new MaxInstancesProperty());
     }
 
     @Override

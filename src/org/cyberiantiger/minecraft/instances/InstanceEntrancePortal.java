@@ -80,6 +80,16 @@ public class InstanceEntrancePortal extends Portal {
                     return;
                 }
             }
+            if (pair.getMaxPlayers() > 0 && pair.getMaxPlayers() > party.getMembers().size()) {
+                player.sendMessage(StringUtil.error("Your party is too big for this dungeon."));
+                e.setCancelled(true);
+                return;
+            }
+            if (pair.getMaxInstances() > 0 && pair.getMaxInstances() >= instances.getInstances(pair).size()) {
+                player.sendMessage(StringUtil.error("Maximum number of dungeons for this portal has been reached."));
+                e.setCancelled(true);
+                return;
+            }
             // XXX: If price and item are set, then code will charge entry price then deny entry.
             if (pair.getCreateOrEntryPrice() > 0.0D) {
                 try {
@@ -110,27 +120,7 @@ public class InstanceEntrancePortal extends Portal {
                 player.sendMessage(StringUtil.success("Your offering of " + required.getAmount() + " " + ItemUtil.prettyName(required.getType()) + " has been accepted."));
             }
 
-            // Must be after other checks.
-            pair.getLastCreate().put(player.getName(), now);
-
-            String sourceWorldName = destination.getCuboid().getWorld();
-
-            int firstInstance = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
-
-            world = instances.getInstanceTools().createInstance(instances, pair.getDifficulty(), sourceWorldName, firstInstance);
-            if (world == null) {
-                player.sendMessage(StringUtil.error("Could not create instance world."));
-                e.setCancelled(true);
-                return;
-            }
-
-            instances.getWorldInheritance().addInheritance(sourceWorldName, world.getName());
-
-            instance = new Instance(getPortalPair(), sourceWorldName, world.getName());
-
-            party.addInstance(instance);
-
-            instances.getLogger().info("Created instance: " + instance);
+            world = instances.createInstance(party, player, pair);
         } else {
             if (pair.getEntryPrice() > 0.0D) {
                 try {
