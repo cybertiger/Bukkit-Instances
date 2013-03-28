@@ -1,5 +1,5 @@
 name: "Instances"
-version: "1.8"
+version: "1.9"
 main: "org.cyberiantiger.minecraft.instances.Instances"
 website: "http://dev.bukkit.org/server-mods/Instances/"
 softdepend:
