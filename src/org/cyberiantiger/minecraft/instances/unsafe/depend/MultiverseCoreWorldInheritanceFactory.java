@@ -8,8 +8,6 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
@@ -38,24 +36,16 @@ public class MultiverseCoreWorldInheritanceFactory extends DependencyFactory<Wor
     private static class MultiverseCoreWorldInheritance implements WorldInheritance {
         private final MultiverseCore plugin;
         private final MVWorldManager worldManager;
-        private final Map<String,Object> worlds;
-        private final Map<String,Object> worldsFromTheConfig;
 
         public MultiverseCoreWorldInheritance(Plugin plugin) throws Exception {
             this.plugin = (MultiverseCore) plugin;
             this.worldManager = this.plugin.getMVWorldManager();
-            Field worldsField = worldManager.getClass().getDeclaredField("worlds");
-            Field worldsFromTheConfigField = worldManager.getClass().getDeclaredField("worldsFromTheConfig");
-            worldsField.setAccessible(true);
-            worldsFromTheConfigField.setAccessible(true);
-            worlds = (Map<String, Object>) worldsField.get(worldManager);
-            worldsFromTheConfig = (Map<String, Object>) worldsFromTheConfigField.get(worldManager);
         }
 
         public void addInheritance(String parent, String child) {
             MultiverseWorld parentWorld = worldManager.getMVWorld(parent);
             if (parentWorld != null) {
-                if (worldManager.addWorld(child, parentWorld.getEnvironment(), String.valueOf(parentWorld.getSeed()), parentWorld.getWorldType(), false, null, parentWorld.getAdjustSpawn())) {
+                if (worldManager.addWorld(child, parentWorld.getEnvironment(), String.valueOf(parentWorld.getSeed()), parentWorld.getWorldType(), false, null, parentWorld.getAdjustSpawn(), false)) {
                     MultiverseWorld childWorld = worldManager.getMVWorld(child);
                     // Do not set the alias or MV-Core has multiple worlds
                     // under the same alias.
@@ -97,11 +87,7 @@ public class MultiverseCoreWorldInheritanceFactory extends DependencyFactory<Wor
         }
 
         public void removeInheritance(String parent, String child) {
-            worlds.remove(child);
-            worldsFromTheConfig.remove(child);
-            worldManager.saveWorldsConfig();
-            // Cannot do this as it unloads the world, and that is our job!
-            // worldManager.removeWorldFromConfig(child);
+            worldManager.removeWorldFromConfig(child, false);
         }
 
         public Plugin getPlugin() {
