@@ -93,7 +93,7 @@ public final class InstanceTools implements org.cyberiantiger.minecraft.instance
     }
 
     @Override
-    public org.bukkit.World createInstance(final Plugin instances, Difficulty difficulty, String sourceWorld, int startNumber) {
+    public org.bukkit.World createInstance(final Plugin instances, Difficulty difficulty, String sourceWorld, String instanceName) {
         World source = instances.getServer().getWorld(sourceWorld);
         File dataFolder;
         if (source == null) {
@@ -115,13 +115,6 @@ public final class InstanceTools implements org.cyberiantiger.minecraft.instance
             instances.getLogger().info("Failed to create instance, could not locate console object.");
             return null;
         }
-
-        int i = startNumber;
-        while (instances.getServer().getWorld(sourceWorld + '-' + i) != null) {
-            i++;
-        }
-
-        String instanceName = sourceWorld + '-' + i;
 
         File worldFolder = new File(instances.getDataFolder(), FOLDER_NAME);
         File saveDataFolder = new File(worldFolder, instanceName);

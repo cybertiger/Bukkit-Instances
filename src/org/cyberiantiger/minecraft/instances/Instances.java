@@ -348,16 +348,24 @@ public class Instances extends JavaPlugin implements Listener {
     public World createInstance(Party party, Player player, PortalPair pair) {
         String sourceWorldName = pair.getDestination().getCuboid().getWorld();
 
-        int firstInstance = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
+        int i = pair.getDefaultParty() == null ? 1 : party.getName().equals(pair.getDefaultParty()) ? 0 : 1;
 
-        World world = getInstanceTools().createInstance(this, pair.getDifficulty(), sourceWorldName, firstInstance);
+        while (getServer().getWorld(sourceWorldName + '-' + i) != null) {
+            i++;
+        }
+
+        String instanceName = sourceWorldName + '-' + i;
+
+        getWorldInheritance().addInheritance(sourceWorldName, instanceName);
+
+        World world = getInstanceTools().createInstance(this, pair.getDifficulty(), sourceWorldName, instanceName);
 
         if (world == null) {
+            getWorldInheritance().removeInheritance(sourceWorldName, instanceName);
             return null;
         }
         pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
 
-        getWorldInheritance().addInheritance(sourceWorldName, world.getName());
 
         Instance instance = new Instance(pair, sourceWorldName, world.getName());
 
@@ -892,8 +900,6 @@ public class Instances extends JavaPlugin implements Listener {
         // Drop the world from the server, teleporting anyone inside it out.
         World world = getServer().getWorld(instance.getInstance());
         if (world != null) {
-            // Remove any world inheritance.
-            getWorldInheritance().removeInheritance(instance.getSourceWorld(), instance.getInstance());
             getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
             // Remove all players from the world.
             for (Player p : world.getPlayers()) {
@@ -901,6 +907,9 @@ public class Instances extends JavaPlugin implements Listener {
             }
             // Finally delete the instance without saving.
             getInstanceTools().unloadWorld(this, world);
+
+            // Remove any world inheritance.
+            getWorldInheritance().removeInheritance(instance.getSourceWorld(), instance.getInstance());
 
             if (instanceMap.containsKey(instance.getPortal().getName())) {
                 instanceMap.get(instance.getPortal().getName()).remove(instance);

@@ -14,7 +14,6 @@ import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.minecraft.server.v1_5_R1.Chunk;
 import net.minecraft.server.v1_5_R1.ChunkRegionLoader;
 import net.minecraft.server.v1_5_R1.EntityTracker;
@@ -36,7 +35,6 @@ import net.minecraft.server.v1_5_R1.ServerNBTManager;
 import net.minecraft.server.v1_5_R1.WorldProviderHell;
 import net.minecraft.server.v1_5_R1.WorldProviderTheEnd;
 import org.bukkit.Difficulty;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
@@ -95,7 +93,7 @@ public final class InstanceTools implements org.cyberiantiger.minecraft.instance
     }
 
     @Override
-    public org.bukkit.World createInstance(final Plugin instances, Difficulty difficulty, String sourceWorld, int startNumber) {
+    public org.bukkit.World createInstance(final Plugin instances, Difficulty difficulty, String sourceWorld, String instanceName) {
         World source = instances.getServer().getWorld(sourceWorld);
         File dataFolder;
         if (source == null) {
@@ -117,13 +115,6 @@ public final class InstanceTools implements org.cyberiantiger.minecraft.instance
             instances.getLogger().info("Failed to create instance, could not locate console object.");
             return null;
         }
-
-        int i = startNumber;
-        while (instances.getServer().getWorld(sourceWorld + '-' + i) != null) {
-            i++;
-        }
-
-        String instanceName = sourceWorld + '-' + i;
 
         File worldFolder = new File(instances.getDataFolder(), FOLDER_NAME);
         File saveDataFolder = new File(worldFolder, instanceName);
