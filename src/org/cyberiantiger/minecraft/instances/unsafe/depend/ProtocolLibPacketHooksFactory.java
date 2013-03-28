@@ -87,8 +87,8 @@ public class ProtocolLibPacketHooksFactory extends DependencyFactory<PacketHooks
             String tag = strings.readSafely(0);
             if ("MC|AdvCdm".equals(tag)) {
                 event.setCancelled(true);
-                final int length = container.getIntegers().readSafely(1);
-                final byte[] data = container.getByteArrays().readSafely(2);
+                final int length = container.getIntegers().readSafely(0);
+                final byte[] data = container.getByteArrays().readSafely(0);
                 try {
                     DataInputStream in = new DataInputStream(new ByteArrayInputStream(data, 0, length));
                     try {
