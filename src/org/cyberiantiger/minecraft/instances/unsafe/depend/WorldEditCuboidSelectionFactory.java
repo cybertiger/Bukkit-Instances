@@ -64,7 +64,11 @@ public class WorldEditCuboidSelectionFactory extends DependencyFactory<CuboidSel
                     throw new InvocationException("You can only create portals for cuboid regions.");
                 }
             } catch (IncompleteRegionException ex) {
-                throw new InvocationException(ex.getLocalizedMessage());
+                if (ex.getLocalizedMessage() != null) 
+                    throw new InvocationException(ex.getLocalizedMessage());
+                if (ex.getMessage() != null)
+                    throw new InvocationException(ex.getMessage());
+                throw new InvocationException("Incomplete region");
             }
         }
 

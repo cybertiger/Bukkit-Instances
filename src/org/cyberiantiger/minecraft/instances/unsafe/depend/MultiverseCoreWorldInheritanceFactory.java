@@ -7,8 +7,11 @@ package org.cyberiantiger.minecraft.instances.unsafe.depend;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import com.onarandombox.MultiverseCore.utils.WorldManager;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 
@@ -33,19 +36,28 @@ public class MultiverseCoreWorldInheritanceFactory extends DependencyFactory<Wor
         return new MultiverseCoreWorldInheritance(plugin);
     }
     
-    private static class MultiverseCoreWorldInheritance implements WorldInheritance {
+    private class MultiverseCoreWorldInheritance implements WorldInheritance {
         private final MultiverseCore plugin;
         private final MVWorldManager worldManager;
+        private final Field worlds;
+        private final Field worldsFromTheConfig;
 
         public MultiverseCoreWorldInheritance(Plugin plugin) throws Exception {
             this.plugin = (MultiverseCore) plugin;
             this.worldManager = this.plugin.getMVWorldManager();
+            worlds = WorldManager.class.getDeclaredField("worlds");
+            worldsFromTheConfig = WorldManager.class.getDeclaredField("worldsFromTheConfig");
+            worlds.setAccessible(true);
+            worldsFromTheConfig.setAccessible(true);
         }
 
-        public void addInheritance(String parent, String child) {
+        public void preAddInheritance(String parent, String child) {
+        }
+
+        public void postAddInheritance(String parent, String child) {
             MultiverseWorld parentWorld = worldManager.getMVWorld(parent);
             if (parentWorld != null) {
-                if (worldManager.addWorld(child, parentWorld.getEnvironment(), String.valueOf(parentWorld.getSeed()), parentWorld.getWorldType(), false, null, parentWorld.getAdjustSpawn(), false)) {
+                if (worldManager.addWorld(child, parentWorld.getEnvironment(), String.valueOf(parentWorld.getSeed()), parentWorld.getWorldType(), false, null, parentWorld.getAdjustSpawn())) {
                     MultiverseWorld childWorld = worldManager.getMVWorld(child);
                     // Do not set the alias or MV-Core has multiple worlds
                     // under the same alias.
@@ -86,8 +98,20 @@ public class MultiverseCoreWorldInheritanceFactory extends DependencyFactory<Wor
             }
         }
 
-        public void removeInheritance(String parent, String child) {
-            worldManager.removeWorldFromConfig(child, false);
+        public void preRemoveInheritance(String parent, String child) {
+            try {
+                Map worldsMap = (Map) worlds.get(plugin.getMVWorldManager());
+                Map worldsFromTheConfigMap = (Map) worldsFromTheConfig.get(plugin.getMVWorldManager());
+                worldsMap.remove(child);
+                worldsFromTheConfigMap.remove(child);
+            } catch (IllegalArgumentException ex) {
+                getThisPlugin().getLogger().log(Level.WARNING, null, ex);
+            } catch (IllegalAccessException ex) {
+                getThisPlugin().getLogger().log(Level.WARNING, null, ex);
+            }
+        }
+
+        public void postRemoveInheritance(String parent, String child) {
         }
 
         public Plugin getPlugin() {

@@ -39,12 +39,18 @@ public class PEXWorldInheritanceFactory extends DependencyFactory<WorldInheritan
             permissionManager = PermissionsEx.getPermissionManager();
         }
 
-        public void addInheritance(String parent, String child) {
+        public void preAddInheritance(String parent, String child) {
             PermissionManager pm = PermissionsEx.getPermissionManager();
             pm.setWorldInheritance(child, new String[]{parent});
         }
-        
-        public void removeInheritance(String parent, String child) {
+
+        public void postAddInheritance(String parent, String child) {
+        }
+
+        public void preRemoveInheritance(String parent, String child) {
+        }
+
+        public void postRemoveInheritance(String parent, String child) {
             PermissionManager pm = PermissionsEx.getPermissionManager();
             pm.setWorldInheritance(child, new String[0]);
         }

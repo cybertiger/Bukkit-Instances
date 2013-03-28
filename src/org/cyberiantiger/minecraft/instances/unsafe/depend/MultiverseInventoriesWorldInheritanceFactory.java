@@ -37,16 +37,22 @@ public class MultiverseInventoriesWorldInheritanceFactory extends DependencyFact
             this.plugin = (MultiverseInventories) plugin;
         }
 
-        public void addInheritance(String parent, String child) {
+        public void preAddInheritance(String parent, String child) {
+        }
+
+        public void postAddInheritance(String parent, String child) {
             for (WorldGroupProfile profile : plugin.getGroupManager().getGroupsForWorld(parent)) {
                 profile.addWorld(child);
             }
         }
 
-        public void removeInheritance(String parent, String child) {
+        public void preRemoveInheritance(String parent, String child) {
             for (WorldGroupProfile profile : plugin.getGroupManager().getGroupsForWorld(parent)) {
                 profile.removeWorld(child);
             }
+        }
+
+        public void postRemoveInheritance(String parent, String child) {
         }
 
         public Plugin getPlugin() {

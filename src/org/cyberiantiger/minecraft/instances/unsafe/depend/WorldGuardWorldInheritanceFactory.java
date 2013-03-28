@@ -4,6 +4,8 @@
  */
 package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
+import com.sk89q.worldguard.bukkit.ConfigurationManager;
+import com.sk89q.worldguard.bukkit.WorldConfiguration;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.GlobalRegionManager;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -70,29 +72,40 @@ public class WorldGuardWorldInheritanceFactory extends DependencyFactory<WorldIn
         private static final String EXCUSE = "Worldguard was not open to patches to make this possible without horrible hacks.";
         private final WorldGuardPlugin worldGuard;
         private final Field regionManagers;
+        private final Field configMap;
 
         public WorldGuardWorldInheritance(Plugin plugin) throws NoSuchFieldException {
             this.worldGuard = (WorldGuardPlugin) plugin;
             regionManagers = GlobalRegionManager.class.getDeclaredField("managers");
             regionManagers.setAccessible(true);
+            configMap = ConfigurationManager.class.getDeclaredField("worlds");
+            configMap.setAccessible(true);
         }
 
-        public void addInheritance(String parent, String child) {
+        public void preAddInheritance(String parent, String child) {
             try {
-                ConcurrentHashMap<String, RegionManager> map = 
-                        (ConcurrentHashMap<String, RegionManager>) regionManagers.get(worldGuard.getGlobalRegionManager());
-                RegionManager regionManager = map.get(parent);
-                if (regionManager == null) {
-                    World world = getThisPlugin().getServer().getWorld(parent);
-                    if (world == null) {
-                        world = new FakeWorld(parent);
-                        regionManager = worldGuard.getGlobalRegionManager().create(world);
-                    } 
-                    regionManager = worldGuard.getGlobalRegionManager().create(world);
-                    map.putIfAbsent(parent, regionManager);
+                World world = getThisPlugin().getServer().getWorld(parent);
+                if (world == null) {
+                    world = new FakeWorld(parent);
                 }
-                regionManager = map.get(parent);
-                map.putIfAbsent(child, regionManager);
+                ConfigurationManager configManager = worldGuard.getGlobalStateManager();
+                WorldConfiguration config = configManager.get(world);
+                {
+                    ConcurrentHashMap<String, WorldConfiguration> map = 
+                            (ConcurrentHashMap<String, WorldConfiguration>) configMap.get(configManager);
+                    map.put(child, config);
+                }
+                {
+                    ConcurrentHashMap<String, RegionManager> map =
+                            (ConcurrentHashMap<String, RegionManager>) regionManagers.get(worldGuard.getGlobalRegionManager());
+                    RegionManager regionManager = map.get(parent);
+                    if (regionManager == null) {
+                        regionManager = worldGuard.getGlobalRegionManager().create(world);
+                        map.putIfAbsent(parent, regionManager);
+                    }
+                    regionManager = map.get(parent);
+                    map.putIfAbsent(child, regionManager);
+                }
             } catch (IllegalArgumentException ex) {
                 getThisPlugin().getLogger().log(Level.WARNING, null, ex);
             } catch (IllegalAccessException ex) {
@@ -100,15 +113,23 @@ public class WorldGuardWorldInheritanceFactory extends DependencyFactory<WorldIn
             }
         }
 
-        public void removeInheritance(String parent, String child) {
+        public void postAddInheritance(String parent, String child) {
+        }
+
+        public void preRemoveInheritance(String parent, String child) {
             try {
                 ConcurrentHashMap map = (ConcurrentHashMap) regionManagers.get(worldGuard.getGlobalRegionManager());
+                map.remove(child);
+                map = (ConcurrentHashMap) configMap.get(worldGuard.getGlobalStateManager());
                 map.remove(child);
             } catch (IllegalArgumentException ex) {
                 getThisPlugin().getLogger().log(Level.WARNING, null, ex);
             } catch (IllegalAccessException ex) {
                 getThisPlugin().getLogger().log(Level.WARNING, null, ex);
             }
+        }
+
+        public void postRemoveInheritance(String parent, String child) {
         }
 
         public Plugin getPlugin() {

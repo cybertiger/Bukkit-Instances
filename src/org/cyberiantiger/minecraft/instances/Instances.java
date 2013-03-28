@@ -88,6 +88,7 @@ import org.cyberiantiger.minecraft.instances.unsafe.depend.PEXWorldInheritanceFa
 import org.cyberiantiger.minecraft.instances.unsafe.depend.ProtocolLibPacketHooksFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.VaultBankFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldEditCuboidSelectionFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldGuardWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.cyberiantiger.minecraft.instances.util.DependencyUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
@@ -356,14 +357,17 @@ public class Instances extends JavaPlugin implements Listener {
 
         String instanceName = sourceWorldName + '-' + i;
 
-        getWorldInheritance().addInheritance(sourceWorldName, instanceName);
+        getWorldInheritance().preAddInheritance(sourceWorldName, instanceName);
 
         World world = getInstanceTools().createInstance(this, pair.getDifficulty(), sourceWorldName, instanceName);
 
         if (world == null) {
-            getWorldInheritance().removeInheritance(sourceWorldName, instanceName);
+            getWorldInheritance().postRemoveInheritance(sourceWorldName, instanceName);
             return null;
         }
+
+        getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
+
         pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
 
 
@@ -438,6 +442,7 @@ public class Instances extends JavaPlugin implements Listener {
         worldInheritanceFactories.add(new MultiverseCoreWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new MultiverseInventoriesWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new PEXWorldInheritanceFactory(this));
+        worldInheritanceFactories.add(new WorldGuardWorldInheritanceFactory(this));
         this.worldInheritance = DependencyUtil.merge(getLogger(), WorldInheritance.class, worldInheritanceFactories);
         List<DependencyFactory<Bank>> bankFactories = new ArrayList<DependencyFactory<Bank>>();
         bankFactories.add(new VaultBankFactory(this));
@@ -689,6 +694,7 @@ public class Instances extends JavaPlugin implements Listener {
         } catch (InvocationException e) {
             if (e.getMessage() == null) {
                 sender.sendMessage(StringUtil.error("An error occurred with " + command.getName()));
+                getLogger().log(Level.WARNING, "Error occurred executing a command", e);
             } else {
                 sender.sendMessage(StringUtil.error(String.format(e.getMessage(), command.getName())));
             }
@@ -806,26 +812,25 @@ public class Instances extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onClick(PlayerInteractEvent e) {
-        if (!getCuboidSelection().isNative()) {
-            return;
-        }
-        Player p = e.getPlayer();
-        if (getSelectionTool() != null && getSelectionTool().equals(p.getItemInHand()) && p.hasPermission("instances.portal.create")) {
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                Block b = e.getClickedBlock();
-                Location l = b.getLocation();
-                getSelection(
-                        p).setFrom(l);
-                p.sendMessage("Selection area location from: " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
-                e.setCancelled(true);
-            }
-            if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                Block b = e.getClickedBlock();
-                Location l = b.getLocation();
-                getSelection(
-                        p).setTo(l);
-                p.sendMessage("Selection area location to: " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
-                e.setCancelled(true);
+        if (getCuboidSelection().isNative()) {
+            Player p = e.getPlayer();
+            if (getSelectionTool() != null && getSelectionTool().equals(p.getItemInHand()) && p.hasPermission("instances.portal.create")) {
+                if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    Block b = e.getClickedBlock();
+                    Location l = b.getLocation();
+                    getSelection(
+                            p).setFrom(l);
+                    p.sendMessage("Selection area location from: " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
+                    e.setCancelled(true);
+                }
+                if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    Block b = e.getClickedBlock();
+                    Location l = b.getLocation();
+                    getSelection(
+                            p).setTo(l);
+                    p.sendMessage("Selection area location to: " + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ());
+                    e.setCancelled(true);
+                }
             }
         }
     }
@@ -905,11 +910,14 @@ public class Instances extends JavaPlugin implements Listener {
             for (Player p : world.getPlayers()) {
                 teleportToSpawn(p);
             }
+            // Remove world inheritance.
+            getWorldInheritance().preRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
+
             // Finally delete the instance without saving.
             getInstanceTools().unloadWorld(this, world);
 
             // Remove any world inheritance.
-            getWorldInheritance().removeInheritance(instance.getSourceWorld(), instance.getInstance());
+            getWorldInheritance().postRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
 
             if (instanceMap.containsKey(instance.getPortal().getName())) {
                 instanceMap.get(instance.getPortal().getName()).remove(instance);
