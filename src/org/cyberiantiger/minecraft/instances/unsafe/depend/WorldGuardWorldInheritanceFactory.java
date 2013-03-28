@@ -87,9 +87,8 @@ public class WorldGuardWorldInheritanceFactory extends DependencyFactory<WorldIn
                     if (world == null) {
                         world = new FakeWorld(parent);
                         regionManager = worldGuard.getGlobalRegionManager().create(world);
-                    } else {
-                        regionManager = worldGuard.getGlobalRegionManager().create(world);
-                    }
+                    } 
+                    regionManager = worldGuard.getGlobalRegionManager().create(world);
                     map.putIfAbsent(parent, regionManager);
                 }
                 regionManager = map.get(parent);
