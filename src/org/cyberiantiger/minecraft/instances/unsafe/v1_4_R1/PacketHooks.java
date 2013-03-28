@@ -18,6 +18,7 @@ import net.minecraft.server.v1_4_R1.EntityPlayer;
 import net.minecraft.server.v1_4_R1.NetworkManager;
 import net.minecraft.server.v1_4_R1.Packet;
 import net.minecraft.server.v1_4_R1.Packet250CustomPayload;
+import net.minecraft.server.v1_4_R1.Packet9Respawn;
 import net.minecraft.server.v1_4_R1.PlayerConnection;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -193,7 +194,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
     }
 
     private static final class HackedInboundQueue implements Queue {
-
+        private static final Packet NOOP = new Packet9Respawn();
         private final Player player;
         private final PacketHooks hooks;
         private final Queue delegate;
@@ -206,11 +207,11 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
 
         @Override
         public Object poll() {
-            while (true) {
-                Object ret = delegate.poll();
-                if (!hooks.handlePacket(player, (Packet) ret)) {
-                    return ret;
-                }
+            Object ret = delegate.poll();
+            if (!hooks.handlePacket(player, (Packet) ret)) {
+                return ret;
+            } else {
+                return NOOP;
             }
         }
 
