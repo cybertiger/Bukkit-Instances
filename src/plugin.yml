@@ -118,10 +118,10 @@ commands:
       -v <true|false> - Make the spawned monsters invulnerable
       -V <none|x,y,z> - Set the initial motion of the monster, or remove it.
       -z <size> - Set the size of the spawned mob.
-#      -R - Remove the currently selection monster spawn (broken).
-#      -S <index> - Select a monster this spawner spawns (default: 0) (broken).
-#      -w <weight> - Set the weight of the currently selected monster (broken).
-#      -a <monster> - Add a monster to the spawner (broken).
+      -R <index> - Remove the monster at the specified index from the spawner.
+      -S <index> - Select a monster this spawner spawns (default: 0).
+      -w <weight> - Set the weight of the currently selected monster.
+      -a <monster> - Add a monster to the spawner.
     permission: instances.general.spawner
   icmd:
     description: Set the item in your hand to a command block.

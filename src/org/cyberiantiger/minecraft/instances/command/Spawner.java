@@ -333,6 +333,7 @@ public class Spawner extends AbstractCommand {
                             }
                             spawnPotentials.remove(idx);
                             spawn = (CompoundTag) spawnPotentials.getValue()[0];
+                            modified = true;
                         } catch (NumberFormatException e) {
                             throw new InvocationException("Must select spawned mob by number.");
                         }
