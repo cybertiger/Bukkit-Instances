@@ -48,7 +48,7 @@ public class PartyInvite extends AbstractCommand {
             throw new InvocationException(args[0] + " is already invited.");
         }
         party.getInvites().add(invitee);
-        party.message(instances, invitee.getDisplayName() + "has been invited to join by " + player.getDisplayName() + '.');
+        party.emote(instances, invitee, "has been invited to join by " + player.getDisplayName() + '.');
         invitee.sendMessage("You have been invited to join party " + party.getName() + " type /pjoin " + party.getName());
         return msg();
     }
