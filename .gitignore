@@ -16,3 +16,6 @@ build.xml
 
 # Downloadable jar files.
 site/downloads/*
+
+# Maven generated
+*/target/*

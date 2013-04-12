@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.cyberiantiger.minecraft</groupId>
+  <artifactId>instances-parent</artifactId>
+  <version>1.9</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>instances-core</module>
+    <module>instances-v1_4_R1</module>
+    <module>instances-v1_5_R1</module>
+    <module>instances-v1_5_R2</module>
+    <module>instances</module>
+  </modules>
+  <repositories>
+        <!-- Too bloody many repositories -->
+        <!-- Bukkit and Bukkit snapshots -->
+		<repository>
+			<id>bukkit-rel</id>
+			<name>repo.bukkit.org Releases</name>
+			<url>http://repo.bukkit.org/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>bukkit-snapshots</id>
+			<name>repo.bukkit.org Releases</name>
+			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>
+		</repository>
+        <!-- WorldGuard and WorldEdit -->
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>
+        <!-- ProtocolLib -->
+        <repository>
+            <id>comphenix-snapshots</id>
+            <name>Comphenix Maven Snapshots</name>
+            <url>http://repo.comphenix.net/content/repositories/releases/</url>
+        </repository>
+        <!-- Multiverse-Core and Multiverse-Inventories -->
+        <repository>
+            <id>onarandombox</id>
+            <url>http://repo.onarandombox.com/content/groups/public</url>
+        </repository>
+        <!-- Vault -->
+        <repository>
+            <id>vault-repo</id>
+            <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+        </repository>
+        <!-- PermissionsEx -->
+        <!-- Broken repository
+        <repository>
+            <id>tehkode-ru-repo</id>
+            <url>http://repo.tehkode.ru/repository/bukkit-plugins/</url>
+        </repository> -->
+	</repositories>
+</project>
