@@ -8,15 +8,16 @@ import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import org.bukkit.plugin.Plugin;
+import org.cyberiantiger.minecraft.instances.Instances;
 
 /**
  *
  * @author antony
  */
-public class MultiverseInventoriesWorldInheritanceFactory extends DependencyFactory<WorldInheritance> {
+public class MultiverseInventoriesWorldInheritanceFactory extends DependencyFactory<Instances, WorldInheritance> {
     public static final String PLUGIN_NAME = "Multiverse-Inventories";
 
-    public MultiverseInventoriesWorldInheritanceFactory(Plugin thisPlugin) {
+    public MultiverseInventoriesWorldInheritanceFactory(Instances thisPlugin) {
         super(thisPlugin, PLUGIN_NAME);
     }
 

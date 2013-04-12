@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -19,16 +20,16 @@ import java.util.logging.Logger;
  */
 public class DependencyUtil {
 
-    public static <T extends Dependency> T merge(final Logger log, final Class<T> type, final List<DependencyFactory<T>> factories) {
+    public static <T extends Dependency> T merge(final Logger log, final Class<T> type, final List<DependencyFactory<?,T>> factories) {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 // We only support merging for methods which return void.
                 if (method.getReturnType() != Void.TYPE)  {
                     throw new UnsupportedOperationException();
                 }
-                Iterator<DependencyFactory<T>> i = factories.iterator();
+                Iterator<DependencyFactory<?, T>> i = factories.iterator();
                 while(i.hasNext()) {
-                    DependencyFactory<T> factory = i.next();
+                    DependencyFactory<? extends Plugin, T> factory = i.next();
                     T instance = factory.getDependecy();
                     if (instance != null) {
                         try {
@@ -58,12 +59,12 @@ public class DependencyUtil {
         });
     }
 
-    public static <T extends Dependency> T first(final Logger log, final Class<T> type, final List<DependencyFactory<T>> factories) {
+    public static <T extends Dependency> T first(final Logger log, final Class<T> type, final List<DependencyFactory<?, T>> factories) {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                Iterator<DependencyFactory<T>> i = factories.iterator();
+                Iterator<DependencyFactory<? extends Plugin, T>> i = factories.iterator();
                 while(i.hasNext()) {
-                    DependencyFactory<T> factory = i.next();
+                    DependencyFactory<?, T> factory = i.next();
                     T instance = factory.getDependecy();
                     if (instance != null) {
                         try {

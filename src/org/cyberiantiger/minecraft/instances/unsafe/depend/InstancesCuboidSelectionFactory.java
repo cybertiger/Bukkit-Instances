@@ -16,9 +16,9 @@ import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
  *
  * @author antony
  */
-public class InstancesCuboidSelectionFactory extends DependencyFactory<CuboidSelection> {
+public class InstancesCuboidSelectionFactory extends DependencyFactory<Instances, CuboidSelection> {
 
-    public InstancesCuboidSelectionFactory(Plugin plugin) {
+    public InstancesCuboidSelectionFactory(Instances plugin) {
         super(plugin, plugin.getName());
     }
 

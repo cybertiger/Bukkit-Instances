@@ -15,6 +15,7 @@ import com.sk89q.worldedit.regions.Region;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.Cuboid;
+import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.command.InvocationException;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 
@@ -22,11 +23,11 @@ import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
  *
  * @author antony
  */
-public class WorldEditCuboidSelectionFactory extends DependencyFactory<CuboidSelection> {
+public class WorldEditCuboidSelectionFactory extends DependencyFactory<Instances, CuboidSelection> {
 
     public static final String PLUGIN_NAME = "WorldEdit";
 
-    public WorldEditCuboidSelectionFactory(Plugin thisPlugin) {
+    public WorldEditCuboidSelectionFactory(Instances thisPlugin) {
         super(thisPlugin, PLUGIN_NAME);
     }
 

@@ -11,14 +11,14 @@ import org.bukkit.plugin.Plugin;
  *
  * @author antony
  */
-public abstract class DependencyFactory<T extends Dependency> {
+public abstract class DependencyFactory<P extends Plugin, T extends Dependency> {
 
-    private final Plugin thisPlugin;
+    private final P thisPlugin;
     private final String plugin;
     private boolean cannotLoad = false;
     private T dependency;
 
-    public DependencyFactory(Plugin thisPlugin, String plugin) {
+    public DependencyFactory(P thisPlugin, String plugin) {
         this.thisPlugin = thisPlugin;
         this.plugin = plugin;
     }
@@ -27,7 +27,7 @@ public abstract class DependencyFactory<T extends Dependency> {
         return plugin;
     }
 
-    public final Plugin getThisPlugin() {
+    public final P getThisPlugin() {
         return thisPlugin;
     }
 
@@ -35,6 +35,9 @@ public abstract class DependencyFactory<T extends Dependency> {
         Plugin depPlugin;
         if (plugin.equals(thisPlugin.getName()))  {
             depPlugin = thisPlugin;
+            if (dependency != null) {
+                return dependency;
+            }
         } else {
             depPlugin = thisPlugin.getServer().getPluginManager().getPlugin(plugin);
             if (depPlugin == null || !depPlugin.isEnabled()) {

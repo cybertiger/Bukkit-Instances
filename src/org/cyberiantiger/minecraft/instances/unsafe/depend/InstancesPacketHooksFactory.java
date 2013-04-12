@@ -14,9 +14,9 @@ import org.cyberiantiger.minecraft.unsafe.CBShim;
  *
  * @author antony
  */
-public class InstancesPacketHooksFactory extends DependencyFactory<PacketHooks> {
+public class InstancesPacketHooksFactory extends DependencyFactory<Instances, PacketHooks> {
 
-    public InstancesPacketHooksFactory(Plugin instances) {
+    public InstancesPacketHooksFactory(Instances instances) {
         super(instances, instances.getName());
     }
 

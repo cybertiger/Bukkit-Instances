@@ -45,16 +45,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 
 /**
  *
  * @author antony
  */
-public class WorldGuardWorldInheritanceFactory extends DependencyFactory<WorldInheritance> {
+public class WorldGuardWorldInheritanceFactory extends DependencyFactory<Instances, WorldInheritance> {
     private static final String PLUGIN_NAME = "WorldGuard";
     
-    public WorldGuardWorldInheritanceFactory(Plugin thisPlugin) {
+    public WorldGuardWorldInheritanceFactory(Instances thisPlugin) {
         super(thisPlugin, PLUGIN_NAME);
     }
 

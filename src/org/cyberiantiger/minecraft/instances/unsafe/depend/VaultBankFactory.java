@@ -10,16 +10,17 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 
 /**
  *
  * @author antony
  */
-public class VaultBankFactory extends DependencyFactory<Bank> {
+public class VaultBankFactory extends DependencyFactory<Instances, Bank> {
     public static final String PLUGIN_NAME = "Vault";
 
-    public VaultBankFactory(Plugin thisPlugin) {
+    public VaultBankFactory(Instances thisPlugin) {
         super(thisPlugin, PLUGIN_NAME);
     }
 

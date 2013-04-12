@@ -6,6 +6,7 @@ package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.bukkit.plugin.Plugin;
+import org.cyberiantiger.minecraft.instances.Instances;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -13,10 +14,10 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  *
  * @author antony
  */
-public class PEXWorldInheritanceFactory extends DependencyFactory<WorldInheritance> {
+public class PEXWorldInheritanceFactory extends DependencyFactory<Instances, WorldInheritance> {
     public static final String PLUGIN_NAME = "PermissionsEx";
 
-    public PEXWorldInheritanceFactory(Plugin thisPlugin) {
+    public PEXWorldInheritanceFactory(Instances thisPlugin) {
         super(thisPlugin, PLUGIN_NAME);
     }
 

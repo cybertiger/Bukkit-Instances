@@ -13,16 +13,17 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.plugin.Plugin;
+import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 
 /**
  *
  * @author antony
  */
-public class MultiverseCoreWorldInheritanceFactory extends DependencyFactory<WorldInheritance> {
+public class MultiverseCoreWorldInheritanceFactory extends DependencyFactory<Instances, WorldInheritance> {
     public static final String PLUGIN_NAME = "Multiverse-Core";
 
-    public MultiverseCoreWorldInheritanceFactory(Plugin thisPlugin) {
+    public MultiverseCoreWorldInheritanceFactory(Instances thisPlugin) {
         super(thisPlugin, PLUGIN_NAME);
     }
 

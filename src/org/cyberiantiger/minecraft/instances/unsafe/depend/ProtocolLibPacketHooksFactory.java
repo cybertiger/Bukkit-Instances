@@ -30,10 +30,10 @@ import org.cyberiantiger.minecraft.unsafe.NBTTools;
  *
  * @author antony
  */
-public class ProtocolLibPacketHooksFactory extends DependencyFactory<PacketHooks> {
+public class ProtocolLibPacketHooksFactory extends DependencyFactory<Instances, PacketHooks> {
     public static final String PLUGIN_NAME = "ProtocolLib";
 
-    public ProtocolLibPacketHooksFactory(Plugin thisPlugin) {
+    public ProtocolLibPacketHooksFactory(Instances thisPlugin) {
         super (thisPlugin, PLUGIN_NAME);
     }
 
@@ -56,7 +56,7 @@ public class ProtocolLibPacketHooksFactory extends DependencyFactory<PacketHooks
             this.protocolLib = (ProtocolLibrary) plugin;
             this.editInCreative = editInCreative;
             this.protocolManager = ProtocolLibrary.getProtocolManager();
-            this.packetAdapter = new PacketAdapterImpl((Instances)getThisPlugin(), ConnectionSide.SERVER_SIDE, 250);
+            this.packetAdapter = new PacketAdapterImpl((Instances)getThisPlugin(), ConnectionSide.CLIENT_SIDE, 250);
         }
 
         public void install() {

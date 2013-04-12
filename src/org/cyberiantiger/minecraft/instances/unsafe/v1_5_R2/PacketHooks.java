@@ -208,7 +208,7 @@ public class PacketHooks implements org.cyberiantiger.minecraft.instances.unsafe
         @Override
         public Object poll() {
             Object ret = delegate.poll();
-            if (!hooks.handlePacket(player, (Packet) ret)) {
+            if (hooks.handlePacket(player, (Packet) ret)) {
                 return ret;
             } else {
                 return NOOP;
