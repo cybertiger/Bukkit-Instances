@@ -7,6 +7,28 @@
     <artifactId>instances-parent</artifactId>
     <version>1.9-SNAPSHOT</version>
   </parent>
+  <build>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>2.0</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <artifactSet>
+              <includes>
+                <include>org.cyberiantiger.minecraft:*</include>
+              </includes>
+            </artifactSet>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </build>
   <dependencies>
     <dependency>
       <groupId>${pom.groupId}</groupId>
