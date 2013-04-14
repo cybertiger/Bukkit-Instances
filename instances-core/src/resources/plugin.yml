@@ -10,6 +10,7 @@ softdepend:
   - WorldGuard
   - Vault
   - ProtocolLib
+  - ScoreShare
 commands:
   p:
     description: Chat to your party.
