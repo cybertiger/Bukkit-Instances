@@ -28,11 +28,31 @@
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
       <version>5.7.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.spout</groupId>
+          <artifactId>spoutapi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.spout</groupId>
+          <artifactId>vanilla</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldedit</artifactId>
       <version>5.5.8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.spout</groupId>
+          <artifactId>spoutapi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.spout</groupId>
+          <artifactId>vanilla</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
