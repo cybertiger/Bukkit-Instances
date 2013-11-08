@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.cyberiantiger.minecraft.Cuboid;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.util.ItemUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;

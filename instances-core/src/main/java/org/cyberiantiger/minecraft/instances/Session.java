@@ -5,6 +5,8 @@
 
 package org.cyberiantiger.minecraft.instances;
 
+import org.cyberiantiger.minecraft.Cuboid;
+
 /**
  *
  * @author antony

@@ -2,6 +2,8 @@ package org.cyberiantiger.minecraft.instances;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.cyberiantiger.minecraft.Coord;
+import org.cyberiantiger.minecraft.Cuboid;
 
 public class Selection implements Cloneable {
 

@@ -5,6 +5,7 @@
 
 package org.cyberiantiger.minecraft.instances;
 
+import org.cyberiantiger.minecraft.Cuboid;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 

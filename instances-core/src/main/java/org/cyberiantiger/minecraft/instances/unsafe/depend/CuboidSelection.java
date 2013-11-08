@@ -6,7 +6,7 @@
 package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
 import org.bukkit.entity.Player;
-import org.cyberiantiger.minecraft.instances.Cuboid;
+import org.cyberiantiger.minecraft.Cuboid;
 import org.cyberiantiger.minecraft.instances.command.InvocationException;
 import org.cyberiantiger.minecraft.instances.util.Dependency;
 

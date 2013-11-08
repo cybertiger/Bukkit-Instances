@@ -6,7 +6,7 @@ package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.cyberiantiger.minecraft.instances.Cuboid;
+import org.cyberiantiger.minecraft.Cuboid;
 import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.Selection;
 import org.cyberiantiger.minecraft.instances.command.InvocationException;

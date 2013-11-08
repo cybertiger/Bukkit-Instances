@@ -12,7 +12,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.cyberiantiger.minecraft.instances.Facing;
+import org.cyberiantiger.minecraft.Facing;
 import org.cyberiantiger.minecraft.instances.Instances;
 import org.cyberiantiger.minecraft.instances.PortalPair;
 
