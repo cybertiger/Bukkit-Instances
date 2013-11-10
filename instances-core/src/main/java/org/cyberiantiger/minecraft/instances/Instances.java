@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.CheckForNull;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -184,6 +185,7 @@ public class Instances extends JavaPlugin implements Listener {
         return nbtTools;
     }
 
+    @CheckForNull
     public InstanceTools getInstanceTools() {
         return instanceTools;
     }
@@ -370,7 +372,12 @@ public class Instances extends JavaPlugin implements Listener {
 
         getWorldInheritance().preAddInheritance(sourceWorldName, instanceName);
 
-        World world = getInstanceTools().createInstance(this, pair.getDifficulty(), sourceWorldName, instanceName);
+        InstanceTools tools = getInstanceTools();
+        if (tools == null) {
+            getLogger().log(Level.WARNING, "Cannot create instance as server version is not supported.");
+            return null;
+        }
+        World world = tools.createInstance(this, pair.getDifficulty(), sourceWorldName, instanceName);
 
         if (world == null) {
             getWorldInheritance().postRemoveInheritance(sourceWorldName, instanceName);
@@ -928,7 +935,10 @@ public class Instances extends JavaPlugin implements Listener {
             getWorldInheritance().preRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
 
             // Finally delete the instance without saving.
-            getInstanceTools().unloadWorld(this, world);
+            InstanceTools tools = getInstanceTools();
+            if (tools != null) {
+                tools.unloadWorld(this, world);
+            }
 
             // Remove any world inheritance.
             getWorldInheritance().postRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
