@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.cyberiantiger.minecraft.instances.unsafe;
+package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
 import org.cyberiantiger.minecraft.instances.util.Dependency;
 

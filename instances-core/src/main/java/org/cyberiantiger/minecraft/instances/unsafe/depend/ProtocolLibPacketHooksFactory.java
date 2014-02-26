@@ -21,7 +21,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.Instances;
-import org.cyberiantiger.minecraft.instances.unsafe.PacketHooks;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.cyberiantiger.minecraft.nbt.CompoundTag;
 import org.cyberiantiger.minecraft.unsafe.NBTTools;
