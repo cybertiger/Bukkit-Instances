@@ -488,6 +488,7 @@ public class Instances extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         super.onDisable();
+        clear();
         bank = null;
         worldInheritance = null;
         cuboidSelection = null;
@@ -501,7 +502,6 @@ public class Instances extends JavaPlugin implements Listener {
         } catch (Error e) {
             getLogger().log(Level.WARNING, "Error uninstalling PacketHooks.", e);
         }
-        clear();
     }
 
     public void clear() {
