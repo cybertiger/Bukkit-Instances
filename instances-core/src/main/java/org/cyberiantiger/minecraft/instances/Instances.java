@@ -475,6 +475,8 @@ public class Instances extends JavaPlugin implements Listener {
         getLogger().info("Registering packet handler for no-op command block editing");
         try {
             packetHooks.install();
+        } catch (UnsupportedOperationException e) {
+            getLogger().log(Level.WARNING, "Could not install packet hooks, protocollib is required for command block editing to work.");
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Error installing PacketHooks.", e);
         } catch (Error e) {
@@ -492,6 +494,8 @@ public class Instances extends JavaPlugin implements Listener {
         save();
         try {
             packetHooks.uninstall();
+        } catch (UnsupportedOperationException e) {
+            // We never installed any in the first place.
         } catch (Exception e) {
             getLogger().log(Level.WARNING, "Error uninstalling PacketHooks.", e);
         } catch (Error e) {
