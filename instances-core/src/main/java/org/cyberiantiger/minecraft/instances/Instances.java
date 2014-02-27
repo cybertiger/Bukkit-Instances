@@ -488,11 +488,11 @@ public class Instances extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         super.onDisable();
+        save();
         clear();
         bank = null;
         worldInheritance = null;
         cuboidSelection = null;
-        save();
         try {
             packetHooks.uninstall();
         } catch (UnsupportedOperationException e) {
