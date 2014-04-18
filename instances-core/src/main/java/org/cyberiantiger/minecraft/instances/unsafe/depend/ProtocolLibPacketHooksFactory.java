@@ -86,7 +86,6 @@ public class ProtocolLibPacketHooksFactory extends DependencyFactory<Instances, 
             super(plugin, CUSTOM);
             this.instances = plugin;
             newProtocol = CUSTOM.getCurrentVersion().compareTo(MinecraftVersion.WORLD_UPDATE) >= 0;
-            instances.getLogger().info(newProtocol?"Using new protocol" : "Using old protocol");
         }
 
         private String decodeCommand(ByteBuffer in) throws IOException {
