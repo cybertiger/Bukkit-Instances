@@ -26,11 +26,6 @@
       <version>1.7</version>
     </dependency>
     <dependency>
-      <groupId>org.cyberiantiger.minecraft</groupId>
-      <artifactId>scoreshare</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
       <version>5.7.3</version>

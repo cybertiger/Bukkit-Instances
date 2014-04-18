@@ -88,9 +88,7 @@ import org.cyberiantiger.minecraft.instances.unsafe.depend.InstancesCuboidSelect
 import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseCoreWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseInventoriesWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.PEXWorldInheritanceFactory;
-import org.cyberiantiger.minecraft.instances.unsafe.depend.PartyUI;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.ProtocolLibPacketHooksFactory;
-import org.cyberiantiger.minecraft.instances.unsafe.depend.ScoreSharePartyUIFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.VaultBankFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldEditCuboidSelectionFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldGuardWorldInheritanceFactory;
@@ -130,7 +128,6 @@ public class Instances extends JavaPlugin implements Listener {
     private PacketHooks packetHooks;
     private NBTTools nbtTools;
     private InstanceTools instanceTools;
-    private PartyUI partyUI;
 
     {
         commands.put("p", new PartyChat());
@@ -302,8 +299,6 @@ public class Instances extends JavaPlugin implements Listener {
         Party party = new Party(name, player);
         parties.put(name, party);
         partyMap.put(player, party);
-        partyUI.createParty(party);
-        partyUI.addMember(party, player);
         return party;
     }
 
@@ -313,7 +308,6 @@ public class Instances extends JavaPlugin implements Listener {
             // Instances should be empty anyway.
             removePlayerFromInstance(p);
             partyMap.remove(p);
-            partyUI.removeMember(party, p);
         }
         // Clear party members so checkInstances() can delete any instances.
         party.getMembers().clear();
@@ -326,14 +320,12 @@ public class Instances extends JavaPlugin implements Listener {
             i.remove();
         }
         parties.remove(party.getName());
-        partyUI.removeParty(party);
     }
 
     public void partyAdd(Party party, Player player) {
         party.getInvites().remove(player);
         party.getMembers().add(player);
         partyMap.put(player, party);
-        partyUI.addMember(party, player);
     }
 
     public void partyRemove(Party party, Player player) {
@@ -341,7 +333,6 @@ public class Instances extends JavaPlugin implements Listener {
         removePlayerFromInstance(player);
         party.getMembers().remove(player);
         partyMap.remove(player);
-        partyUI.removeMember(party, player);
         if (party.getMembers().isEmpty()) {
             partyDisband(party);
         }
@@ -468,10 +459,6 @@ public class Instances extends JavaPlugin implements Listener {
         cuboidSelectionFactories.add(new WorldEditCuboidSelectionFactory(this));
         cuboidSelectionFactories.add(new InstancesCuboidSelectionFactory(this));
         this.cuboidSelection = DependencyUtil.first(getLogger(), CuboidSelection.class, cuboidSelectionFactories);
-        List<DependencyFactory<?,PartyUI>> partyUIFactories = new ArrayList<DependencyFactory<?,PartyUI>>();
-        partyUIFactories.add(new ScoreSharePartyUIFactory(this));
-        this.partyUI = DependencyUtil.merge(getLogger(), PartyUI.class, partyUIFactories);
-        partyUI.init();
         getLogger().info("Registering packet handler for no-op command block editing");
         try {
             packetHooks.install();
