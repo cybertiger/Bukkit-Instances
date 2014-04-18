@@ -15,6 +15,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>Vault</artifactId>
+      <version>1.2.32</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.cyberiantiger.minecraft</groupId>
       <artifactId>libnbt</artifactId>
       <version>1.7</version>
