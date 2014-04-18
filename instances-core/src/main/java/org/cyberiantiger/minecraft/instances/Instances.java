@@ -4,6 +4,7 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
+import com.google.common.io.Files;
 import java.io.BufferedReader;
 import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
@@ -96,6 +98,7 @@ import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.cyberiantiger.minecraft.instances.util.DependencyUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 import org.cyberiantiger.minecraft.unsafe.NBTTools;
+import org.cyberiantiger.minecraft.util.FileUtils;
 
 /**
  *
@@ -160,6 +163,10 @@ public class Instances extends JavaPlugin implements Listener {
         commands.put("imodifyportal", new ModifyPortal());
         commands.put("ispawner", new Spawner());
         commands.put("icmd", new Cmd());
+    }
+
+    public File getInstanceWorldContainer() {
+        return new File(getDataFolder(), "worlds");
     }
 
     public Bank getBank() {
@@ -363,38 +370,53 @@ public class Instances extends JavaPlugin implements Listener {
 
         getWorldInheritance().preAddInheritance(sourceWorldName, instanceName);
 
-        InstanceTools tools = getInstanceTools();
-        if (tools == null) {
-            getLogger().log(Level.WARNING, "Cannot create instance as server version is not supported.");
-            return null;
+        try {
+            InstanceTools tools = getInstanceTools();
+            if (tools == null) {
+                throw new IllegalStateException("Unsupported server version: " + getServer().getBukkitVersion());
+            }
+            
+            if (getServer().getWorld(sourceWorldName) != null) {
+                getLogger().warning(sourceWorldName + " is loaded, instances of loaded worlds may cause issues.");
+            }
+            
+            File sourcePath = new File(getServer().getWorldContainer(), sourceWorldName);
+            
+            File instanceWorldContainer = getInstanceWorldContainer();
+            
+            instanceWorldContainer.mkdirs();
+            
+            File instanceFolder = File.createTempFile(instanceName, ".world", instanceWorldContainer);
+            instanceFolder.delete();
+            instanceFolder.mkdir();
+            World world = tools.createInstance(this, pair.getDifficulty(), instanceName, sourcePath, instanceFolder);
+            
+            getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
+            
+            pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
+            
+            Instance instance = new Instance(pair, sourceWorldName, world.getName());
+            
+            party.addInstance(instance);
+            List<Instance> instances;
+            if (!instanceMap.containsKey(pair.getName())) {
+                instances = new ArrayList<Instance>();
+                instanceMap.put(pair.getName(), instances);
+            } else {
+                instances = instanceMap.get(pair.getName());
+            }
+            instances.add(instance);
+            
+            getLogger().info("Created instance: " + instance);
+            
+            return world;
+        } catch (RuntimeException e) {
+            getLogger().log(Level.WARNING, "Error creating instance", e);
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Error creating instance", e);
         }
-        World world = tools.createInstance(this, pair.getDifficulty(), sourceWorldName, instanceName);
-
-        if (world == null) {
-            getWorldInheritance().postRemoveInheritance(sourceWorldName, instanceName);
-            return null;
-        }
-
-        getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
-
-        pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
-
-
-        Instance instance = new Instance(pair, sourceWorldName, world.getName());
-
-        party.addInstance(instance);
-        List<Instance> instances;
-        if (!instanceMap.containsKey(pair.getName())) {
-            instances = new ArrayList<Instance>();
-            instanceMap.put(pair.getName(), instances);
-        } else {
-            instances = instanceMap.get(pair.getName());
-        }
-        instances.add(instance);
-
-        getLogger().info("Created instance: " + instance);
-
-        return world;
+        getWorldInheritance().postRemoveInheritance(sourceWorldName, instanceName);
+        return null;
     }
 
     public List<Instance> getInstances(PortalPair portal) {
@@ -417,6 +439,12 @@ public class Instances extends JavaPlugin implements Listener {
     public void onEnable() {
         super.onEnable();
         saveDefaultConfig();
+        getLogger().info("Purging old instance saves files");
+        try {
+            FileUtils.deleteRecursively(getInstanceWorldContainer());
+        } catch (IOException ex) {
+            Logger.getLogger(Instances.class.getName()).log(Level.WARNING, "Error purging old instance saves", ex);
+        }
         getLogger().info("Loading configuration");
         load();
         getLogger().info("Registering event handlers");
