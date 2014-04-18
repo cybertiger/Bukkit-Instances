@@ -278,7 +278,7 @@ public class ScoreSharePartyUIFactory extends DependencyFactory<Instances, Party
             partyName = party.getName();
             Map<String, Integer> result = new HashMap<String, Integer>();
             for (Player p : party.getMembers()) {
-                result.put(p.getName(), p.getHealth());
+                result.put(p.getName(), (int)p.getHealth());
             }
             return result;
         }
@@ -293,10 +293,10 @@ public class ScoreSharePartyUIFactory extends DependencyFactory<Instances, Party
             if (member.getName().equals(user)) {
                 partyName = party.getName();
                 for (Player p : party.getMembers()) {
-                    firePutScore(p.getName(), p.getHealth());
+                    firePutScore(p.getName(), (int)p.getHealth());
                 }
             } else if (party.getName().equals(partyName)) {
-                firePutScore(member.getName(), member.getHealth());
+                firePutScore(member.getName(), (int)member.getHealth());
             }
         }
 
@@ -322,7 +322,7 @@ public class ScoreSharePartyUIFactory extends DependencyFactory<Instances, Party
             if (party == null || !partyName.equals(party.getName())) {
                 return;
             }
-            firePutScore(player.getName(), player.getHealth());
+            firePutScore(player.getName(), (int)player.getHealth());
         }
     }
 }
