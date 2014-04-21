@@ -24,9 +24,6 @@
                 <includes>
                   <include>org.cyberiantiger.minecraft:*</include>
                 </includes>
-                <excludes>
-                  <exclude>org.cyberiantiger.minecraft:scoreshare</exclude>
-                </excludes>
               </artifactSet>
             </configuration>
           </execution>

@@ -8,6 +8,7 @@ package org.cyberiantiger.minecraft.instances;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Difficulty;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 import org.cyberiantiger.minecraft.Facing;
 
@@ -26,6 +27,7 @@ public class PortalPair implements Comparable<PortalPair> {
     private ItemStack createItem;
     private int unloadTime;
     private int recreateTime;
+    private World.Environment environment;
     private Difficulty difficulty;
     private String defaultParty;
     private int maxPlayers;
@@ -33,11 +35,11 @@ public class PortalPair implements Comparable<PortalPair> {
     // Last time a player created a new instance of this portal's dungeon.
     private Map<String, Long> lastCreate = new HashMap<String, Long>();
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, Difficulty difficulty) {
-        this(name, enter, destination, 0, 0, null, null, 0, 0, difficulty, null, null, null, 0, 0);
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, World.Environment environment, Difficulty difficulty) {
+        this(name, enter, destination, 0, 0, null, null, 0, 0, environment, difficulty, null, null, null, 0, 0);
     };
 
-    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, Difficulty difficulty, String defaultParty, Facing entranceFacing, Facing destinationFacing, int maxPlayers, int maxInstances) {
+    public PortalPair(String name, InstanceEntrancePortal enter, InstanceDestinationPortal destination, double entryPrice, double createPrice, ItemStack entryItem, ItemStack createItem, int unloadTime, int recreateTime, World.Environment environment, Difficulty difficulty, String defaultParty, Facing entranceFacing, Facing destinationFacing, int maxPlayers, int maxInstances) {
         this.name = name;
         this.enter = enter;
         this.destination = destination;
@@ -47,6 +49,7 @@ public class PortalPair implements Comparable<PortalPair> {
         this.createItem = createItem;
         this.unloadTime = unloadTime;
         this.recreateTime = recreateTime;
+        this.environment = environment;
         this.difficulty = difficulty;
         this.defaultParty = defaultParty;
         this.maxPlayers = maxPlayers;
@@ -127,6 +130,14 @@ public class PortalPair implements Comparable<PortalPair> {
 
     public InstanceEntrancePortal getEnter() {
         return enter;
+    }
+
+    public World.Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(World.Environment environment) {
+        this.environment = environment;
     }
 
     public Difficulty getDifficulty() {

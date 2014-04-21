@@ -7,6 +7,7 @@ package org.cyberiantiger.minecraft.instances.command;
 
 import java.util.List;
 import org.bukkit.Difficulty;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.cyberiantiger.minecraft.instances.InstanceDestinationPortal;
 import org.cyberiantiger.minecraft.instances.InstanceEntrancePortal;
@@ -42,8 +43,10 @@ public class CreatePortal extends AbstractCommand {
         }
         InstanceEntrancePortal entrance = new InstanceEntrancePortal(session.getEntrance());
         InstanceDestinationPortal destination = new InstanceDestinationPortal(session.getDestination());
-        Difficulty difficulty = instances.getServer().getWorld(destination.getCuboid().getWorld()).getDifficulty();
-        PortalPair pair = new PortalPair(args[0], entrance, destination, difficulty);
+        World instanceWorld = instances.getServer().getWorld(destination.getCuboid().getWorld());
+        World.Environment environment = instanceWorld.getEnvironment();
+        Difficulty difficulty = instanceWorld.getDifficulty();
+        PortalPair pair = new PortalPair(args[0], entrance, destination, environment, difficulty);
         instances.addPortalPair(pair);
         session.clear();
         return msg("Portal " + args[0] + " created.");

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.bukkit.Difficulty;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -172,7 +173,6 @@ public class ModifyPortal extends AbstractCommand {
                 throw new InvocationException("Difficulty must be peaceful, easy, normal or hard");
             }
         }
-
         @Override
         public String getName() {
             return "difficulty";
@@ -191,6 +191,38 @@ public class ModifyPortal extends AbstractCommand {
         @Override
         public void reset(PortalPair portal) {
             portal.setDifficulty(Difficulty.NORMAL);
+        }
+    }
+
+    private static class EnvironmentProperty extends Property<World.Environment> {
+        public World.Environment parse(Instances instances, CommandSender sender, String[] args) {
+            if (args.length != 1) {
+                throw new InvocationException("You must specify a difficulty value for this property");
+            }
+            try {
+                return World.Environment.valueOf(args[0].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new InvocationException("Environment must be peaceful, easy, normal or hard");
+            }
+        }
+        @Override
+        public String getName() {
+            return "environment";
+        }
+
+        @Override
+        public void set(PortalPair portal, World.Environment value) {
+            portal.setEnvironment(value);
+        }
+
+        @Override
+        public World.Environment get(PortalPair portal) {
+            return portal.getEnvironment();
+        }
+
+        @Override
+        public void reset(PortalPair portal) {
+            portal.setEnvironment(World.Environment.NORMAL);
         }
     }
 
@@ -462,6 +494,7 @@ public class ModifyPortal extends AbstractCommand {
         addProperty(new CreateItem());
         addProperty(new RecreateTime());
         addProperty(new UnloadTime());
+        addProperty(new EnvironmentProperty());
         addProperty(new DifficultyProperty());
         addProperty(new DefaultParty());
         addProperty(new EntranceFacing());

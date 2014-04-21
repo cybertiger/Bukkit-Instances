@@ -4,7 +4,6 @@
  */
 package org.cyberiantiger.minecraft.instances;
 
-import com.google.common.io.Files;
 import java.io.BufferedReader;
 import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
@@ -389,7 +388,7 @@ public class Instances extends JavaPlugin implements Listener {
             File instanceFolder = File.createTempFile(instanceName, ".world", instanceWorldContainer);
             instanceFolder.delete();
             instanceFolder.mkdir();
-            World world = tools.createInstance(this, pair.getDifficulty(), instanceName, sourcePath, instanceFolder);
+            World world = tools.createInstance(this, instanceName, pair.getEnvironment(), pair.getDifficulty(), sourcePath, instanceFolder);
             
             getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
             
@@ -575,8 +574,9 @@ public class Instances extends JavaPlugin implements Listener {
                 int maxPlayers = thisSection.getInt("maxPlayers", 0);
                 int maxInstances = thisSection.getInt("maxInstances", 0);
                 Difficulty difficulty = Difficulty.valueOf(thisSection.getString("difficulty", "NORMAL"));
+                World.Environment environment = World.Environment.valueOf(thisSection.getString("environment", "NORMAL"));
                 String defaultParty = thisSection.getString("defaultParty", null);
-                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, difficulty, defaultParty, entranceFacing, destinationFacing, maxPlayers, maxInstances);
+                PortalPair portal = new PortalPair(s, entrance, destination, entryPrice, createPrice, entryItem, createItem, unloadTime, reenterTime, environment, difficulty, defaultParty, entranceFacing, destinationFacing, maxPlayers, maxInstances);
                 ConfigurationSection playerSection = thisSection.getConfigurationSection("lastCreate");
                 if (playerSection != null) {
                     for (String p : playerSection.getKeys(false)) {
@@ -670,6 +670,7 @@ public class Instances extends JavaPlugin implements Listener {
             pairSection.set("createPrice", pair.getCreatePrice());
             pairSection.set("unloadTime", pair.getUnloadTime());
             pairSection.set("recreateTime", pair.getRecreateTime());
+            pairSection.set("environment", pair.getEnvironment().name());
             pairSection.set("difficulty", pair.getDifficulty().name());
             if (pair.getDefaultParty() != null) {
                 pairSection.set("defaultParty", pair.getDefaultParty());
