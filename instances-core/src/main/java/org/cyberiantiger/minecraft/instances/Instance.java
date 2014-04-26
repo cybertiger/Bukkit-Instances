@@ -5,7 +5,7 @@
 
 package org.cyberiantiger.minecraft.instances;
 
-import java.util.UUID;
+import java.io.File;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
@@ -17,12 +17,14 @@ public class Instance {
     private final String sourceWorld;
     private final String instance;
     private final PortalPair portal;
+    private final File folder;
     private BukkitTask deleteTask;
 
-    public Instance(PortalPair portal, String sourceWorld, String instance) {
+    public Instance(PortalPair portal, String sourceWorld, String instance, File folder) {
         this.portal = portal;
         this.sourceWorld = sourceWorld;
         this.instance = instance;
+        this.folder = folder;
     }
 
     public String getSourceWorld() {
@@ -35,6 +37,10 @@ public class Instance {
 
     public PortalPair getPortal() {
         return portal;
+    }
+
+    public File getFolder() {
+        return folder;
     }
 
     public BukkitTask getDeleteTask() {

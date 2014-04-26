@@ -130,6 +130,9 @@ public class Instances extends JavaPlugin implements Listener {
     private PacketHooks packetHooks;
     private NBTTools nbtTools;
     private InstanceTools instanceTools;
+    private FilePurgeTask filePurgeTask;
+
+    /* pp */ final Object INSTANCE_LOCK = new Object();
 
     {
         commands.put("p", new PartyChat());
@@ -370,45 +373,47 @@ public class Instances extends JavaPlugin implements Listener {
         getWorldInheritance().preAddInheritance(sourceWorldName, instanceName);
 
         try {
-            InstanceTools tools = getInstanceTools();
-            if (tools == null) {
-                throw new IllegalStateException("Unsupported server version: " + getServer().getBukkitVersion());
+            synchronized (INSTANCE_LOCK) {
+                InstanceTools tools = getInstanceTools();
+                if (tools == null) {
+                    throw new IllegalStateException("Unsupported server version: " + getServer().getBukkitVersion());
+                }
+                
+                if (getServer().getWorld(sourceWorldName) != null) {
+                    getLogger().warning(sourceWorldName + " is loaded, instances of loaded worlds may cause issues.");
+                }
+                
+                File sourcePath = new File(getServer().getWorldContainer(), sourceWorldName);
+                
+                File instanceWorldContainer = getInstanceWorldContainer();
+                
+                instanceWorldContainer.mkdirs();
+                
+                File instanceFolder = File.createTempFile(instanceName, ".world", instanceWorldContainer);
+                instanceFolder.delete();
+                instanceFolder.mkdir();
+                World world = tools.createInstance(this, instanceName, pair.getEnvironment(), pair.getDifficulty(), sourcePath, instanceFolder);
+                
+                getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
+                
+                pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
+                
+                Instance instance = new Instance(pair, sourceWorldName, world.getName(), instanceFolder);
+                
+                party.addInstance(instance);
+                List<Instance> instances;
+                if (!instanceMap.containsKey(pair.getName())) {
+                    instances = new ArrayList<Instance>();
+                    instanceMap.put(pair.getName(), instances);
+                } else {
+                    instances = instanceMap.get(pair.getName());
+                }
+                instances.add(instance);
+                
+                getLogger().info("Created instance: " + instance);
+                
+                return world;
             }
-            
-            if (getServer().getWorld(sourceWorldName) != null) {
-                getLogger().warning(sourceWorldName + " is loaded, instances of loaded worlds may cause issues.");
-            }
-            
-            File sourcePath = new File(getServer().getWorldContainer(), sourceWorldName);
-            
-            File instanceWorldContainer = getInstanceWorldContainer();
-            
-            instanceWorldContainer.mkdirs();
-            
-            File instanceFolder = File.createTempFile(instanceName, ".world", instanceWorldContainer);
-            instanceFolder.delete();
-            instanceFolder.mkdir();
-            World world = tools.createInstance(this, instanceName, pair.getEnvironment(), pair.getDifficulty(), sourcePath, instanceFolder);
-            
-            getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
-            
-            pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
-            
-            Instance instance = new Instance(pair, sourceWorldName, world.getName());
-            
-            party.addInstance(instance);
-            List<Instance> instances;
-            if (!instanceMap.containsKey(pair.getName())) {
-                instances = new ArrayList<Instance>();
-                instanceMap.put(pair.getName(), instances);
-            } else {
-                instances = instanceMap.get(pair.getName());
-            }
-            instances.add(instance);
-            
-            getLogger().info("Created instance: " + instance);
-            
-            return world;
         } catch (RuntimeException e) {
             getLogger().log(Level.WARNING, "Error creating instance", e);
         } catch (IOException e) {
@@ -418,9 +423,15 @@ public class Instances extends JavaPlugin implements Listener {
         return null;
     }
 
+    /* pp */ Map<String, List<Instance>> getInstances() {
+        return instanceMap;
+    }
+
     public List<Instance> getInstances(PortalPair portal) {
-        List<Instance> ret = instanceMap.get(portal.getName());
-        return ret == null ? Collections.<Instance>emptyList() : ret;
+        synchronized (INSTANCE_LOCK) {
+            List<Instance> ret = instanceMap.get(portal.getName());
+            return ret == null ? Collections.<Instance>emptyList() : ret;
+        }
     }
     
     public boolean isInstance(World world) {
@@ -496,6 +507,8 @@ public class Instances extends JavaPlugin implements Listener {
         } catch (Error e) {
             getLogger().log(Level.WARNING, "Error installing PacketHooks.", e);
         }
+        filePurgeTask = new FilePurgeTask(this);
+        filePurgeTask.start();
     }
 
 
@@ -941,30 +954,32 @@ public class Instances extends JavaPlugin implements Listener {
     }
 
     private void deleteInstance(Instance instance) {
-        // Make sure we're not called twice.
-        instance.cancelDelete();
-        // Drop the world from the server, teleporting anyone inside it out.
-        World world = getServer().getWorld(instance.getInstance());
-        if (world != null) {
-            getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
-            // Remove all players from the world.
-            for (Player p : world.getPlayers()) {
-                teleportToSpawn(p);
-            }
-            // Remove world inheritance.
-            getWorldInheritance().preRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
-
-            // Finally delete the instance without saving.
-            InstanceTools tools = getInstanceTools();
-            if (tools != null) {
-                tools.unloadWorld(this, world);
-            }
-
-            // Remove any world inheritance.
-            getWorldInheritance().postRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
-
-            if (instanceMap.containsKey(instance.getPortal().getName())) {
-                instanceMap.get(instance.getPortal().getName()).remove(instance);
+        synchronized (INSTANCE_LOCK) {
+            // Make sure we're not called twice.
+            instance.cancelDelete();
+            // Drop the world from the server, teleporting anyone inside it out.
+            World world = getServer().getWorld(instance.getInstance());
+            if (world != null) {
+                getLogger().log(Level.INFO, "Deleting instance: {0}", instance);
+                // Remove all players from the world.
+                for (Player p : world.getPlayers()) {
+                    teleportToSpawn(p);
+                }
+                // Remove world inheritance.
+                getWorldInheritance().preRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
+                
+                // Finally delete the instance without saving.
+                InstanceTools tools = getInstanceTools();
+                if (tools != null) {
+                    tools.unloadWorld(this, world);
+                }
+                
+                // Remove any world inheritance.
+                getWorldInheritance().postRemoveInheritance(instance.getSourceWorld(), instance.getInstance());
+                
+                if (instanceMap.containsKey(instance.getPortal().getName())) {
+                    instanceMap.get(instance.getPortal().getName()).remove(instance);
+                }
             }
         }
     }
