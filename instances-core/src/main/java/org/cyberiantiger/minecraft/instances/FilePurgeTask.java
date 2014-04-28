@@ -51,9 +51,12 @@ class FilePurgeTask extends BukkitRunnable {
             } catch (IOException ioe) {
                 parentDir = parentDir.getAbsoluteFile();
             }
-            for (File f : parentDir.listFiles()) {
-                if (! worldSaves.contains(f)) {
-                    toPurge.add(f);
+            File[] files = parentDir.listFiles();
+            if (files != null) {
+                for (File f : parentDir.listFiles()) {
+                    if (f.isDirectory() && !worldSaves.contains(f)) {
+                        toPurge.add(f);
+                    }
                 }
             }
         }
