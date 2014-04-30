@@ -5,6 +5,8 @@
 
 package org.cyberiantiger.minecraft.instances.util;
 
+import org.apache.commons.lang.time.DurationFormatUtils;
+
 /**
  *
  * @author antony
@@ -12,8 +14,7 @@ package org.cyberiantiger.minecraft.instances.util;
 public class TimeUtil {
 
     public static String format(long time) {
-        // Todo
-        return String.valueOf(time) + " in game ticks.";
+        return DurationFormatUtils.formatDurationHMS(time * 50);
     }
 
 }
