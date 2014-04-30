@@ -1,5 +1,5 @@
 name: "Instances"
-version: "${version}"
+version: "${version}-${project.build.number}"
 main: "org.cyberiantiger.minecraft.instances.Instances"
 website: "http://dev.bukkit.org/server-mods/Instances/"
 softdepend:
