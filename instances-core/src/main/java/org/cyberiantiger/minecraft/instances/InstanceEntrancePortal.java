@@ -81,7 +81,7 @@ public class InstanceEntrancePortal extends Portal {
                     return;
                 }
             }
-            if (pair.getMaxPlayers() > 0 && pair.getMaxPlayers() > party.getMembers().size()) {
+            if (pair.getMaxPlayers() > 0 && pair.getMaxPlayers() < party.getMembers().size()) {
                 player.sendMessage(StringUtil.error("Your party is too big for this dungeon."));
                 e.setCancelled(true);
                 return;
