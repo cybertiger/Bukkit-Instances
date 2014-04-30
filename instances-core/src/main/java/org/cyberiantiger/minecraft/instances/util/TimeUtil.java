@@ -17,7 +17,7 @@ public class TimeUtil {
     public static String format(long time) {
         // Round up to the nearest second.
         time += 20 - (time % 20);
-        return DurationFormatUtils.formatDurationWords(time * 20, true, true);
+        return DurationFormatUtils.formatDurationWords(time * 50, true, true);
     }
 
 }
