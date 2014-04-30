@@ -64,14 +64,10 @@ class FilePurgeTask extends BukkitRunnable {
             if (worldSaves.contains(file)) {
                 plugin.getLogger().log(Level.INFO, "Skipping active instance save dir: {0}", file);
             } else if (file.isDirectory()) {
-                try {
-                    if (!FileUtils.deleteRecursively(file)) {
-                        plugin.getLogger().log(Level.WARNING, "Failed to fully delete unused instance save directory: {0}", file);
-                    } else {
-                        plugin.getLogger().log(Level.INFO, "Deleted unused instance save directory: {0}", file);
-                    }
-                }  catch (IOException ioe) {
-                    // Never thrown, will be removed from method declaration in next release.
+                if (!FileUtils.deleteRecursively(file)) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to fully delete unused instance save directory: {0}", file);
+                } else {
+                    plugin.getLogger().log(Level.INFO, "Deleted unused instance save directory: {0}", file);
                 }
             }
         }

@@ -449,12 +449,6 @@ public class Instances extends JavaPlugin implements Listener {
     public void onEnable() {
         super.onEnable();
         saveDefaultConfig();
-        getLogger().info("Purging old instance saves files");
-        try {
-            FileUtils.deleteRecursively(getInstanceWorldContainer());
-        } catch (IOException ex) {
-            Logger.getLogger(Instances.class.getName()).log(Level.WARNING, "Error purging old instance saves", ex);
-        }
         getLogger().info("Loading configuration");
         load();
         getLogger().info("Registering event handlers");
@@ -507,6 +501,7 @@ public class Instances extends JavaPlugin implements Listener {
         } catch (Error e) {
             getLogger().log(Level.WARNING, "Error installing PacketHooks.", e);
         }
+        getLogger().info("Starting asynchronous instance world deletion task");
         filePurgeTask = new FilePurgeTask(this);
         filePurgeTask.start();
     }
