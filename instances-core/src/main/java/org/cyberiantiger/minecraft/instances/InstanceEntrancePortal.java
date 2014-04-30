@@ -66,7 +66,7 @@ public class InstanceEntrancePortal extends Portal {
             return;
         }
 
-        long now = player.getWorld().getTime();
+        long now = player.getWorld().getFullTime();
 
         Instance instance = party.getInstanceFromSourceWorld(destination.getCuboid().getWorld());
 

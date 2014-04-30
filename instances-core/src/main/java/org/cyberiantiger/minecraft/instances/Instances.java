@@ -396,7 +396,7 @@ public class Instances extends JavaPlugin implements Listener {
                 
                 getWorldInheritance().postAddInheritance(sourceWorldName, instanceName);
                 
-                pair.getLastCreate().put(player.getName(), System.currentTimeMillis());
+                pair.getLastCreate().put(player.getName(), player.getWorld().getFullTime());
                 
                 Instance instance = new Instance(pair, sourceWorldName, world.getName(), instanceFolder);
                 
