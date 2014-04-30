@@ -13,8 +13,11 @@ import org.apache.commons.lang.time.DurationFormatUtils;
  */
 public class TimeUtil {
 
+
     public static String format(long time) {
-        return DurationFormatUtils.formatDurationHMS(time * 50);
+        // Round up to the nearest second.
+        time += 20 - (time % 20);
+        return DurationFormatUtils.formatDurationWords(time * 20, true, true);
     }
 
 }

@@ -75,8 +75,8 @@ public class InstanceEntrancePortal extends Portal {
             if (pair.getRecreateTime() > 0 && pair.getLastCreate().containsKey(player.getName())) {
                 int recreateTime = pair.getRecreateTime();
                 long lastCreate = pair.getLastCreate().get(player.getName());
-                if (lastCreate + recreateTime < now) {
-                    player.sendMessage(StringUtil.error("You cannot recreate this dungeon for another " + TimeUtil.format(now - lastCreate - recreateTime) + "."));
+                if (lastCreate + recreateTime > now) {
+                    player.sendMessage(StringUtil.error("You cannot recreate this dungeon for another " + TimeUtil.format(lastCreate + recreateTime - now) + "."));
                     e.setCancelled(true);
                     return;
                 }
