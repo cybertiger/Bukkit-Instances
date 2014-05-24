@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
@@ -86,6 +85,7 @@ import org.cyberiantiger.minecraft.instances.unsafe.depend.Bank;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.WorldInheritance;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.CuboidSelection;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.InstancesCuboidSelectionFactory;
+import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiInvWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseCoreWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.MultiverseInventoriesWorldInheritanceFactory;
 import org.cyberiantiger.minecraft.instances.unsafe.depend.PEXWorldInheritanceFactory;
@@ -97,7 +97,6 @@ import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.cyberiantiger.minecraft.instances.util.DependencyUtil;
 import org.cyberiantiger.minecraft.instances.util.StringUtil;
 import org.cyberiantiger.minecraft.unsafe.NBTTools;
-import org.cyberiantiger.minecraft.util.FileUtils;
 
 /**
  *
@@ -481,6 +480,7 @@ public class Instances extends JavaPlugin implements Listener {
         List<DependencyFactory<?, WorldInheritance>> worldInheritanceFactories = new ArrayList<DependencyFactory<?,WorldInheritance>>();
         worldInheritanceFactories.add(new MultiverseCoreWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new MultiverseInventoriesWorldInheritanceFactory(this));
+        worldInheritanceFactories.add(new MultiInvWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new PEXWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new WorldGuardWorldInheritanceFactory(this));
         this.worldInheritance = DependencyUtil.merge(getLogger(), WorldInheritance.class, worldInheritanceFactories);

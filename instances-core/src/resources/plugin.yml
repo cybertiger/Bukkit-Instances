@@ -6,11 +6,11 @@ softdepend:
   - Multiverse-Core
   - PermissionsEx
   - Multiverse-Inventories
+  - MultiInv
   - WorldEdit
   - WorldGuard
   - Vault
   - ProtocolLib
-  - ScoreShare
 commands:
   p:
     description: Chat to your party.
