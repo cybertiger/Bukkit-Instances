@@ -65,7 +65,9 @@ public class Spawner extends AbstractCommand {
         INVULNERABLE('v', true),
         MOTION('V', true),
         WEIGHT('w', true),
-        SIZE('z', true);
+        SIZE('z', true),
+        NAME('n', true),
+        NAME_VISIBLE('N', true);
         private char letter;
         private boolean hasArg;
 
@@ -529,7 +531,16 @@ public class Spawner extends AbstractCommand {
                             throw new InvocationException("You must specify a duration.");
                         }
                         break;
-
+                    case NAME:
+                        String name = a;
+                        getProperties(spawn).setString("CustomName", name);
+                        getProperties(spawn).setByte("CustomNameVisible", (byte)1);
+                        modified = true;
+                        break;
+                    case NAME_VISIBLE:
+                        boolean visible = Boolean.valueOf(a);
+                        getProperties(spawn).setByte("CustomNameVisible", visible ? (byte)1:(byte)0);
+                        break;
                 }
                 flag = null;
             }
