@@ -110,7 +110,7 @@ commands:
       -L <true|false> - For creepers, spawn them powered or unpowered.
       -m <delay> - Set the minimum delay between spawns. (default: 200)
       -M <delay> - Set the maximum delay between spawns. (default: 800)
-      -n <name> - Set the custom name for the spawned monster (implies -N true).
+      -n <name>|none - Set the custom name for the spawned monster (implies -N true).
       -N <true|false> - Set whether the spawned monster's name is visible.
       -p <range> - Activate when a player is within <range>. (default: 16)
       -P <none|x,y,z> - Set the initial position of the monster, or remove it.
