@@ -469,7 +469,7 @@ public class Spawner extends AbstractCommand {
                             setEquipmentDefaults(spawn);
                             ListTag equipment = getEquipment(spawn);
                             ItemStack stack = player.getItemInHand();
-                            if (stack == null) {
+                            if (stack == null || stack.getType() == Material.AIR) {
                                 equipment.getValue()[slot.ordinal()] = new CompoundTag();
                                 modified = true;
                             } else {
@@ -532,14 +532,19 @@ public class Spawner extends AbstractCommand {
                         }
                         break;
                     case NAME:
-                        String name = a;
-                        getProperties(spawn).setString("CustomName", name);
-                        getProperties(spawn).setByte("CustomNameVisible", (byte)1);
+                        if ("none".equals(a)) {
+                            getProperties(spawn).remove("CustomName");
+                            getProperties(spawn).remove("CustomNameVisible");
+                        } else {
+                            getProperties(spawn).setString("CustomName", a);
+                            getProperties(spawn).setByte("CustomNameVisible", (byte)1);
+                        }
                         modified = true;
                         break;
                     case NAME_VISIBLE:
                         boolean visible = Boolean.valueOf(a);
                         getProperties(spawn).setByte("CustomNameVisible", visible ? (byte)1:(byte)0);
+                        modified = true;
                         break;
                 }
                 flag = null;
