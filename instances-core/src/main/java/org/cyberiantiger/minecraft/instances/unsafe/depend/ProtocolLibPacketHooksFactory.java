@@ -76,16 +76,15 @@ public class ProtocolLibPacketHooksFactory extends DependencyFactory<Instances, 
         }
     }
     
-    private static PacketType CUSTOM = PacketType.Play.Client.CUSTOM_PAYLOAD;
 
     private static final class PacketAdapterImpl extends PacketAdapter {
         private final Instances instances;
         private final boolean newProtocol;
 
         public PacketAdapterImpl(Instances plugin, ConnectionSide connectionSide) {
-            super(plugin, CUSTOM);
+            super(plugin, PacketType.Play.Client.CUSTOM_PAYLOAD);
             this.instances = plugin;
-            newProtocol = CUSTOM.getCurrentVersion().compareTo(MinecraftVersion.WORLD_UPDATE) >= 0;
+            newProtocol = PacketType.Play.Client.CUSTOM_PAYLOAD.getCurrentVersion().compareTo(MinecraftVersion.WORLD_UPDATE) >= 0;
         }
 
         private String decodeCommand(ByteBuffer in) throws IOException {
