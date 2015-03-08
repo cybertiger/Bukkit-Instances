@@ -34,11 +34,13 @@
       <url>http://maven.sk89q.com/repo/</url>
     </repository>
     <!-- ProtocolLib -->
+    <!-- RIP protocollib repo.
     <repository>
       <id>comphenix-snapshots</id>
       <name>Comphenix Maven Snapshots</name>
       <url>http://repo.comphenix.net/content/repositories/releases/</url>
     </repository>
+    -->
     <!-- Multiverse-Core and Multiverse-Inventories -->
     <repository>
       <id>onarandombox</id>
