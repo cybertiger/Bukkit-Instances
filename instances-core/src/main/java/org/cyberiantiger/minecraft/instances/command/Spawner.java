@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -141,11 +142,11 @@ public class Spawner extends AbstractCommand {
             spawner.setCompound("SpawnData");
             spawner.getCompound("SpawnData").getValue().putAll(spawn.getValue());
             spawner.setString("EntityId", nearest.getType().getName());
-            spawner.setList("SpawnPotentials", new ListTag("SpawnPotentials", TagType.COMPOUND, new CompoundTag[]{spawn}));
+            spawner.setList("SpawnPotentials", new ListTag(TagType.COMPOUND, new CompoundTag[]{spawn}));
             nbtTools.writeTileEntity(b, spawner);
             args = shift(args, 1);
         } else {
-            b = player.getTargetBlock(null, 200);
+            b = player.getTargetBlock((Set<Material>)null, 200);
         }
         if (b.getType() != Material.MOB_SPAWNER) {
             throw new InvocationException("You are not looking at a mob spawner.");
@@ -160,7 +161,7 @@ public class Spawner extends AbstractCommand {
         if (spawnPotentials == null) {
             spawn = createSpawn(EntityType.fromName(tileEntity.getString("EntityId")), 100);
             CompoundTag[] spawns = new CompoundTag[]{spawn};
-            spawnPotentials = new ListTag("SpawnPotentials", TagType.COMPOUND, spawns);
+            spawnPotentials = new ListTag(TagType.COMPOUND, spawns);
             tileEntity.setList("SpawnPotentials", spawnPotentials);
         } else {
             spawn = (CompoundTag) spawnPotentials.getValue()[0];
@@ -418,13 +419,13 @@ public class Spawner extends AbstractCommand {
                                 ListTag list = tag.getList("Pos");
                                 if (list == null) {
                                     DoubleTag[] pos = new DoubleTag[3];
-                                    list = new ListTag("Pos", TagType.DOUBLE, pos);
+                                    list = new ListTag(TagType.DOUBLE, pos);
                                     tag.setList("Pos", list);
                                 }
                                 DoubleTag[] pos = (DoubleTag[]) list.getValue();
-                                pos[0] = new DoubleTag(null, x);
-                                pos[1] = new DoubleTag(null, y);
-                                pos[2] = new DoubleTag(null, z);
+                                pos[0] = new DoubleTag(x);
+                                pos[1] = new DoubleTag(y);
+                                pos[2] = new DoubleTag(z);
                                 modified = true;
                             }
                         } catch (NumberFormatException e) {
@@ -450,13 +451,13 @@ public class Spawner extends AbstractCommand {
                                 ListTag list = tag.getList("Motion");
                                 if (list == null) {
                                     DoubleTag[] pos = new DoubleTag[3];
-                                    list = new ListTag("Motion", TagType.DOUBLE, pos);
+                                    list = new ListTag(TagType.DOUBLE, pos);
                                     tag.setList("Motion", list);
                                 }
                                 DoubleTag[] pos = (DoubleTag[]) list.getValue();
-                                pos[0] = new DoubleTag(null, x);
-                                pos[1] = new DoubleTag(null, y);
-                                pos[2] = new DoubleTag(null, z);
+                                pos[0] = new DoubleTag(x);
+                                pos[1] = new DoubleTag(y);
+                                pos[2] = new DoubleTag(z);
                                 modified = true;
                             }
                         } catch (NumberFormatException e) {
@@ -502,7 +503,7 @@ public class Spawner extends AbstractCommand {
                             }
                             setEquipmentDefaults(spawn);
                             ListTag chances = getDropChance(spawn);
-                            chances.getValue()[slot.ordinal()] = new FloatTag(null, chance);
+                            chances.getValue()[slot.ordinal()] = new FloatTag(chance);
                             modified = true;
                         } catch (NumberFormatException e) {
                             throw new InvocationException("Drop chance must be a number between 0.0 and 1.0.");
@@ -587,13 +588,13 @@ public class Spawner extends AbstractCommand {
         FloatTag[] dropChance = new FloatTag[5];
         for (int i = 0; i < armour.length; i++) {
             armour[i] = new CompoundTag();
-            dropChance[i] = new FloatTag(null, 0.05f);
+            dropChance[i] = new FloatTag(0.05f);
         }
         if (!properties.containsKey("Equipment")) {
-            properties.setList("Equipment", new ListTag("Equipment", TagType.COMPOUND, armour));
+            properties.setList("Equipment", new ListTag(TagType.COMPOUND, armour));
         }
         if (!properties.containsKey("DropChances")) {
-            properties.setList("DropChances", new ListTag("DropChances", TagType.FLOAT, dropChance));
+            properties.setList("DropChances", new ListTag(TagType.FLOAT, dropChance));
         }
     }
 

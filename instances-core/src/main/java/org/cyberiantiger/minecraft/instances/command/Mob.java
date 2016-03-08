@@ -5,7 +5,9 @@
 package org.cyberiantiger.minecraft.instances.command;
 
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -46,7 +48,7 @@ public class Mob extends AbstractCommand {
         if (spawner == null) {
             throw new InvocationException("Not a valid entity: " + args[0]);
         }
-        Block b = player.getTargetBlock(null, 200);
+        Block b = player.getTargetBlock((Set<Material>)null, 200);
         if (b == null) {
             throw new InvocationException("You are not looking at anything.");
         }
