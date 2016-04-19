@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.CheckForNull;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -190,7 +189,6 @@ public class Instances extends JavaPlugin implements Listener {
         return nbtTools;
     }
 
-    @CheckForNull
     public InstanceTools getInstanceTools() {
         return instanceTools;
     }
