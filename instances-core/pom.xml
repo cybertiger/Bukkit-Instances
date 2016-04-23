@@ -9,6 +9,12 @@
   </parent>
   <dependencies>
     <dependency>
+      <groupId>ru.tehkode</groupId>
+      <artifactId>PermissionsEx</artifactId>
+      <version>1.23</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
       <version>1.9-R0.1-cybertiger</version>
@@ -16,8 +22,8 @@
     </dependency>
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
-      <artifactId>Vault</artifactId>
-      <version>1.2.32</version>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.6</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -28,33 +34,13 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>worldguard</artifactId>
-      <version>5.9</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>spoutapi</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>vanilla</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.sk89q</groupId>
-      <artifactId>worldedit</artifactId>
-      <version>5.6.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>spoutapi</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.spout</groupId>
-          <artifactId>vanilla</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>com.sk89q.worldedit</groupId>
+      <artifactId>worldedit-bukkit</artifactId>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -73,12 +59,6 @@
       <groupId>com.onarandombox.multiverseinventories</groupId>
       <artifactId>Multiverse-Inventories</artifactId>
       <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>ru.tehkode</groupId>
-      <artifactId>PermissionsEx</artifactId>
-      <version>1.19.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

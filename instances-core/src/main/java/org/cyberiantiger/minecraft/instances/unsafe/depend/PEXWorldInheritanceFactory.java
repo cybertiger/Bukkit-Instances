@@ -4,6 +4,7 @@
  */
 package org.cyberiantiger.minecraft.instances.unsafe.depend;
 
+import java.util.Collections;
 import org.cyberiantiger.minecraft.instances.util.DependencyFactory;
 import org.bukkit.plugin.Plugin;
 import org.cyberiantiger.minecraft.instances.Instances;
@@ -42,7 +43,7 @@ public class PEXWorldInheritanceFactory extends DependencyFactory<Instances, Wor
 
         public void preAddInheritance(String parent, String child) {
             PermissionManager pm = PermissionsEx.getPermissionManager();
-            pm.setWorldInheritance(child, new String[]{parent});
+            pm.setWorldInheritance(child, Collections.singletonList(parent));
         }
 
         public void postAddInheritance(String parent, String child) {
@@ -53,7 +54,7 @@ public class PEXWorldInheritanceFactory extends DependencyFactory<Instances, Wor
 
         public void postRemoveInheritance(String parent, String child) {
             PermissionManager pm = PermissionsEx.getPermissionManager();
-            pm.setWorldInheritance(child, new String[0]);
+            pm.setWorldInheritance(child, Collections.emptyList());
         }
 
         public Plugin getPlugin() {
