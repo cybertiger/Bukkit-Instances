@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -103,6 +105,17 @@ import org.cyberiantiger.minecraft.unsafe.NBTTools;
  */
 public class Instances extends JavaPlugin implements Listener {
 
+    private static final String[] DEFAULT_HOOKS = new String[] {
+        "Instances",
+        "MultiInv",
+        "Multiverse-Core",
+        "Multiverse-Inventories",
+        "PermissionsEx",
+        "ProtocolLib",
+        "Vault",
+        "WorldEdit",
+        "WorldGuard",
+    };
     public static final Charset CHARSET = Charset.forName("UTF-8");
     private String[] motd;
     private String partyNamePrefix;
@@ -112,6 +125,7 @@ public class Instances extends JavaPlugin implements Listener {
     private boolean leaderDisband;
     private boolean editCommandInCreative = true;
     private String spawnName;
+    private Map<String, Boolean> hooks = new HashMap<String, Boolean>();
     private Map<String, Party> parties = new HashMap<String, Party>();
     private Map<Player, Party> partyMap = new HashMap<Player, Party>();
     private Map<String, PortalPair> portals = new HashMap<String, PortalPair>();
@@ -474,21 +488,21 @@ public class Instances extends JavaPlugin implements Listener {
         }
         List<DependencyFactory<?, PacketHooks>> packetHooksFactories = new ArrayList<DependencyFactory<?, PacketHooks>>();
         packetHooksFactories.add(new ProtocolLibPacketHooksFactory(this));
-        packetHooks = DependencyUtil.first(getLogger(), PacketHooks.class, packetHooksFactories);
+        packetHooks = DependencyUtil.first(getLogger(), PacketHooks.class, packetHooksFactories, hooks);
         List<DependencyFactory<?, WorldInheritance>> worldInheritanceFactories = new ArrayList<DependencyFactory<?,WorldInheritance>>();
         worldInheritanceFactories.add(new MultiverseCoreWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new MultiverseInventoriesWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new MultiInvWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new PEXWorldInheritanceFactory(this));
         worldInheritanceFactories.add(new WorldGuardWorldInheritanceFactory(this));
-        this.worldInheritance = DependencyUtil.merge(getLogger(), WorldInheritance.class, worldInheritanceFactories);
+        this.worldInheritance = DependencyUtil.merge(getLogger(), WorldInheritance.class, worldInheritanceFactories, hooks);
         List<DependencyFactory<?,Bank>> bankFactories = new ArrayList<DependencyFactory<?,Bank>>();
         bankFactories.add(new VaultBankFactory(this));
-        this.bank = DependencyUtil.first(getLogger(), Bank.class, bankFactories);
+        this.bank = DependencyUtil.first(getLogger(), Bank.class, bankFactories, hooks);
         List<DependencyFactory<?,CuboidSelection>> cuboidSelectionFactories = new ArrayList<DependencyFactory<?,CuboidSelection>>();
         cuboidSelectionFactories.add(new WorldEditCuboidSelectionFactory(this));
         cuboidSelectionFactories.add(new InstancesCuboidSelectionFactory(this));
-        this.cuboidSelection = DependencyUtil.first(getLogger(), CuboidSelection.class, cuboidSelectionFactories);
+        this.cuboidSelection = DependencyUtil.first(getLogger(), CuboidSelection.class, cuboidSelectionFactories, hooks);
         getLogger().info("Registering packet handler for no-op command block editing");
         try {
             packetHooks.install();
@@ -592,6 +606,17 @@ public class Instances extends JavaPlugin implements Listener {
                 addPortalPair(portal);
             }
         }
+        ConfigurationSection hooksSection = config.getConfigurationSection("hooks");
+        hooks.clear();
+        if (hooksSection != null) {
+            for (String key : hooksSection.getKeys(true)) {
+                hooks.put(key, hooksSection.getBoolean(key));
+            }
+        } else {
+            for (String s : DEFAULT_HOOKS) {
+                hooks.put(s, Boolean.TRUE);
+            }
+        }
     }
 
     private Cuboid loadCuboid(ConfigurationSection section) {
@@ -651,6 +676,7 @@ public class Instances extends JavaPlugin implements Listener {
             config.set("spawnWorld", spawnName);
         }
         config.set("selectionTool", getSelectionTool());
+        config.set("hooks", hooks);
         ConfigurationSection homeSection;
         if (!config.isConfigurationSection("homes")) {
             homeSection = config.createSection("homes");

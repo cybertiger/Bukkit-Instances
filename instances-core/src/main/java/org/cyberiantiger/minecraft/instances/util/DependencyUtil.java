@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.plugin.Plugin;
@@ -20,7 +21,14 @@ import org.bukkit.plugin.Plugin;
  */
 public class DependencyUtil {
 
-    public static <T extends Dependency> T merge(final Logger log, final Class<T> type, final List<DependencyFactory<?,T>> factories) {
+    public static <T extends Dependency> T merge(final Logger log, final Class<T> type, final List<DependencyFactory<?,T>> factories, Map<String, Boolean> enabled) {
+        Iterator<DependencyFactory<?,T>> i = factories.iterator();
+        while (i.hasNext()) {
+            DependencyFactory<?,T> factory = i.next();
+            if (!enabled.get(factory.getPlugin())) {
+                i.remove();
+            }
+        }
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 // We only support merging for methods which return void.
@@ -59,7 +67,15 @@ public class DependencyUtil {
         });
     }
 
-    public static <T extends Dependency> T first(final Logger log, final Class<T> type, final List<DependencyFactory<?, T>> factories) {
+    public static <T extends Dependency> T first(final Logger log, final Class<T> type, final List<DependencyFactory<?, T>> factories, Map<String,Boolean> enabled) {
+        Iterator<DependencyFactory<?,T>> i = factories.iterator();
+        while (i.hasNext()) {
+            DependencyFactory<?,T> factory = i.next();
+            if (!enabled.get(factory.getPlugin())) {
+                i.remove();
+            }
+        }
+        
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type }, new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                 Iterator<DependencyFactory<? extends Plugin, T>> i = factories.iterator();

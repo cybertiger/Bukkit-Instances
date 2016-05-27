@@ -8,3 +8,13 @@ selectionTool:
   ==: org.bukkit.inventory.ItemStack
   type: FEATHER
 homes: {}
+hooks:
+        Instances: true
+        MultiInv: true
+        Multiverse-Core: true
+        Multiverse-Inventories: true
+        PermissionsEx: true
+        ProtocolLib: true
+        Vault: true
+        WorldEdit: true
+        WorldGuard: true
