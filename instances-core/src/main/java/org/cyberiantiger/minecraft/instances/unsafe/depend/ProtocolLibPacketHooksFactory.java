@@ -51,11 +51,11 @@ public class ProtocolLibPacketHooksFactory extends DependencyFactory<Instances, 
     }
 
     private final class ProtocolLibPacketHooks implements PacketHooks {
-        private final ProtocolLibrary protocolLib;
         private final ProtocolManager protocolManager;
         private final PacketAdapter packetAdapter;
+        private final Plugin plugin;
         public ProtocolLibPacketHooks(Plugin plugin) {
-            this.protocolLib = (ProtocolLibrary) plugin;
+            this.plugin = plugin;
             this.protocolManager = ProtocolLibrary.getProtocolManager();
             this.packetAdapter = new PacketAdapterImpl((Instances)getThisPlugin(), ConnectionSide.CLIENT_SIDE);
         }
@@ -72,7 +72,7 @@ public class ProtocolLibPacketHooksFactory extends DependencyFactory<Instances, 
 
         @Override
         public Plugin getPlugin() {
-            return protocolLib;
+            return plugin;
         }
     }
     
