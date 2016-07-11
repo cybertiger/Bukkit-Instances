@@ -54,6 +54,17 @@
         <id>pex-repo</id>
         <url>http://pex-repo.aoeu.xyz/</url>
     </repository>
+    <!-- Fuck off spout -->
+    <repository>
+        <id>spout-repo</id>
+        <url>http://repo.spout.org/</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
   </repositories>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
